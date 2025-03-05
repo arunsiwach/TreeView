@@ -1,0 +1,17 @@
+﻿Create table Granularity
+(
+	GranularityID int identity(1,1) ,
+	Level1 varchar (200) not null,
+	Level2 varchar(200)  null,
+	Level3 varchar(200)  null,
+	Level4 varchar(200)  null,
+	Level5 varchar(200)  null,
+	Level6 varchar(200)  null,
+	Level7 varchar(200)  null,
+	Level8 varchar(200)  null,
+	Level9 varchar(200)  null,
+	Level10 varchar(200)  null,
+	[CreatedBy] [int] NOT NULL,
+	[CreatedAt] [smalldatetime] NOT NULL,
+    DataLevel tinyint null
+)
