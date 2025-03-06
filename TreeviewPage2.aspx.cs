@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.Data.SqlClient;
 using System.Configuration;
 using System.Data;
+using System.Xml.Linq;
 //using System.Reflection.Emit;
 namespace TreeView
 {
@@ -30,8 +31,11 @@ namespace TreeView
             string level6, string level7, string level8, string level9,
             string level10)
         {
+
+            string result = string.Empty;
             try
             {
+                
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.AppSettings["MyConnectionString"].ToString()))
                 {
                     con.Open();
@@ -51,20 +55,20 @@ namespace TreeView
                         command.Parameters.Add("@OutStatus",SqlDbType.Int).Direction = ParameterDirection.Output;
                         command.Parameters.Add("@OutDesc", SqlDbType.VarChar,200).Direction = ParameterDirection.Output;                        
                         int rowsAffected = command.ExecuteNonQuery();
-                        if (Convert.ToString(command.Parameters["@OutStatus"].Value)=="1")
-                        {        
-                            //do something
-                        }                        
+                        if (Convert.ToString(command.Parameters["@OutStatus"].Value) == "1")
+                        {
+                            result= String.Format("status: {0}{2}msg: {1}", 
+                                Convert.ToString(command.Parameters["@OutStatus"].Value), Convert.ToString(command.Parameters["@OutDesc"].Value), Environment.NewLine);                          
+                        }
                     }
                 }
+                             
             }
             catch (Exception ex)
             {
-
-                //Response.Write("<script>alert('Error: " + ex.Message + "');</script>");
+                result = ex.Message;
             }
-
-            return "You Have Set levels :   " + level2  ;
+            return result;
         }
        
         public class Root

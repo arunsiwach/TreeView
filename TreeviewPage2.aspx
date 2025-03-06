@@ -123,6 +123,8 @@
         }
 
         function onSubmitForm() {
+
+            
             var postdata = JSON.stringify(
                 {"level1": document.getElementById("txtlevel1").value,
                  "level2": document.getElementById("txtlevel2").value,
@@ -135,12 +137,9 @@
                  "level9": document.getElementById("txtlevel9").value,
                  "level10":document.getElementById("txtlevel10").value
                 });
-            /*alert(postdata);*/
-            //console.log(postdata);
-            //postdata = '{"name":"arun"}';    
-            //postdata = '{ "level1": "ccbs", "level2": " ","Level3": " ", "level4": " ", "level5": " ", "level6": " ", "level7": " " , "level8": " ", "level9": " " ,"level10": " "}';
-                //'{ "level1": "ccbs", "level2": " ", "Level3": " "}';
-            //console.log(postdata);            
+            /*alert(postdata);*/                        
+            console.log(postdata);   
+            debugger;    
             try {
                 $.ajax({
                     type: "POST",
@@ -148,20 +147,19 @@
                    //url: "TreeviewPage2.aspx/getname",                    
                     data: postdata,
                     contentType: "application/json; charset=utf-8",                    
-                    dataType:"json",
-                    success: getSuccess,
-                    error: getFail
+                    dataType: "json",
+                    success: OnSuccess,
+                    failure: function (response) {
+                        alert(response.d);
+                    }
                 });
             } catch (e) {
                 alert(e);
             }
-            function getSuccess(response) {
-                alert("Success: " + response.d);
-            };
-            function getFail(response) {
-                alert("Error:" + response.d);
-
-            };        
+            
+            function OnSuccess(response) {
+                alert(response.d);
+            }       
         };
     </script>
 </body>
