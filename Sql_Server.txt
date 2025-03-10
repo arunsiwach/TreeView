@@ -18,6 +18,26 @@
 
 GO
 
+
+Create table StatusGranularity
+(
+	StatusGranularityID int identity(1,1) ,
+	Level1 varchar (200) not null,
+	Level2 varchar(200)  null,
+	Level3 varchar(200)  null,
+	Level4 varchar(200)  null,
+	Level5 varchar(200)  null,
+	Level6 varchar(200)  null,
+	Level7 varchar(200)  null,
+	Level8 varchar(200)  null,
+	Level9 varchar(200)  null,
+	Level10 varchar(200)  null,
+	[CreatedBy] [int] NOT NULL,
+	[CreatedAt] [smalldatetime] NOT NULL
+)
+
+GO
+
 ALTER PROCEDURE Task_usp_Insertlevels
 @level1 VARCHAR(200),
 @level2 VARCHAR(200),
@@ -40,4 +60,30 @@ INSERT INTO [dbo].[Granularity]
 		   (@level1,@level2,@level3,@level4,@level5,@level6,@level7,@level8,@level9,@level10,100,GETDATE())
 set @OutStatus=1
 set @OutDesc='Level has been insert Successfully'		   		   		
+END
+
+GO
+
+CREATE PROCEDURE Status_usp_Insertlevels
+@level1 VARCHAR(200),
+@level2 VARCHAR(200),
+@level3 VARCHAR(200),
+@level4 VARCHAR(200),
+@level5 VARCHAR(200),
+@level6 VARCHAR(200),
+@level7 VARCHAR(200),
+@level8 VARCHAR(200),
+@level9 VARCHAR(200),
+@level10 VARCHAR(200),
+@OutStatus INT output,
+@OutDesc VARCHAR(200) output 
+AS
+BEGIN
+INSERT INTO [dbo].[StatusGranularity]
+           ([Level1],[Level2],[Level3],[Level4],[Level5]
+           ,[Level6],[Level7],[Level8],[Level9],[Level10],[CreatedBy],[CreatedAt])
+     VALUES
+		   (@level1,@level2,@level3,@level4,@level5,@level6,@level7,@level8,@level9,@level10,100,GETDATE())
+set @OutStatus=1
+set @OutDesc='Status Level has been insert Successfully'		   		   		
 END

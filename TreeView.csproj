@@ -73,6 +73,7 @@
     <Content Include="Global.asax" />
     <Content Include="Sql_Server.txt" />
     <Content Include="TreeView1.aspx" />
+    <Content Include="TreeViewPage1.aspx" />
     <Content Include="TreeviewPage2.aspx" />
     <Content Include="Web.config" />
     <Content Include="WebForm1.aspx" />
@@ -88,6 +89,13 @@
     </Compile>
     <Compile Include="TreeView1.aspx.designer.cs">
       <DependentUpon>TreeView1.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="TreeViewPage1.aspx.cs">
+      <DependentUpon>TreeViewPage1.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TreeViewPage1.aspx.designer.cs">
+      <DependentUpon>TreeViewPage1.aspx</DependentUpon>
     </Compile>
     <Compile Include="TreeviewPage2.aspx.cs">
       <DependentUpon>TreeviewPage2.aspx</DependentUpon>
