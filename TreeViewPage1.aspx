@@ -78,7 +78,7 @@
 <%--    <form id="form1" runat="server">--%>
         <div class="floating-tree">
             <ul class="tree">
-                <li><span>Set Your Hirearchy</span> 
+                <li><span>Set your Work Status Levels</span> 
                     <ul>
                         <li><span>Status level 1 </span> <input type="text" id="txtlevel1" placeholder="Name your status Level 1" /></li>
                         <li><span>Status level 2</span> <input type="text" id="txtlevel2" placeholder="Name your status Level 2"/></li>
@@ -93,7 +93,7 @@
                     </ul>
                 </li>
             </ul>        
-            <button onclick="getraversal()">Save your levels</button>        
+            <button onclick="onSubmitForm()">Save your levels</button>        
         </div>     
     <%--</form>      --%>   
     <script>
@@ -121,7 +121,7 @@
             //return values;
         }
 
-        function getraversal() {
+        function onSubmitForm() {
 
             alert('Helo arun siwach')
             document.querySelector(".tree span").classList.toggle("expanded");                              

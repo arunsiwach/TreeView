@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="./css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./css/style.css" />
+  
+    <title>Hello, world!</title>
+</head>
+
+<body>
+    <div class=" wrapper">
+        <header class="header">
+            <img src="./images/right-img.png" class="right-img " alt="right-img" />
+            <img src="./images/center-img.png" class="center-img " alt="center-img " />
+            <img src="./images/left-img.png" class="left-img " alt="left-img" />
+        </header>
+        <main class="main">
+            <img src="./images/main-right-bg.png" class="main-left-bg" alt="">
+            <img src="./images/main-left-bg.png" class="main-right-bg" alt="">
+            <div class="dashboard-container">
+                <div class="row">
+                    <div class="col mx-auto d-flex justify-content-between align-items-center newProject">
+                        <h2 class="main-title">Status Dashboard</h2>
+                        <div class="d-flex">
+                            <div class="user-info">
+                                <p class="m-0">Welcome</p>
+                                <h6 class="text-medium-bold ">Manish Kumar</h6>
+                            </div>
+                            <img src="./images/user.png" class="user-img" alt="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col menu">
+                        <button class="btn btn-sm btn-primary menu-btns"><span>Home</span><img src="./images/home.png"
+                                alt=""></button>
+                        <button class="btn btn-sm  btn-secondry-outline menu-btns"><span>Project</span><img
+                                src="./images/edit.png" alt=""></button>
+                        <button class="btn btn-sm  btn-secondry-outline menu-btns"><span>Task</span><img
+                                src="./images/edit.png" alt=""></button>
+                        <button class="btn btn-sm  btn-secondry-outline menu-btns"><span>Module</span><img
+                                src="./images/edit.png" alt=""></button>
+                        <button class="btn btn-sm  btn-secondry-outline menu-btns"><span>Assignment</span><img
+                                src="./images/edit.png" alt=""></button>
+                        <button class="btn btn-sm  btn-secondry-outline menu-btns"><span>Add User</span><img
+                                src="./images/edit.png" alt=""></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col filters-btn">
+                        <button class="btn btn-primary ">AllCreated (279)</button>
+                        <button class="btn btn-success">Assigned (229)</button>
+                        <button class="btn btn-secondary">Unassigned (51)</button>
+                        <button class="btn btn-warning">Pending (10)</button>
+                        <button class="btn btn-orange">InProgress (43)</button>
+                        <button class="btn btn-clan">Completed (172)</button>
+                        <button class="btn btn-danger">RevertBack (0)</button>
+                        <button class="btn btn-voilet">Withdraw (0)</button>
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="col table-container">
+                        <div class="card ">
+                            <div class="row">
+                                <div class="col filter-section">
+                                    <!-- <select id="example-multiselect" multiple="multiple">
+                                        <option value="">Select Group</option>
+                                        <option value="1">Option 1</option>
+                                        <option value="2">Option 2</option>
+                                        <option value="3">Option 3</option>
+                                    </select> -->
+                                    <select class="table-filters">
+                                        <option value="">Select Group</option>
+                                    </select>
+                                    <select class="table-filters">
+                                        <option value="">All Project</option>
+                                    </select>
+                                    <select class="table-filters">
+                                        <option value="">All Module</option>
+                                    </select>
+                                    <select class="table-filters">
+                                        <option value="">Select Status</option>
+                                    </select>
+                                    <select class="table-filters">
+                                        <option value="">Select User</option>
+                                    </select>
+                                    <input type="date" class="table-filters date-filter">
+                                    <input type="date" class="table-filters date-filter">
+                                    <button class="btn btn-primary">Show</button>
+                                    <select class="table-filters page-no">
+                                        <option value="">10</option>
+                                    </select>
+                                    <select class="table-filters export-btn">
+                                        <option value="">Export</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <img src="./images/table.png" width="100%" alt="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </main>
+        <footer>
+            <div class="footer">
+                <div class="right"> <img src="./images/left-footer-img.png" alt="NIC Logo" /></div>
+                <div class="center">
+                    <p className="">
+                        Prayas has been developed under the guidance of Prime Minister’s
+                        office with inputs from Departments.
+                        <br />
+                        The Platform is designed and developed by Data Analytics,
+                        Visualizaton and Dashboard (DAVD) Division, NIC and Centre of
+                        Excellence for Data Analytics(CEDA), NICSI.
+                    </p>
+                </div>
+                <div class="left">
+                    <img src="./images/right-footer-img.png" alt="NICSI Logo" />
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#example-multiselect').multiselect({
+                includeSelectAllOption: true,  // Adds a "Select All" option
+                enableFiltering: true,        // Adds a search/filter box
+                buttonWidth: '250px',
+                nonSelectedText: 'Select options' // Placeholder text
+            });
+        });
+    </script>
+</body>
+
+</html>

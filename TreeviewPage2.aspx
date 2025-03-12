@@ -94,8 +94,7 @@
                 </li>
             </ul>        
             <button onclick="onSubmitForm()">Save your levels</button>        
-        </div>  
-    <asp:Label ID="Label1" runat="server" Text="Label"></asp:Label>  
+        </div>     
   <%--  </form>      --%>   
     <script>
         document.addEventListener("DOMContentLoaded", function () {
