@@ -1,0 +1,58 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Prayas.master.cs" Inherits="TreeViewProject.Prayas" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Level Report</title>
+    <link rel="stylesheet" href="css/Style2.css">
+
+    <!-- Header Section -->
+    <header class="status-header">
+        <img
+            src="img/header.png"
+            alt="STATUS Header Image"
+            class="header-image" />
+    </header>
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="logo">Data Sanity Platform</div>
+        <div class="menu">
+            <img class="icon-btn" src="./img/home.png" alt="Home">
+            <img class="icon-btn" src="./img/reset.png" alt="Reset">
+        <div class="dropdown">
+            <button>Detailed Report <i class="fas fa-chevron-down"></i></button>
+        </div>
+        <div class="dropdown">
+            <button>Granularity <i class="fas fa-chevron-down"></i></button>
+        </div>
+        </div>
+    </header>
+
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+    </form>
+<!-- Footer Section -->
+<footer class="footer">
+    <div class="footer-container">
+        <img src="./img/nic-logo.png" alt="NIC Logo" class="footer-logo">
+        <p class="footer-text">
+            Prayas has been developed under the guidance of the Prime Minister’s Office with inputs from Ministries and Departments. 
+            The Platform is designed and developed by the Data Analytics, Visualization, and Dashboard (DAVD) Division, NIC, and 
+            the Centre of Excellence for Data Analytics (CEDA), NICSI.
+        </p>
+        <img src="./img/nicsi-logo.png" alt="NICSI Logo" class="footer-logo">
+    </div>
+</footer>
+</body>
+</html>

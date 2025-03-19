@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="TreeViewPage1.aspx.cs" Inherits="TreeView.TreeViewPage1" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="TreeViewPage1.aspx.cs" Inherits="TreeViewProject.TreeViewPage1" %>
 
 <!DOCTYPE html>
 

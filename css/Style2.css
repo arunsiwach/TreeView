@@ -1,0 +1,282 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* Header Styling */
+.status-header {
+  width: 100%;
+  background-color: #e6f0ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.header-image {
+  width: 100%;
+  max-width: 1920px;
+  height: auto;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: #4c8cda;
+  color: white;
+}
+
+
+
+
+
+/* Navigation Header */
+.header {
+  background: #4c8cda;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.menu .icon-btn {
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.select-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  padding: 10px;
+}
+
+.label {
+  font-size: 15px;
+  font-weight: bold;
+  width: auto;
+}
+
+.dropdown-new {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 10rem;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: white;
+  padding-right: 40px; /* Space for the icon */
+  background-image: url('./img/dropdown.png'); /* Replace with your image path */
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+
+.dropdown-new:focus {
+    border-color: #4c8cda;
+    outline: none;
+}
+
+.dropdown button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.dropdown button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+
+.apply-btn {
+  height: 2.5rem;
+  width: 5.5rem;
+  font-weight: bold;
+  padding: 10px 15px;
+  border: none;
+  background-color: #2f80ed;
+  color: white;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.apply-btn:hover {
+  background-color: #1c6ed8;
+}
+
+
+body {
+  background: #f5f5f5;
+}
+
+.container {
+  max-width: 100%;
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: bold;
+  background: #4c8cda;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+/* FILTER BUTTONS */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0px;
+  margin-bottom: 20px;
+}
+
+/* RESPONSIVE TABLE */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+th {
+  background: #d5c4ff;
+}
+
+/* COLOR INDICATORS */
+.match {
+  background: #00f0ff;
+}
+.slight-mismatch {
+  background: #ffff00;
+}
+.mismatch {
+  background: #ff4d4d;
+  color: white;
+}
+
+/* BUTTONS */
+.action-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.action-buttons button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.pmo {
+  background: #4a2db5;
+  color: white;
+}
+
+.summary {
+  background: #28a745;
+  color: white;
+}
+
+.pmo:hover {
+  background: #362091;
+}
+
+.summary:hover {
+  background: #218838;
+}
+
+/* MOBILE RESPONSIVENESS */
+@media (max-width: 768px) {
+  th,
+  td {
+    font-size: 12px;
+    padding: 8px;
+  }
+}
+
+/* Footer Styling */
+.footer {
+  background-color: #4a90e2;
+  padding: 15px 20px;
+  text-align: center;
+  width: 100%;
+  margin-top: auto;
+}
+
+.footer-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: auto;
+  text-align: center;
+}
+
+.footer-text {
+  color: white;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  flex: 1;
+  padding: 0 20px;
+}
+
+.footer-logo {
+  width: 100px;
+  height: auto;
+}

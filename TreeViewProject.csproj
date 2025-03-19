@@ -11,8 +11,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TreeView</RootNamespace>
-    <AssemblyName>TreeView</AssemblyName>
+    <RootNamespace>TreeViewProject</RootNamespace>
+    <AssemblyName>TreeViewProject</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
@@ -70,8 +70,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ceda.txt" />
+    <Content Include="ceda\ceda.txt" />
     <Content Include="css\bootstrap.min.css" />
     <Content Include="css\style.css" />
+    <Content Include="css\Style1.css" />
+    <Content Include="css\Style2.css" />
     <Content Include="dashboard.html" />
     <Content Include="Global.asax" />
     <Content Include="images\center-img.png" />
@@ -89,7 +93,16 @@
     <Content Include="images\right.png" />
     <Content Include="images\table.png" />
     <Content Include="images\user.png" />
+    <Content Include="img\dropdown.png" />
+    <Content Include="img\header.png" />
+    <Content Include="img\home.png" />
+    <Content Include="img\nic-logo.png" />
+    <Content Include="img\nicsi-logo.png" />
+    <Content Include="img\reset.png" />
+    <Content Include="index.html" />
     <Content Include="js\bootstrap.min.js" />
+    <Content Include="js\script.js" />
+    <Content Include="kpi.aspx" />
     <Content Include="login.html" />
     <Content Include="newProject.html" />
     <Content Include="PrayasKPI.aspx" />
@@ -98,11 +111,24 @@
     <Content Include="TreeViewPage1.aspx" />
     <Content Include="TreeviewPage2.aspx" />
     <Content Include="Web.config" />
-    <Content Include="WebForm1.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="kpi.aspx.cs">
+      <DependentUpon>kpi.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="kpi.aspx.designer.cs">
+      <DependentUpon>kpi.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Prayas.Master.cs">
+      <DependentUpon>Prayas.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Prayas.Master.designer.cs">
+      <DependentUpon>Prayas.Master</DependentUpon>
     </Compile>
     <Compile Include="PrayasKPI.aspx.cs">
       <DependentUpon>PrayasKPI.aspx</DependentUpon>
@@ -118,6 +144,13 @@
     </Compile>
     <Compile Include="Site1.Master.designer.cs">
       <DependentUpon>Site1.Master</DependentUpon>
+    </Compile>
+    <Compile Include="Site2.Master.cs">
+      <DependentUpon>Site2.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Site2.Master.designer.cs">
+      <DependentUpon>Site2.Master</DependentUpon>
     </Compile>
     <Compile Include="TreeView1.aspx.cs">
       <DependentUpon>TreeView1.aspx</DependentUpon>
@@ -137,18 +170,13 @@
       <DependentUpon>TreeviewPage2.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="WebForm1.aspx.cs">
-      <DependentUpon>WebForm1.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="WebForm1.aspx.designer.cs">
-      <DependentUpon>WebForm1.aspx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\Poppins-Regular.ttf" />
     <None Include="packages.config" />
     <Content Include="Site1.Master" />
+    <Content Include="Prayas.Master" />
+    <Content Include="Site2.Master" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

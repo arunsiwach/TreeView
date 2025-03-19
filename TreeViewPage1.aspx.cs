@@ -9,7 +9,7 @@ using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace TreeView
+namespace TreeViewProject
 {
     public partial class TreeViewPage1 : System.Web.UI.Page
     {
