@@ -60,12 +60,14 @@
                                     <%# Container.DataItemIndex + 1 %>
                                 </ItemTemplate>
                             </asp:TemplateField>
-                            <asp:BoundField HeaderText='State' DataField="StateName" HtmlEncode="true" />
+                        <%--    <asp:BoundField HeaderText='State' DataField="StateName" HtmlEncode="true" />
                             <asp:BoundField HeaderText='State Code' DataField="StateCode" HtmlEncode="true" />
                             <asp:BoundField HeaderText='Sector Name' DataField="SectorName" HtmlEncode="true" />
-                            <asp:BoundField HeaderText='Department Name' DataField="DepartmentName" HtmlEncode="true" />
-                            <asp:BoundField HeaderText='Prayas Value (A)' DataField="National_Value" HtmlEncode="true" />
-                            <asp:BoundField HeaderText='Ceda Value (B)' DataField="CedaValue" HtmlEncode="true" />
+                            <asp:BoundField HeaderText='Department Name' DataField="DepartmentName" HtmlEncode="true" />--%>
+                            <asp:BoundField HeaderText='Scheme Name' DataField="Project_Name_E" HtmlEncode="true" />
+                            <asp:BoundField HeaderText='KPI Name' DataField="KPI_Name_E" HtmlEncode="true" />
+                            <asp:BoundField HeaderText='Darpan Data (A)' DataField="National_Value" HtmlEncode="true" />
+                            <asp:BoundField HeaderText='Paryas Data (B)' DataField="CedaValue" HtmlEncode="true" />
                             <%--   <asp:TemplateField HeaderText='Prayas Value(A)'>
                                 <ItemTemplate>
                                     <asp:Label ID="lblPrayasValue" runat="server"

@@ -115,6 +115,7 @@ namespace TreeViewProject
                             ddlState.DataValueField = "Level2_code";
                             ddlState.DataBind();
                             ddlState.Items.Insert(0, new ListItem("---Select State---", "-1"));
+                            ddlState.Items.Insert(1, new ListItem("----- All -----", "0"));
                         }
                     }
                 }
@@ -144,6 +145,7 @@ namespace TreeViewProject
                             ddlDistrict.DataValueField = "Level3_code";
                             ddlDistrict.DataBind();
                             ddlDistrict.Items.Insert(0, new ListItem("--Select District--", "-1"));
+                            //ddlDistrict.Items.Insert(1, new ListItem("----- All -----", "0"));                            
                         }
                     }
                 }
@@ -202,7 +204,7 @@ namespace TreeViewProject
                             ddlKpi.DataValueField = "KPI_ID";
                             ddlKpi.DataBind();
                             ddlKpi.Items.Insert(0, new ListItem("--Select KPI--", "-1"));
-                            ddlKpi.Items.Insert(1, new ListItem("----All----", "0"));
+                            ddlKpi.Items.Insert(1, new ListItem("----- All -----", "0"));                            
                         }
                     }
                 }
@@ -219,10 +221,20 @@ namespace TreeViewProject
             BindState();
         }
         protected void ddlState_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        {            
             Int16 stateID = Convert.ToInt16(ddlState.SelectedValue);
-            GetAllDistrictByState(stateID);
+            if (ddlState.SelectedIndex != 1) { 
+                ddlDistrict.Items.Clear();
+                GetAllDistrictByState(stateID);
 
+            }
+            else { 
+                ddlDistrict.Items.Clear();
+                ddlDistrict.Items.Insert(0, new ListItem("--Select District--", "-1"));
+                ddlDistrict.Items.Insert(1, new ListItem("----- All -----", "0"));
+                ddlDistrict.SelectedIndex = 1;
+                GetAllSchemebyDeptID(Convert.ToInt16(ddlDepartment.SelectedValue));
+            }
         }
         protected void ddlDistrict_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -249,14 +261,14 @@ namespace TreeViewProject
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
                 // Ceda Value - local value
-                if ((Convert.ToDecimal(e.Row.Cells[6].Text) - Convert.ToDecimal(e.Row.Cells[5].Text)) == 0)
+                if ((Convert.ToDecimal(e.Row.Cells[4].Text) - Convert.ToDecimal(e.Row.Cells[3].Text)) == 0)
                 {
-                    e.Row.Cells[7].CssClass = "match";
-                    e.Row.Cells[8].CssClass = "match";                    
+                    e.Row.Cells[5].CssClass = "match";
+                    e.Row.Cells[6].CssClass = "match";                    
                 }
                 else {
-                    e.Row.Cells[7].CssClass = "mismatch";
-                    e.Row.Cells[8].CssClass = "mismatch";
+                    e.Row.Cells[5].CssClass = "mismatch";
+                    e.Row.Cells[6].CssClass = "mismatch";
                 }
                     
             }
@@ -305,31 +317,35 @@ namespace TreeViewProject
             }
             try
             {
-                DataTable dt1 = getDataFromLocal(0, 100359, 0);
-                DataTable dt2 = GetCedaDatafromlocal();
-                //DataTable dt2 = GetCedaData(0, 100359, 0);
-                dt1.Columns.Add("StateName");
-                dt1.Columns.Add("Statecode");
-                dt1.Columns.Add("SectorName");
-                dt1.Columns.Add("DepartmentName");
+                int stateid = Convert.ToInt32(ddlState.SelectedValue);
+                int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
+                int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
+
+                DataTable dt1 = getDataFromLocal(stateid, schemeCode, kpid);
+                //DataTable dt2 = GetCedaDatafromlocal();
+                DataTable dt2 = GetCedaData(stateid, schemeCode, kpid);
+                //dt1.Columns.Add("StateName");
+                //dt1.Columns.Add("Statecode");
+                //dt1.Columns.Add("SectorName");
+                //dt1.Columns.Add("DepartmentName");
                 dt1.Columns.Add("CedaValue");
                 dt1.Columns.Add("Diffvalue");
                 dt1.Columns.Add("Diffpercnt");
 
                 if (dt1.Rows.Count > 0 && dt2.Rows.Count > 0)
                 {
-                    string StateName = ddlState.SelectedItem.ToString();
-                    string StateCode = ddlState.SelectedValue.ToString();
-                    string SectorName = ddlSector.SelectedItem.ToString();
-                    string DepartmentName = ddlDepartment.SelectedItem.ToString();
+                    //string StateName = ddlState.SelectedItem.ToString();
+                    //string StateCode = ddlState.SelectedValue.ToString();
+                    //string SectorName = ddlSector.SelectedItem.ToString();
+                    //string DepartmentName = ddlDepartment.SelectedItem.ToString();
                     decimal v1, v2;
                     decimal Avg;
                     for (int i = 0; i < dt1.Rows.Count; i++)
                     {
-                        dt1.Rows[i]["StateName"] = StateName;
-                        dt1.Rows[i]["StateCode"] = StateCode;
-                        dt1.Rows[i]["SectorName"] = SectorName;
-                        dt1.Rows[i]["DepartmentName"] = DepartmentName;
+                        //dt1.Rows[i]["StateName"] = StateName;
+                        //dt1.Rows[i]["StateCode"] = StateCode;
+                        //dt1.Rows[i]["SectorName"] = SectorName;
+                        //dt1.Rows[i]["DepartmentName"] = DepartmentName;
                         dt1.Rows[i]["CedaValue"] = dt2.Rows[i]["national_value"];
 
                         v1 = Convert.ToDecimal(dt1.Rows[i]["national_value"]);
@@ -411,8 +427,12 @@ namespace TreeViewProject
         {
             try
             {
+                int stateid = Convert.ToInt32(ddlState.SelectedValue);
+                int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
+                int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
+
                 DataTable ds;
-                string paramdeclare = @"declare @stateid int=" + 0 + " ,@schemecode int=" + ddlScheme.SelectedValue + " ,@kpiid int=" + 0 + "";                
+                string paramdeclare = @"declare @stateid int=" + stateid + " ,@schemecode int=" + schemeCode + " ,@kpiid int=" + kpid + "";                
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine(paramdeclare);
                 string file = @"E:\TreeView\TreeView\ceda.txt";
