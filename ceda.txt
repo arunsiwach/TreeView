@@ -2,12 +2,12 @@ if (@schemecode=100359)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select data_freq,state_code,state_name,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [JJM_Daily_Blocks_Villages_updated]
 where [date]=(select max(date) from [JJM_Daily_Blocks_Villages_updated] )
 and data_freq in ('Daily','Weekly','Fortnightly')  
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -21,12 +21,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [JJM_Daily_Blocks_Villages_updated]
 where [date]=(select max(date) from [JJM_Daily_Blocks_Villages_updated] )
 and data_freq in ('Daily','Weekly','Fortnightly')  and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -41,60 +41,17 @@ END
 
 end
 
-/*Swachh Bharat Mission - Grameen 100547 Total ODF Plus Villages [swachh_bharat_mission_grameen_new_daily] this schemes have the data_freq column*/
-if (@schemecode=100547)
-begin
-if (@stateid=0 and @kpiid =0)
-begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
-from [swachh_bharat_mission_grameen_new_daily]
-where [date]=(select max(date) from [swachh_bharat_mission_grameen_new_daily] )
-and data_freq in ('Daily','Weekly','Fortnightly')  
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
-
-END
-if (@stateid<>0 and @kpiid <>0)
-begin
-select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
-from [swachh_bharat_mission_grameen_new_daily]
-where [date]=(select max(date) from [swachh_bharat_mission_grameen_new_daily] )
-and data_freq in ('Daily','Weekly','Fortnightly')  and [label]=@kpiid and state_code=@stateid
-group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
-order by [label]
-END
-if (@stateid=0 and @kpiid <>0)
-begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
-from [swachh_bharat_mission_grameen_new_daily]
-where [date]=(select max(date) from [swachh_bharat_mission_grameen_new_daily] )
-and data_freq in ('Daily','Weekly','Fortnightly')  and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
-
-END
-if (@stateid<>0 and @kpiid =0)
-begin
-select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
-from [swachh_bharat_mission_grameen_new_daily]
-where [date]=(select max(date) from [swachh_bharat_mission_grameen_new_daily] )
-and data_freq in ('Daily','Weekly','Fortnightly')  and state_code=@stateid 
-group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
-order by [label]
-END
-END
-
 /*PM SVANIDHI 100134 Number of Loans Disbursed [pm_svanidhi] this schemes have the data_freq column*/
 if (@schemecode=100134)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [pm_svanidhi]
 where [date]=(select max(date) from [pm_svanidhi] )
 and data_freq in ('Daily','Weekly','Fortnightly')  
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -108,12 +65,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [pm_svanidhi]
 where [date]=(select max(date) from [pm_svanidhi] )
 and data_freq in ('Daily','Weekly','Fortnightly')  and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -133,12 +90,12 @@ if (@schemecode=100396)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [pmkvy_stt]
 where [date]=(select max(date) from [pmkvy_stt] )
 and data_freq in ('Daily','Weekly','Fortnightly')  
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -152,12 +109,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [pmkvy_stt]
 where [date]=(select max(date) from [pmkvy_stt] )
 and data_freq in ('Daily','Weekly','Fortnightly')  and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -176,12 +133,12 @@ if (@schemecode=70007)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [PM_DASBOARD_MGNREGA_Updated]
 where [date]=(select max(date) from [PM_DASBOARD_MGNREGA_Updated] )
 and data_freq in ('Daily','Weekly','Fortnightly')  
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -195,12 +152,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [PM_DASBOARD_MGNREGA_Updated]
 where [date]=(select max(date) from [PM_DASBOARD_MGNREGA_Updated] )
 and data_freq in ('Daily','Weekly','Fortnightly')  and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -221,11 +178,11 @@ if (@schemecode=100135)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [pradhan mantri awaas yojana gramin]
 where [date]=(select max(date) from [pradhan mantri awaas yojana gramin] )
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -239,12 +196,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [pradhan mantri awaas yojana gramin]
 where [date]=(select max(date) from [pradhan mantri awaas yojana gramin] )
   and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -259,15 +216,16 @@ END
 
 end
 /*SVAMITVA 100405 Property Card Distributed [svamitva scheme]--monthly--100405*/
+
 if (@schemecode=100405)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [svamitva scheme]
 where [date]=(select max(date) from [svamitva scheme] )
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -281,12 +239,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [svamitva scheme]
 where [date]=(select max(date) from [svamitva scheme] )
   and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -305,11 +263,11 @@ if (@schemecode=70010)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [deendayal antyodaya yojana nrlm]
 where project_code=70010 and  [date]=(select max(date) from [deendayal antyodaya yojana nrlm] )
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -323,12 +281,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [deendayal antyodaya yojana nrlm]
 where project_code=70010 and [date]=(select max(date) from [deendayal antyodaya yojana nrlm] )
   and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -348,11 +306,11 @@ begin
 
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [deendayal antyodaya yojana nrlm]
 where project_code=70012 and  [date]=(select max(date) from [deendayal antyodaya yojana nrlm] )
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -366,12 +324,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [deendayal antyodaya yojana nrlm]
 where project_code=70012 and [date]=(select max(date) from [deendayal antyodaya yojana nrlm] )
   and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -390,11 +348,11 @@ if (@schemecode=70013)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [deendayal antyodaya yojana nrlm]
 where project_code=70013 and  [date]=(select max(date) from [deendayal antyodaya yojana nrlm] )
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -408,12 +366,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [deendayal antyodaya yojana nrlm]
 where project_code=70013 and [date]=(select max(date) from [deendayal antyodaya yojana nrlm] )
   and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -432,11 +390,11 @@ if (@schemecode=100156)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select  state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [deendayal antyodaya yojana nrlm]
 where project_code=100156 and  [date]=(select max(date) from [deendayal antyodaya yojana nrlm] )
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by  state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -450,12 +408,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select  state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [deendayal antyodaya yojana nrlm]
 where project_code=100156 and [date]=(select max(date) from [deendayal antyodaya yojana nrlm] )
   and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by  state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -474,11 +432,11 @@ if (@schemecode=10046)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [pradhan mantri gram sadak yojana]
 where   [date]=(select max(date) from [pradhan mantri gram sadak yojana] )
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -492,12 +450,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [pradhan mantri gram sadak yojana]
 where  [date]=(select max(date) from [pradhan mantri gram sadak yojana] )
   and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -517,11 +475,11 @@ if (@schemecode=100565)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [onorc_v3]
 where  project_code=100565 and [date]=(select max(date) from [onorc_v3] )
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -535,12 +493,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [onorc_v3]
 where project_code=100565 and [date]=(select max(date) from [onorc_v3] )
   and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -558,11 +516,11 @@ if (@schemecode=100646)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [onorc_v3]
 where  project_code=100646 and [date]=(select max(date) from [onorc_v3] )
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -576,12 +534,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [onorc_v3]
 where project_code=100646 and [date]=(select max(date) from [onorc_v3] )
   and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -600,11 +558,11 @@ if (@schemecode=100201)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [pm_awaas_yojana_urban_weekly]
 where   [date]=(select max(date) from [pm_awaas_yojana_urban_weekly] )
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -618,12 +576,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [pm_awaas_yojana_urban_weekly]
 where  [date]=(select max(date) from [pm_awaas_yojana_urban_weekly] )
   and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -643,11 +601,11 @@ if (@schemecode=70051)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [ujala]
 where   [date]=(select max(date) from [ujala] )
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -661,12 +619,12 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [ujala]
 where  [date]=(select max(date) from [ujala] )
   and [label]=@kpiid 
-group by project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
 
 END
 if (@stateid<>0 and @kpiid =0)

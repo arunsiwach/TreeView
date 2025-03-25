@@ -7,6 +7,9 @@
     <asp:ScriptManager ID="scriptmanagerParayas" runat="server"></asp:ScriptManager>
     <div class="container">
         <h2>State Level Report</h2>
+
+
+
         <asp:UpdatePanel ID="updatepnl" UpdateMode="Always" runat="server">
             <ContentTemplate>
                 <!-- FILTER BUTTONS -->
@@ -29,11 +32,11 @@
                         </asp:DropDownList>
                     </div>
 
-                    <div class="select-wrapper">
+                    <%--  <div class="select-wrapper">
                         <label for="District" class="label">District</label>
                         <asp:DropDownList ID="ddlDistrict" class="dropdown-new" AutoPostBack="true" runat="server" OnSelectedIndexChanged="ddlDistrict_SelectedIndexChanged">
                         </asp:DropDownList>
-                    </div>
+                    </div>--%>
 
                     <div class="select-wrapper">
                         <label for="Scheme" class="label">Scheme</label>
@@ -48,11 +51,17 @@
 
                     <asp:Button ID="btnShow" class="apply-btn" runat="server" Text="Apply" ToolTip="Click to Show" OnClick="btnShow_Click" />
                 </div>
-
+               <asp:UpdateProgress ID="UpdateProgress1" runat="server" DynamicLayout="true" AssociatedUpdatePanelID="updatepnl">
+                    <ProgressTemplate>                        
+                        <div class="center">           
+                              <img alt="" src="images/lg1.gif" />
+                     </div>                               
+                    </ProgressTemplate>
+               </asp:UpdateProgress>
                 <!-- RESPONSIVE TABLE -->
                 <div class="table-container">
                     <asp:GridView ID="gvLedgerDetail" runat="server" OnRowCommand="gvLedgerDetail_RowCommand"
-                        OnRowDataBound="gvLedgerDetail_RowDataBound"
+                        OnRowDataBound="gvLedgerDetail_RowDataBound" EmptyDataText="No Record Found!"
                         AutoGenerateColumns="false">
                         <Columns>
                             <asp:TemplateField HeaderText="Sl.No." HeaderStyle-HorizontalAlign="Left">
@@ -60,14 +69,15 @@
                                     <%# Container.DataItemIndex + 1 %>
                                 </ItemTemplate>
                             </asp:TemplateField>
-                        <%--    <asp:BoundField HeaderText='State' DataField="StateName" HtmlEncode="true" />
-                            <asp:BoundField HeaderText='State Code' DataField="StateCode" HtmlEncode="true" />
+                            <%-- <asp:BoundField HeaderText='State Code' DataField="StateCode" HtmlEncode="true" />
                             <asp:BoundField HeaderText='Sector Name' DataField="SectorName" HtmlEncode="true" />
                             <asp:BoundField HeaderText='Department Name' DataField="DepartmentName" HtmlEncode="true" />--%>
+                            <asp:BoundField ItemStyle-HorizontalAlign="Left" HeaderText='State' DataField="State_name_e" HtmlEncode="true" />
                             <asp:BoundField HeaderText='Scheme Name' DataField="Project_Name_E" HtmlEncode="true" />
                             <asp:BoundField HeaderText='KPI Name' DataField="KPI_Name_E" HtmlEncode="true" />
-                            <asp:BoundField HeaderText='Darpan Data (A)' DataField="National_Value" HtmlEncode="true" />
+                            <asp:BoundField HeaderText='Darpan Data (A)' DataField="outvalue" HtmlEncode="true" />
                             <asp:BoundField HeaderText='Paryas Data (B)' DataField="CedaValue" HtmlEncode="true" />
+                            
                             <%--   <asp:TemplateField HeaderText='Prayas Value(A)'>
                                 <ItemTemplate>
                                     <asp:Label ID="lblPrayasValue" runat="server"
@@ -115,7 +125,6 @@
                         </Columns>
                     </asp:GridView>
                 </div>
-
                 <!-- ACTION BUTTONS -->
                 <div class="action-buttons">
                     <button class="pmo">PMO Report - State Wise</button>

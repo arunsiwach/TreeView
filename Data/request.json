@@ -1,0 +1,16 @@
+{
+  "debit_account_number": "2811100194400000",
+  "debit_amount": "10010",
+  "debit_narration": "EMI OF CONSTRUCTION LOAN 2812201534800001",
+  "loan_credit_account_number": "2812201534800001",
+  "loan_credit_amount": "10000",
+  "loan_credit_narration": "PAYMENT OF EMI OF CONSTRUCTIONLOAN 2812201534800001",
+  "general_charges_credit_account_number": "2811100113200000",
+  "general_charges_amount": "8.47",
+  "general_charges_narration": "Commission Received from SBSePAY Transaction for 2811100134800009",
+  "gst_credit_account_number": "2811100146000000",
+  "gst_credit_amount": "1.53",
+  "gst_credit_narration": "GST received from Commission - 2811100134800009",
+  "request_timestamp": "21-06-2022 00:00:0000",
+  "hash": "0128bf8f724b917366626295be6ab334fcc16fdd62fce63a68e939f59bbac6a8"
+}

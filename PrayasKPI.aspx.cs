@@ -7,9 +7,13 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Configuration;
-//using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
 using System.Text;
 using System.IO;
+using System.Net.Http;
+using RestSharp;
+using System.Threading.Tasks;
+using System.Web.Management;
 
 namespace TreeViewProject
 {
@@ -125,6 +129,8 @@ namespace TreeViewProject
                 Response.Write("<script>alert('Error: " + ex.Message + "');</script>");
             }
         }
+        
+        /*
         private void GetAllDistrictByState(int stateCode)
         {
             try
@@ -155,6 +161,7 @@ namespace TreeViewProject
                 Response.Write("<script>alert('Error: " + ex.Message + "');</script>");
             }
         }
+        */
         private void GetAllSchemebyDeptID(int deptID)
         {
             try
@@ -223,17 +230,18 @@ namespace TreeViewProject
         protected void ddlState_SelectedIndexChanged(object sender, EventArgs e)
         {            
             Int16 stateID = Convert.ToInt16(ddlState.SelectedValue);
-            if (ddlState.SelectedIndex != 1) { 
-                ddlDistrict.Items.Clear();
-                GetAllDistrictByState(stateID);
-
+            GetAllSchemebyDeptID(Convert.ToInt16(ddlDepartment.SelectedValue));
+            if (ddlState.SelectedIndex != 1) {
+                //ddlDistrict.Items.Clear();
+                //GetAllDistrictByState(stateID);
+               
             }
             else { 
-                ddlDistrict.Items.Clear();
-                ddlDistrict.Items.Insert(0, new ListItem("--Select District--", "-1"));
-                ddlDistrict.Items.Insert(1, new ListItem("----- All -----", "0"));
-                ddlDistrict.SelectedIndex = 1;
-                GetAllSchemebyDeptID(Convert.ToInt16(ddlDepartment.SelectedValue));
+                //ddlDistrict.Items.Clear();
+                //ddlDistrict.Items.Insert(0, new ListItem("--Select District--", "-1"));
+                //ddlDistrict.Items.Insert(1, new ListItem("----- All -----", "0"));
+                //ddlDistrict.SelectedIndex = 1;
+               
             }
         }
         protected void ddlDistrict_SelectedIndexChanged(object sender, EventArgs e)
@@ -261,17 +269,41 @@ namespace TreeViewProject
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
                 // Ceda Value - local value
-                if ((Convert.ToDecimal(e.Row.Cells[4].Text) - Convert.ToDecimal(e.Row.Cells[3].Text)) == 0)
+                if ((Convert.ToDecimal(e.Row.Cells[5].Text) - Convert.ToDecimal(e.Row.Cells[4].Text)) == 0)
                 {
-                    e.Row.Cells[5].CssClass = "match";
-                    e.Row.Cells[6].CssClass = "match";                    
+                    e.Row.Cells[6].CssClass = "match";
+                    e.Row.Cells[7].CssClass = "match";                    
                 }
                 else {
-                    e.Row.Cells[5].CssClass = "mismatch";
                     e.Row.Cells[6].CssClass = "mismatch";
-                }
-                    
+                    e.Row.Cells[7].CssClass = "mismatch";
+                }                    
             }
+
+            //for (int i = gvLedgerDetail.Rows.Count - 1; i > 0; i--)
+            //{
+            //    GridViewRow row = gvLedgerDetail.Rows[i];
+            //    GridViewRow previousRow = gvLedgerDetail.Rows[i - 1];
+            //    for (int j = 0; j < row.Cells.Count; j++)
+            //    {
+            //        if (row.Cells[j].Text == previousRow.Cells[j].Text)
+            //        {
+            //            if (previousRow.Cells[j].RowSpan == 0)
+            //            {
+            //                if (row.Cells[j].RowSpan == 0)
+            //                {
+            //                    previousRow.Cells[j].RowSpan += 2;
+            //                }
+            //                else
+            //                {
+            //                    previousRow.Cells[j].RowSpan = row.Cells[j].RowSpan + 1;
+            //                }
+            //                row.Cells[j].Visible = false;
+            //            }
+            //        }
+            //    }
+            //}
+
         }
         #endregion
 
@@ -291,10 +323,10 @@ namespace TreeViewProject
             {
                 stringBuilder.Append("Select State is required!");
             }
-            else if (ddlDistrict.SelectedValue == "-1")
-            {
-                stringBuilder.Append("Select District is required!");
-            }
+            //else if (ddlDistrict.SelectedValue == "-1")
+            //{
+            //    stringBuilder.Append("Select District is required!");
+            //}
             else if (ddlScheme.SelectedValue == "-1")
             {
                 stringBuilder.Append("Select Scheme is required!");
@@ -306,24 +338,50 @@ namespace TreeViewProject
             return stringBuilder.ToString();
         }
 
+        private void ClearGridView()
+        {
+            DataTable dtclear = null;
+            gvLedgerDetail.DataSource = dtclear;
+            gvLedgerDetail.DataBind();
+        }
+
         protected void btnShow_Click(object sender, EventArgs e)
         {
+            ClearGridView();
+            //validation part
             string alertmsg = validateDropdowns();
             if (alertmsg.Trim().Length > 0)
             {
                 string sc = "alert('" + alertmsg + "');";
                 ScriptManager.RegisterStartupScript(updatepnl, updatepnl.GetType(), "alertScript", sc, true);
-                return ;
+                return;
             }
+
+            //DataTable dtjson;
+            //string schemestring = GetJSONString();
+            //if (!string.IsNullOrEmpty(schemestring))
+            //{
+            //    dtjson = (DataTable)JsonConvert.DeserializeObject(schemestring, (typeof(DataTable)));
+            //}
+
             try
-            {
+            {                
+
                 int stateid = Convert.ToInt32(ddlState.SelectedValue);
                 int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
                 int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
+                DataTable dt1;
+                DataTable dt2;
+                dt1 = getDataFromLocal(stateid, schemeCode, kpid);
+                dt2 = GetCedaData(stateid, schemeCode, kpid);
+                /*
+                    DataTable dt3;
+                    Task.Run(async () =>
+                    {
+                        dt3 = await GetDateFromAPIAsync(schemeCode);
+                    }).GetAwaiter().GetResult();
+                */
 
-                DataTable dt1 = getDataFromLocal(stateid, schemeCode, kpid);
-                //DataTable dt2 = GetCedaDatafromlocal();
-                DataTable dt2 = GetCedaData(stateid, schemeCode, kpid);
                 //dt1.Columns.Add("StateName");
                 //dt1.Columns.Add("Statecode");
                 //dt1.Columns.Add("SectorName");
@@ -342,17 +400,25 @@ namespace TreeViewProject
                     decimal Avg;
                     for (int i = 0; i < dt1.Rows.Count; i++)
                     {
-                        //dt1.Rows[i]["StateName"] = StateName;
+                        //dt1.Rows[i]["StateName"] = dt1.Rows[i]["State_name_e"]; ;
                         //dt1.Rows[i]["StateCode"] = StateCode;
                         //dt1.Rows[i]["SectorName"] = SectorName;
                         //dt1.Rows[i]["DepartmentName"] = DepartmentName;
                         dt1.Rows[i]["CedaValue"] = dt2.Rows[i]["national_value"];
 
-                        v1 = Convert.ToDecimal(dt1.Rows[i]["national_value"]);
+                        v1 = Convert.ToDecimal(dt1.Rows[i]["outvalue"]);
                         v2 = Convert.ToDecimal(dt2.Rows[i]["national_value"]);
-                        Avg = (v1 + v2) / 2;
-                        dt1.Rows[i]["Diffvalue"] = Convert.ToString(v2 - v1);
-                        dt1.Rows[i]["Diffpercnt"] = Convert.ToString(Math.Round((Math.Abs(v2 - v1) / Avg) * 100, 2)) + "%";
+                        if ((v1 + v2)!=0)
+                        { 
+                            Avg = (v1 + v2) / 2;
+                            dt1.Rows[i]["Diffvalue"] = Convert.ToString(v2 - v1);
+                            dt1.Rows[i]["Diffpercnt"] = Convert.ToString(Math.Round((Math.Abs(v2 - v1) / Avg) * 100, 2)) + " %";
+                        }
+                        else
+                        {
+                            dt1.Rows[i]["Diffvalue"] = "0.00000";
+                            dt1.Rows[i]["Diffpercnt"] = Convert.ToString("0 %");
+                        }
 
                     }
 
@@ -362,12 +428,47 @@ namespace TreeViewProject
 
 
             }
-            catch
+            catch(Exception ex)
             {
 
             }
 
         }
+
+
+        
+
+        private async Task<DataTable> GetDateFromAPIAsync (int schemeCode)
+        {
+            try
+            {
+                DataTable dt = null;
+                var options = new RestClientOptions("http://164.100.166.65")
+                {                   
+                };
+                var client = new RestClient(options);
+                var request = new RestRequest("/DataSanity_API/api/prayasdatasanitytool", Method.Get);
+                request.AddHeader("Content-Type", "application/json");
+                var body = @"{
+                    " + "\n" +
+                        @"""ProjectCode"":100359
+                    " + "\n" +
+                           @"}";
+                request.AddParameter("application/json", body, ParameterType.RequestBody);                
+                RestResponse response = await client.ExecuteAsync(request);
+
+                if (response != null)
+                {
+                    dt = (DataTable)JsonConvert.DeserializeObject(response.Content, (typeof(DataTable)));
+                }
+                return dt;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         private DataTable getDataFromLocal(int stateCode,int SchemeCode, int KpiID)
         {           
             try
@@ -463,5 +564,23 @@ namespace TreeViewProject
                 throw ex;
             }
         }
+
+        #region(Parsing Methods)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private string GetJSONString()
+        {
+            //var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"Data", "ceda.json");
+            //var filePath = @"E:\TreeView\TreeView\Data\ceda.json";
+            var filePath = @"E:\TreeView\TreeView\Data\request.json";
+            var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            var sr = new StreamReader(fs, System.Text.Encoding.UTF8);
+            string content_data = sr.ReadToEnd();
+            return content_data;
+        }
+        #endregion
+
     }
 }
