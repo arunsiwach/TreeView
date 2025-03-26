@@ -14,6 +14,7 @@ using System.Net.Http;
 using RestSharp;
 using System.Threading.Tasks;
 using System.Web.Management;
+using static TreeView.TreeviewPage2;
 
 namespace TreeViewProject
 {
@@ -347,8 +348,8 @@ namespace TreeViewProject
 
         protected void btnShow_Click(object sender, EventArgs e)
         {
-            ClearGridView();
             //validation part
+            /*
             string alertmsg = validateDropdowns();
             if (alertmsg.Trim().Length > 0)
             {
@@ -356,46 +357,75 @@ namespace TreeViewProject
                 ScriptManager.RegisterStartupScript(updatepnl, updatepnl.GetType(), "alertScript", sc, true);
                 return;
             }
+            */
+            try
+            {
+                string schemestring = GetJSONString();
+                if (!string.IsNullOrEmpty(schemestring))
+                {
+                    //Deserializing JSON
+                    Scheme myschemeclass = JsonConvert.DeserializeObject<Scheme>(schemestring);
+                    // Convert List to DataTable
+                    DataTable dt = ConvertToDataTable(myschemeclass.Data);
+                    DataTable dtfiterdata = FilterRows(Convert.ToInt32(ddlState.SelectedValue), ddlKpi.SelectedItem.Text, ddlScheme.SelectedItem.Text, dt);
 
-            //DataTable dtjson;
-            //string schemestring = GetJSONString();
-            //if (!string.IsNullOrEmpty(schemestring))
-            //{
-            //    dtjson = (DataTable)JsonConvert.DeserializeObject(schemestring, (typeof(DataTable)));
-            //}
+                    //getdata from CEDA server using Query
+                    //DataTable dtfiterdata = GetCedaData(stateid, schemeCode, kpid);      
 
+                    int stateid = Convert.ToInt32(ddlState.SelectedValue);
+                    int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
+                    int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
+                    DataTable dt1 = getDataFromLocal(stateid, schemeCode, kpid);
+                    //return;
+
+                    if (dt1.Rows.Count > 0 && dtfiterdata.Rows.Count > 0)
+                    {
+                        dt1.Columns.Add("CedaValue");
+                        dt1.Columns.Add("Diffvalue");
+                        dt1.Columns.Add("Diffpercnt");
+                        decimal v1, v2, Avg;
+
+                        for (int i = 0; i < dt1.Rows.Count; i++)
+                        {
+                            //dt1.Rows[i]["DepartmentName"] = DepartmentName;
+                            dt1.Rows[i]["CedaValue"] = dtfiterdata.Rows[i]["national_value"];
+
+                            v1 = Convert.ToDecimal(dt1.Rows[i]["outvalue"]);
+                            v2 = Convert.ToDecimal(dtfiterdata.Rows[i]["national_value"]);
+                            if ((v1 + v2) != 0)
+                            {
+                                Avg = (v1 + v2) / 2;
+                                dt1.Rows[i]["Diffvalue"] = Convert.ToString(v2 - v1);
+                                dt1.Rows[i]["Diffpercnt"] = Convert.ToString(Math.Round((Math.Abs(v2 - v1) / Avg) * 100, 2)) + " %";
+                            }
+                            else
+                            {
+                                dt1.Rows[i]["Diffvalue"] = "0.00000";
+                                dt1.Rows[i]["Diffpercnt"] = Convert.ToString("0 %");
+                            }
+
+                        }
+
+                        gvLedgerDetail.DataSource = dt1;
+                        gvLedgerDetail.DataBind();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string sc = "alert('" + ex.Message + "');";
+                ScriptManager.RegisterStartupScript(updatepnl, updatepnl.GetType(), "alertScript", sc, true);
+                return;
+            }
+            /*
             try
             {                
 
-                int stateid = Convert.ToInt32(ddlState.SelectedValue);
-                int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
-                int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
-                DataTable dt1;
-                DataTable dt2;
-                dt1 = getDataFromLocal(stateid, schemeCode, kpid);
-                dt2 = GetCedaData(stateid, schemeCode, kpid);
-                /*
-                    DataTable dt3;
-                    Task.Run(async () =>
-                    {
-                        dt3 = await GetDateFromAPIAsync(schemeCode);
-                    }).GetAwaiter().GetResult();
-                */
 
-                //dt1.Columns.Add("StateName");
-                //dt1.Columns.Add("Statecode");
-                //dt1.Columns.Add("SectorName");
-                //dt1.Columns.Add("DepartmentName");
-                dt1.Columns.Add("CedaValue");
-                dt1.Columns.Add("Diffvalue");
-                dt1.Columns.Add("Diffpercnt");
+
 
                 if (dt1.Rows.Count > 0 && dt2.Rows.Count > 0)
-                {
-                    //string StateName = ddlState.SelectedItem.ToString();
-                    //string StateCode = ddlState.SelectedValue.ToString();
-                    //string SectorName = ddlSector.SelectedItem.ToString();
-                    //string DepartmentName = ddlDepartment.SelectedItem.ToString();
+                {                
                     decimal v1, v2;
                     decimal Avg;
                     for (int i = 0; i < dt1.Rows.Count; i++)
@@ -432,11 +462,8 @@ namespace TreeViewProject
             {
 
             }
-
+            */
         }
-
-
-        
 
         private async Task<DataTable> GetDateFromAPIAsync (int schemeCode)
         {
@@ -564,21 +591,196 @@ namespace TreeViewProject
                 throw ex;
             }
         }
-
-        #region(Parsing Methods)
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+     
+        #region(API Methods)
+        private string GetJSONStringFromAPI()
+        {
+            //DataTable dt3;
+            //Task.Run(async () =>
+            //{
+            //    dt3 = await GetDateFromAPIAsync(schemeCode);
+            //}).GetAwaiter().GetResult();
+            return null;
+        }
         private string GetJSONString()
         {
             //var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"Data", "ceda.json");
             //var filePath = @"E:\TreeView\TreeView\Data\ceda.json";
-            var filePath = @"E:\TreeView\TreeView\Data\request.json";
+            var filePath = @"E:\TreeView\TreeView\Data\ceda.json";
             var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             var sr = new StreamReader(fs, System.Text.Encoding.UTF8);
             string content_data = sr.ReadToEnd();
             return content_data;
+        }        
+        private  DataTable ConvertToDataTable(List<SchemeAttributes> data)
+        {
+            try
+            {
+                // Create DataTable
+                DataTable table = new DataTable();
+
+                // Define Columns
+                table.Columns.Add("KpiName", typeof(string));
+                table.Columns.Add("SchemeName", typeof(string));
+                table.Columns.Add("NationalValue", typeof(string));  // object to handle nulls
+                table.Columns.Add("StateCode", typeof(Int32));
+                table.Columns.Add("StateName", typeof(string));
+                table.Columns.Add("StateValue", typeof(string));
+                table.Columns.Add("DistrictCode", typeof(Int32));
+                table.Columns.Add("DistrictName", typeof(string));
+                table.Columns.Add("DistrictValue", typeof(string));
+                table.Columns.Add("Date", typeof(string));
+
+                // Populate Rows
+                foreach (var item in data)
+                {
+                    table.Rows.Add(
+                        item.KpiName,
+                        item.SchemeName,
+                        item.NationalValue,
+                        item.StateCode,
+                        item.StateName,
+                        item.StateValue,
+                        item.DistrictCode,
+                        item.DistrictName,
+                        item.DistrictValue,
+                        item.Date
+                    );
+                }
+
+                return table;
+            }
+            catch {
+                throw;
+            }
+            
+        }
+
+
+        private DataTable FilterRows(int stateCode, string kpiname, string schemename ,DataTable dt)
+        {
+            try
+            {
+
+                // LINQ Query to filter rows
+                var filteredRows = from row in dt.AsEnumerable()
+                                   where (stateCode == 0 || row.Field<Int32>("StateCode") == stateCode)
+                                   && row.Field<string>("SchemeName") == schemename
+                                   && (kpiname == "----- All -----" || row.Field<string>("KpiName") == kpiname)
+                                   //orderby row.Field<Int32>("StateCode"), row.Field<string>("KpiName")                                   
+                                   group row by new
+                                   {
+                                       KpiName = row.Field<string>("KpiName"),
+                                       SchemeName = row.Field<string>("SchemeName"),
+                                       StateCode = row.Field<Int32>("StateCode"),
+                                       StateName = row.Field<string>("StateName"),
+                                       //DistrictCode = row.Field<Int32>("DistrictCode"),
+                                       //DistrictName = row.Field<string>("DistrictName"),
+                                       Date = row.Field<string>("Date")
+                                   }
+                                    into grp
+                                   // Order by StateCode, SchemeName, and DistrictName
+                                   orderby grp.Key.StateCode, grp.Key.SchemeName,grp.Key.KpiName
+                                   select new
+                                   {
+                                       grp.Key.KpiName,
+                                       grp.Key.SchemeName,
+                                       grp.Key.StateCode,
+                                       grp.Key.StateName,
+                                       //grp.Key.DistrictCode,
+                                       //grp.Key.DistrictName,
+                                       grp.Key.Date,
+                                       TotalDistrictValue = grp.Sum(
+                                           x =>
+                                           {
+                                               string districtValue = x.Field<string>("DistrictValue");
+                                               return string.IsNullOrWhiteSpace(districtValue)
+                                                   ? 0.00M
+                                                   : Convert.ToDecimal(districtValue);
+                                           }
+                                           //Convert.ToDecimal(x["DistrictValue"])
+                                           )
+                                   };
+                
+                // Convert the grouped results back to a DataTable
+                DataTable groupedTable = new DataTable();                
+                groupedTable.Columns.Add("KpiName", typeof(string));
+                groupedTable.Columns.Add("SchemeName", typeof(string));
+                groupedTable.Columns.Add("StateCode", typeof(Int32));
+                groupedTable.Columns.Add("StateName", typeof(string));
+                //groupedTable.Columns.Add("DistrictCode", typeof(Int32));
+                //groupedTable.Columns.Add("DistrictName", typeof(string));
+                groupedTable.Columns.Add("Date", typeof(string));
+                groupedTable.Columns.Add("national_value", typeof(decimal));
+
+                // Populate the grouped DataTable
+                foreach (var row in filteredRows)
+                {
+                    groupedTable.Rows.Add(
+                        row.KpiName,
+                        row.SchemeName,
+                        row.StateCode,
+                        row.StateName,
+                        //row.DistrictCode,
+                        //row.DistrictName,
+                        row.Date,
+                        row.TotalDistrictValue
+                    );
+                }
+
+                return groupedTable;
+            }
+            catch
+            {
+                throw;
+            }
+
+        }
+
+        #endregion
+
+        #region( json classes )
+        /// <summary>
+        /// 
+        /// </summary>
+        public class SchemeAttributes
+        {
+            public string KpiName { get; set; }
+            public string SchemeName { get; set; }
+            public object NationalValue { get; set; }
+            public string StateCode { get; set; }
+            public string StateName { get; set; }
+            public object StateValue { get; set; }
+            public string DistrictCode { get; set; }
+            public string DistrictName { get; set; }
+            public string DistrictValue 
+            {
+                get;
+                set;
+                //get
+                //{
+                //    return DistrictValue;                    
+                //}
+                //set 
+                //{
+
+                //    if (string.IsNullOrEmpty(DistrictValue))
+                //    {
+                //       DistrictValue = "0.00";
+                //    }
+                //    else
+                //    {
+                //        DistrictValue = value;
+                //    }                    
+                //}
+            }
+            public string Date { get; set; }
+        }
+
+        public class Scheme
+        { 
+            public string Status { get; set; }
+            public List<SchemeAttributes> Data { get; set; }
         }
         #endregion
 

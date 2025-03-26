@@ -109,6 +109,7 @@
     <Content Include="css\Style1.css" />
     <Content Include="css\Style2.css" />
     <Content Include="dashboard.html" />
+    <Content Include="Data\Scripts.sql" />
     <Content Include="Global.asax" />
     <Content Include="images\center-img.png" />
     <Content Include="images\edit.png" />

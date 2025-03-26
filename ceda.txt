@@ -7,7 +7,7 @@ from [JJM_Daily_Blocks_Villages_updated]
 where [date]=(select max(date) from [JJM_Daily_Blocks_Villages_updated] )
 and data_freq in ('Daily','Weekly','Fortnightly')  
 group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label],state_code
+order by state_code,[label]
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -26,7 +26,7 @@ from [JJM_Daily_Blocks_Villages_updated]
 where [date]=(select max(date) from [JJM_Daily_Blocks_Villages_updated] )
 and data_freq in ('Daily','Weekly','Fortnightly')  and [label]=@kpiid 
 group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label],state_code
+order by state_code,[label]
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -51,7 +51,7 @@ from [pm_svanidhi]
 where [date]=(select max(date) from [pm_svanidhi] )
 and data_freq in ('Daily','Weekly','Fortnightly')  
 group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label],state_code
+order by state_code,[label]
 
 END
 if (@stateid<>0 and @kpiid <>0)
@@ -70,7 +70,7 @@ from [pm_svanidhi]
 where [date]=(select max(date) from [pm_svanidhi] )
 and data_freq in ('Daily','Weekly','Fortnightly')  and [label]=@kpiid 
 group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
-order by [label],state_code
+order by state_code,[label]
 
 END
 if (@stateid<>0 and @kpiid =0)
@@ -178,7 +178,7 @@ if (@schemecode=100135)
 begin
 if (@stateid=0 and @kpiid =0)
 begin
-select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [pradhan mantri awaas yojana gramin]
 where [date]=(select max(date) from [pradhan mantri awaas yojana gramin] )
 group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
@@ -638,4 +638,3 @@ order by [label]
 END
 end
     
-
