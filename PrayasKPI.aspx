@@ -7,9 +7,6 @@
     <asp:ScriptManager ID="scriptmanagerParayas" runat="server"></asp:ScriptManager>
     <div class="container">
         <h2>State Level Report</h2>
-
-
-
         <asp:UpdatePanel ID="updatepnl" UpdateMode="Always" runat="server">
             <ContentTemplate>
                 <!-- FILTER BUTTONS -->
