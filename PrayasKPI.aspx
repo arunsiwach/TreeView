@@ -20,12 +20,12 @@
 
                     <div class="select-wrapper">
                         <label for="Department" class="label">Department</label>
-                        <asp:DropDownList ID="ddlDepartment" class="dropdown-new" runat="server"></asp:DropDownList>
+                        <asp:DropDownList ID="ddlDepartment" class="dropdown-new" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlDepartment_SelectedIndexChanged"></asp:DropDownList>
                     </div>
 
                     <div class="select-wrapper">
                         <label for="State" class="label">State</label>
-                        <asp:DropDownList ID="ddlState" class="dropdown-new" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlState_SelectedIndexChanged">
+                        <asp:DropDownList ID="ddlState" class="dropdown-new" runat="server" >
                         </asp:DropDownList>
                     </div>
 
@@ -44,6 +44,10 @@
                     <div class="select-wrapper">
                         <label for="KPI" class="label">KPI</label>
                         <asp:DropDownList ID="ddlKpi" class="dropdown-new" Width="180px" runat="server"></asp:DropDownList>
+                    </div>
+                     <div class="select-wrapper">
+                    <label for="KPIDate" class="label">Date</label>
+                        <asp:TextBox ID="txtdate" runat="server" class="dropdown-new" TextMode="Date"  ></asp:TextBox>
                     </div>
 
                     <asp:Button ID="btnShow" class="apply-btn" runat="server" Text="Apply" ToolTip="Click to Show" OnClick="btnShow_Click" />
@@ -73,7 +77,7 @@
                             <asp:BoundField HeaderText='Scheme Name' DataField="Project_Name_E" HtmlEncode="true" />
                             <asp:BoundField HeaderText='KPI Name' DataField="KPI_Name_E" HtmlEncode="true" />
                             <asp:BoundField HeaderText='Darpan Data (A)' DataField="outvalue" HtmlEncode="true" />
-                            <asp:BoundField HeaderText='Paryas Data (B)' DataField="CedaValue" HtmlEncode="true" />
+                            <asp:BoundField HeaderText='Paryas Data / View (B)' DataField="CedaValue" HtmlEncode="true" />
                             
                             <%--   <asp:TemplateField HeaderText='Prayas Value(A)'>
                                 <ItemTemplate>

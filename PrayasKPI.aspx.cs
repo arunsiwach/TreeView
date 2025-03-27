@@ -63,6 +63,8 @@ namespace TreeViewProject
                             ddlSector.DataValueField = "Sector_ID";
                             ddlSector.DataBind();
                             ddlSector.Items.Insert(0, new ListItem("---Select Sector---", "-1"));
+                            ddlSector.Items.Insert(1, new ListItem("----- All -----", "0"));
+                            
                         }
                     }
                 }
@@ -91,7 +93,8 @@ namespace TreeViewProject
                             ddlDepartment.DataTextField = "Depertment_Name_e";
                             ddlDepartment.DataValueField = "Depertment_ID";
                             ddlDepartment.DataBind();
-                            ddlDepartment.Items.Insert(0, new ListItem("--Select Department--", "-1"));
+                            ddlDepartment.Items.Insert(0, new ListItem("--Select Department--", "-1"));                            
+                            ddlDepartment.Items.Insert(1, new ListItem("----- All -----", "0"));
                         }
                     }
                 }
@@ -103,24 +106,28 @@ namespace TreeViewProject
         }
         private void BindState()
         {
+            
             try
             {
-                using (SqlConnection con = new SqlConnection(connectionString))
+                if (ddlState.Items.Count == 0)
                 {
-                    con.Open();
-                    using (SqlCommand command = new SqlCommand("spGetAllState", con))
+                    using (SqlConnection con = new SqlConnection(connectionString))
                     {
-                        command.CommandType = CommandType.StoredProcedure;
-                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        con.Open();
+                        using (SqlCommand command = new SqlCommand("spGetAllState", con))
                         {
-                            DataTable ds = new DataTable();
-                            adapter.Fill(ds);
-                            ddlState.DataSource = ds;
-                            ddlState.DataTextField = "Level2_name_e";
-                            ddlState.DataValueField = "Level2_code";
-                            ddlState.DataBind();
-                            ddlState.Items.Insert(0, new ListItem("---Select State---", "-1"));
-                            ddlState.Items.Insert(1, new ListItem("----- All -----", "0"));
+                            command.CommandType = CommandType.StoredProcedure;
+                            using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                            {
+                                DataTable ds = new DataTable();
+                                adapter.Fill(ds);
+                                ddlState.DataSource = ds;
+                                ddlState.DataTextField = "Level2_name_e";
+                                ddlState.DataValueField = "Level2_code";
+                                ddlState.DataBind();
+                                ddlState.Items.Insert(0, new ListItem("---Select State---", "-1"));
+                                ddlState.Items.Insert(1, new ListItem("----- All -----", "0"));
+                            }
                         }
                     }
                 }
@@ -131,7 +138,8 @@ namespace TreeViewProject
             }
         }
         
-        /*
+        /*  (    Distirct Drp Down Code  )
+       
         private void GetAllDistrictByState(int stateCode)
         {
             try
@@ -167,25 +175,39 @@ namespace TreeViewProject
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(connectionString))
-                {
-                    con.Open();
-                    using (SqlCommand command = new SqlCommand("[spGetAllscheme]", con))
+                string Deptids = string.Empty;
+                if (deptID == 0){
+                    Deptids = string.Empty;
+                    foreach (ListItem items in ddlDepartment.Items)
                     {
-                        command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@dept_id", deptID);
-                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-                        {
-                            DataTable ds = new DataTable();
-                            adapter.Fill(ds);
-                            ddlScheme.DataSource = ds;
-                            ddlScheme.DataTextField = "Project_Name_E";
-                            ddlScheme.DataValueField = "Project_Code";
-                            ddlScheme.DataBind();
-                            ddlScheme.Items.Insert(0, new ListItem("--Select Scheme--", "-1"));
-                        }
+                        if(items.Value != "0" && items.Value != "-1")
+                        Deptids += items.Value + ",";
                     }
                 }
+                else { Deptids = Convert.ToString(deptID);  }
+
+                    using (SqlConnection con = new SqlConnection(connectionString))
+                    {
+                        con.Open();
+                        using (SqlCommand command = new SqlCommand("[spGetAllscheme]", con))
+                        {
+                            command.CommandType = CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@dept_id", Deptids);
+                            using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                            {
+                                DataTable ds = new DataTable();
+                                adapter.Fill(ds);
+                                ddlScheme.DataSource = ds;
+                                ddlScheme.DataTextField = "Project_Name_E";
+                                ddlScheme.DataValueField = "Project_Code";
+                                ddlScheme.DataBind();
+                                ddlScheme.Items.Insert(0, new ListItem("--Select Scheme--", "-1"));
+                                
+                            
+                                    
+                            }
+                        }
+                    }
             }
             catch (Exception ex)
             {
@@ -226,8 +248,12 @@ namespace TreeViewProject
         {
             Int16 sectorID = Convert.ToInt16(ddlSector.SelectedValue);
             GetDepartmentBySector(sectorID);
-            BindState();
+            if (ddlState.Items.Count == 0) { BindState(); }
+            if (ddlScheme.Items.Count >0) { ddlScheme.Items.Clear();}
+            if (ddlKpi.Items.Count > 0) { ddlKpi.Items.Clear(); }
         }
+
+        /* ( drp down Select Index changed    )
         protected void ddlState_SelectedIndexChanged(object sender, EventArgs e)
         {            
             Int16 stateID = Convert.ToInt16(ddlState.SelectedValue);
@@ -245,6 +271,7 @@ namespace TreeViewProject
                
             }
         }
+        */
         protected void ddlDistrict_SelectedIndexChanged(object sender, EventArgs e)
         {
             GetAllSchemebyDeptID(Convert.ToInt16(ddlDepartment.SelectedValue));
@@ -252,6 +279,12 @@ namespace TreeViewProject
         protected void ddlScheme_SelectedIndexChanged(object sender, EventArgs e)
         {
             GetAllKpiBySchemeCode(Convert.ToInt32(ddlScheme.SelectedValue));
+        }
+        protected void ddlDepartment_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(ddlState.Items.Count==0){ BindState(); }            
+            GetAllSchemebyDeptID(Convert.ToInt16(ddlDepartment.SelectedValue));
+            if (ddlKpi.Items.Count > 0) { ddlKpi.Items.Clear(); }           
         }
         #endregion
 
@@ -312,11 +345,11 @@ namespace TreeViewProject
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append("");
-            if(ddlSector.SelectedValue =="-1")
+            if (ddlSector.SelectedValue == "-1")
             {
                 stringBuilder.Append("Select Sector is required!");
             }
-            else if(ddlDepartment.SelectedValue == "-1")
+            else if (ddlDepartment.SelectedValue == "-1")
             {
                 stringBuilder.Append("Select Department is required!");
             }
@@ -336,7 +369,11 @@ namespace TreeViewProject
             {
                 stringBuilder.Append("Select KPI is required!");
             }
-            return stringBuilder.ToString();
+            else if (string.IsNullOrEmpty(txtdate.Text.Trim()))
+            {
+                stringBuilder.Append("Select Date is required!");
+            }
+                return stringBuilder.ToString();
         }
 
         private void ClearGridView()
@@ -348,8 +385,7 @@ namespace TreeViewProject
 
         protected void btnShow_Click(object sender, EventArgs e)
         {
-            //validation part
-            /*
+            //Validation part
             string alertmsg = validateDropdowns();
             if (alertmsg.Trim().Length > 0)
             {
@@ -357,15 +393,15 @@ namespace TreeViewProject
                 ScriptManager.RegisterStartupScript(updatepnl, updatepnl.GetType(), "alertScript", sc, true);
                 return;
             }
-            */
+
             try
             {
+                /*       (API Code)
                 //Task.Run(async () =>
                 //{
-                //    string schemestring1=  await GetJSONStringFromAPI("", 123);
+                //    string schemestring1 = await GetJSONStringFromAPI("", 123);
                 //}).GetAwaiter().GetResult();
                 //return;
-
                 string schemestring = GetJSONString();
                 if (!string.IsNullOrEmpty(schemestring))
                 {
@@ -444,7 +480,55 @@ namespace TreeViewProject
                         gvLedgerDetail.DataBind();
                     }
                 }
+                */
+               
+                int stateid = Convert.ToInt32(ddlState.SelectedValue);
+                int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
+                int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
+                string datevalue = string.Format("yyyy-MM-dd", txtdate.Text.Trim()); 
+                DataTable dt1 = getDataFromLocal(stateid, schemeCode, kpid,datevalue);
+                //getdata from CEDA server using Query
+                return;
+                DataTable dtfiterdata = GetCedaData(stateid, schemeCode, kpid);
+
+                if (dt1.Rows.Count > 0 && dtfiterdata.Rows.Count > 0)
+                {
+                    dt1.Columns.Add("CedaValue");
+                    dt1.Columns.Add("Diffvalue");
+                    dt1.Columns.Add("Diffpercnt");
+                    decimal v1, v2, Avg;
+
+                    for (int i = 0; i < dt1.Rows.Count; i++)
+                    {
+                        //dt1.Rows[i]["DepartmentName"] = DepartmentName;
+                        dt1.Rows[i]["CedaValue"] = dtfiterdata.Rows[i]["national_value"];
+                        v1 = Convert.ToDecimal(dt1.Rows[i]["outvalue"]);
+                        v2 = Convert.ToDecimal(dtfiterdata.Rows[i]["national_value"]);
+                        
+                        if ((v1 + v2) != 0)
+                        {
+                            Avg = (v1 + v2) / 2;
+                            dt1.Rows[i]["Diffvalue"] = Convert.ToString(v2 - v1);
+                            dt1.Rows[i]["Diffpercnt"] = Convert.ToString(Math.Round((Math.Abs(v2 - v1) / Avg) * 100, 2)) + " %";
+                        }
+                        else
+                        {
+                            dt1.Rows[i]["Diffvalue"] = "0.00000";
+                            dt1.Rows[i]["Diffpercnt"] = Convert.ToString("0 %");
+                        }
+
+                    }
+
+                    gvLedgerDetail.DataSource = dt1;
+                    gvLedgerDetail.DataBind();
+                }
+
+                //return;
+
+
             }
+
+
             catch (Exception ex)
             {
                 string sc = "alert('" + ex.Message + "');";
@@ -484,7 +568,7 @@ namespace TreeViewProject
             }
         }
 
-        private DataTable getDataFromLocal(int stateCode,int SchemeCode, int KpiID)
+        private DataTable getDataFromLocal(int stateCode,int SchemeCode, int KpiID,string datevalue)
         {           
             try
             {
@@ -498,6 +582,7 @@ namespace TreeViewProject
                         command.Parameters.AddWithValue("@stateid", stateCode);
                         command.Parameters.AddWithValue("@scheme_code", SchemeCode);
                         command.Parameters.AddWithValue("@kpiid", KpiID);
+                        command.Parameters.AddWithValue("@datevalue", datevalue);
                         using (SqlDataAdapter adapter = new SqlDataAdapter(command))
                         {
                             dt = new DataTable();
@@ -543,12 +628,12 @@ namespace TreeViewProject
         {
             try
             {
-                int stateid = Convert.ToInt32(ddlState.SelectedValue);
-                int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
-                int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
+                //int stateid = Convert.ToInt32(ddlState.SelectedValue);
+                //int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
+                //int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
 
                 DataTable ds;
-                string paramdeclare = @"declare @stateid int=" + stateid + " ,@schemecode int=" + schemeCode + " ,@kpiid int=" + kpid + "";                
+                string paramdeclare = @"declare @stateid int=" + stateCode + " ,@schemecode int=" + SchemeCode + " ,@kpiid int=" + KpiID + "";                
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine(paramdeclare);
                 string file = @"E:\TreeView\TreeView\ceda.txt";
@@ -598,7 +683,7 @@ namespace TreeViewProject
 
                
             }
-            catch(Exception ex)
+            catch(Exception )
             {
                 throw;
             }      
@@ -785,5 +870,6 @@ namespace TreeViewProject
         }
         #endregion
 
+       
     }
 }

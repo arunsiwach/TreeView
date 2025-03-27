@@ -152,3 +152,85 @@ end
 end      
           
 END
+
+GO
+-- =============================================  
+-- Author:  vineet  
+-- Create date: 11 mar 25  
+-- Description: get list of departments on the basis of sector_id  
+--exec spGetAllDepartmentBySectorId 1  
+-- =============================================  
+ALTER PROCEDURE spGetAllDepartmentBySectorId  
+ @sector_id int  
+AS  
+BEGIN  
+ -- SET NOCOUNT ON added to prevent extra result sets from  
+ -- interfering with SELECT statements.  
+ SET NOCOUNT ON;  
+ if(@sector_id=0)
+ select Depertment_ID,Depertment_Name_e from M_Department 
+ order by Depertment_ID,Depertment_Name_e
+ else
+ select Depertment_ID,Depertment_Name_e from M_Department where Sector_ID=@sector_id  
+ order by Depertment_ID,Depertment_Name_e
+      
+END  
+
+GO
+
+ALTER FUNCTION [dbo].[Split](@String varchar(max) ,@Delimiter char(1))        
+returns @temptable TABLE (items varchar(max))        
+as        
+begin        
+    declare @idx int        
+    declare @slice varchar(8000)        
+      
+    select @idx = 1        
+       if len(@String)<1 or @String is null  return        
+       
+    while @idx!= 0        
+    begin        
+        set @idx = charindex(@Delimiter,@String)        
+        if @idx!=0        
+            set @slice = left(@String,@idx - 1)        
+        else        
+            set @slice = @String        
+           
+        if(len(@slice)>0)   
+            insert into @temptable(Items) values(@slice)        
+  
+        set @String = right(@String,len(@String) - @idx)        
+        if len(@String) = 0 break        
+    end    
+return        
+end
+
+
+GO
+  
+ALTER PROCEDURE [dbo].[spGetAllscheme]  
+ (  
+ @dept_id varchar(200)  
+ )  
+  
+AS  
+BEGIN  
+ -- SET NOCOUNT ON added to prevent extra result sets from  
+ -- interfering with SELECT statements.  
+ SET NOCOUNT ON;  
+ --1Jal Jeevan Mission 100359 Villages with 100 Percent Household tap connection  
+--2 PM Garib Kalyan Anna Yojana 100565,100646 Number of Beneficiaries in absolute  
+--3 PM Awaas Yojana - Grameen 100135 Sanctioned Beneficiaries  
+--4 SVAMITVA 100405 Property Card Distributed  
+--5 Swachh Bharat Mission - Grameen 100547 Total ODF Plus Villages  
+--6 National Rural Livelihood Mission NRLM (10010,10012,10013,100156)  
+--7 PM Gram Sadak Yojana 10046 Road Length Built 2014 -19  
+--8 PM Awaas Yojana - Urban 100201 Sanctioned Dwelling Units  
+--9 PM SVANIDHI 100134 Number of Loans Disbursed  
+--10 UJALA 10051 LEDs Distributed by Government  
+--11 PM Kaushal Vikas Yojana - Short Term Training 100396 Candidates Trained  
+--12 MGNREGA 100613  
+select Project_Code,Project_Name_E from Tbl_Project_Detail_Intrim where  
+ Project_Code in (100359,100565,100646,100135,100405,100547,10010,10012,10013,100156,10046,100201,100134,10051,100396,100613) and   
+ Project_Approved_Date is not null and Dept_Code IN (Select cast(items as int) from dbo.split(@dept_id,','))          
+END  
