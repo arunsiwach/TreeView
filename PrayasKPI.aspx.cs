@@ -15,6 +15,7 @@ using RestSharp;
 using System.Threading.Tasks;
 using System.Web.Management;
 using static TreeView.TreeviewPage2;
+using System.Globalization;
 
 namespace TreeViewProject
 {
@@ -485,7 +486,7 @@ namespace TreeViewProject
                 int stateid = Convert.ToInt32(ddlState.SelectedValue);
                 int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
                 int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
-                string datevalue = string.Format("yyyy-MM-dd", txtdate.Text.Trim()); 
+                string datevalue = txtdate.Text.Trim();                                
                 DataTable dt1 = getDataFromLocal(stateid, schemeCode, kpid,datevalue);
                 //getdata from CEDA server using Query
                 return;
