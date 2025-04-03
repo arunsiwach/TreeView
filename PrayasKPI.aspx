@@ -6,9 +6,12 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:ScriptManager ID="scriptmanagerParayas" runat="server"></asp:ScriptManager>
     <div class="container">
-        <h2>State Level Report</h2>
         <asp:UpdatePanel ID="updatepnl" UpdateMode="Always" runat="server">
+
             <ContentTemplate>
+                <h2>
+                    <asp:Label ID="lblh2" runat="server" Text="State Level Report"></asp:Label>
+                </h2>
                 <!-- FILTER BUTTONS -->
                 <div class="filters">
 
@@ -25,7 +28,7 @@
 
                     <div class="select-wrapper">
                         <label for="State" class="label">State</label>
-                        <asp:DropDownList ID="ddlState" class="dropdown-new" runat="server" >
+                        <asp:DropDownList ID="ddlState" class="dropdown-new" runat="server">
                         </asp:DropDownList>
                     </div>
 
@@ -45,22 +48,31 @@
                         <label for="KPI" class="label">KPI</label>
                         <asp:DropDownList ID="ddlKpi" class="dropdown-new" Width="180px" runat="server"></asp:DropDownList>
                     </div>
-                     <div class="select-wrapper">
-                    <label for="KPIDate" class="label">Date</label>
-                        <asp:TextBox ID="txtdate" runat="server" class="dropdown-new" TextMode="Date"  ></asp:TextBox>
+                    <div class="select-wrapper">
+                        <label for="KPIDate" class="label">Date</label>
+                        <asp:TextBox ID="txtdate" runat="server" class="dropdown-new" TextMode="Date"></asp:TextBox>
                     </div>
 
                     <asp:Button ID="btnShow" class="apply-btn" runat="server" Text="Apply" ToolTip="Click to Show" OnClick="btnShow_Click" />
                 </div>
-               <asp:UpdateProgress ID="UpdateProgress1" runat="server" DynamicLayout="true" AssociatedUpdatePanelID="updatepnl">
-                    <ProgressTemplate>                        
-                        <div class="center">           
-                              <img alt="" src="images/lg1.gif" />
-                     </div>                               
+                <asp:UpdateProgress ID="UpdateProgress1" runat="server" DynamicLayout="true" AssociatedUpdatePanelID="updatepnl">
+                    <ProgressTemplate>
+                        <div class="center">
+                            <img alt="" src="images/lg1.gif" />
+                        </div>
                     </ProgressTemplate>
-               </asp:UpdateProgress>
+                </asp:UpdateProgress>
                 <!-- RESPONSIVE TABLE -->
                 <div class="table-container">
+
+                    <div class="headergrid" id="divgrdheader" runat="server" visible="false">
+                        <div class="logo"></div>
+                        <div class="menugrid">
+                            <img class="icon-btn" src="./img/match.png" alt="Matched"/><span style="color:#b0f5a4">Matched</span>
+                            <img class="icon-btn" src="img/Mismatched.png" alt="Mis-Matched"/><span style="color:#f18445">Mis-Matched</span>
+                        </div>
+                    </div>
+
                     <asp:GridView ID="gvLedgerDetail" runat="server" OnRowCommand="gvLedgerDetail_RowCommand"
                         OnRowDataBound="gvLedgerDetail_RowDataBound" EmptyDataText="No Record Found!"
                         AutoGenerateColumns="false">
@@ -76,9 +88,9 @@
                             <asp:BoundField ItemStyle-HorizontalAlign="Left" HeaderText='State' DataField="State_name_e" HtmlEncode="true" />
                             <asp:BoundField HeaderText='Scheme Name' DataField="Project_Name_E" HtmlEncode="true" />
                             <asp:BoundField HeaderText='KPI Name' DataField="KPI_Name_E" HtmlEncode="true" />
-                            <asp:BoundField HeaderText='Darpan Data (A)' DataField="outvalue" HtmlEncode="true" />
-                            <asp:BoundField HeaderText='Paryas Data / View (B)' DataField="CedaValue" HtmlEncode="true" />
-                            
+                            <asp:BoundField HeaderText='' DataField="outvalue" HtmlEncode="true" />
+                            <asp:BoundField HeaderText='' DataField="CedaValue" HtmlEncode="true" />
+
                             <%--   <asp:TemplateField HeaderText='Prayas Value(A)'>
                                 <ItemTemplate>
                                     <asp:Label ID="lblPrayasValue" runat="server"

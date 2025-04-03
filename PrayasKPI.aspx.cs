@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Web.Management;
 using static TreeView.TreeviewPage2;
 using System.Globalization;
+using System.EnterpriseServices;
 
 namespace TreeViewProject
 {
@@ -32,6 +33,22 @@ namespace TreeViewProject
 
         private string connectionString = ConfigurationManager.AppSettings["MyConnectionString"];
         private string connectionStringCEDA = ConfigurationManager.AppSettings["MyConnectionStringCEDA"];
+
+        /// <summary>
+        /// Used to convert the Date into dd/MM/yyyy format
+        /// </summary>
+        /// 
+
+        protected string KPIDate
+        {
+            set;
+            get;
+        }
+
+        public static DateTimeFormatInfo DateFormat()
+        {
+            return new DateTimeFormatInfo { ShortDatePattern = "dd/MM/yyyy" };
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!Page.IsPostBack)
@@ -301,18 +318,33 @@ namespace TreeViewProject
         }
         protected void gvLedgerDetail_RowDataBound(object sender, GridViewRowEventArgs e)
         {
+            if (e.Row.RowType == DataControlRowType.Header)
+            {
+                if (KPIDate.Length > 0)
+                {
+                    e.Row.Cells[4].Text = "Darpan Data (A)" + "<br/>" + "As On " + KPIDate;
+                    e.Row.Cells[5].Text = "Paryas Data / View (B)" + "<br/>" + "As On " + KPIDate;
+                }
+                else
+                {
+                    e.Row.Cells[4].Text = "Darpan Data (A)";
+                    e.Row.Cells[5].Text = "Paryas Data / View (B)";
+                }
+            }
+
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
                 // Ceda Value - local value
                 if ((Convert.ToDecimal(e.Row.Cells[5].Text) - Convert.ToDecimal(e.Row.Cells[4].Text)) == 0)
                 {
                     e.Row.Cells[6].CssClass = "match";
-                    e.Row.Cells[7].CssClass = "match";                    
+                    e.Row.Cells[7].CssClass = "match";
                 }
-                else {
+                else
+                {
                     e.Row.Cells[6].CssClass = "mismatch";
                     e.Row.Cells[7].CssClass = "mismatch";
-                }                    
+                }
             }
 
             //for (int i = gvLedgerDetail.Rows.Count - 1; i > 0; i--)
@@ -394,7 +426,7 @@ namespace TreeViewProject
                 ScriptManager.RegisterStartupScript(updatepnl, updatepnl.GetType(), "alertScript", sc, true);
                 return;
             }
-
+            
             try
             {
                 /*       (API Code)
@@ -486,11 +518,25 @@ namespace TreeViewProject
                 int stateid = Convert.ToInt32(ddlState.SelectedValue);
                 int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
                 int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
-                string datevalue = txtdate.Text.Trim();                                
+
+                if (txtdate.Text.Trim().Length > 0)
+                {
+                    DateTime date = Convert.ToDateTime(txtdate.Text.Trim(), DateFormat()); 
+                    string formattedDate = date.ToString("dd/MM/yyyy");
+                    KPIDate = formattedDate;
+                }
+                else
+                {
+                    KPIDate = "";
+                }
+                string datevalue = KPIDate;
                 DataTable dt1 = getDataFromLocal(stateid, schemeCode, kpid,datevalue);
+                lblh2.Text = ddlState.SelectedIndex == 1 ? "All STATES REPORT" : ddlState.SelectedItem.Text.Trim() + "  STATE REPORT";
                 //getdata from CEDA server using Query
-                return;
-                DataTable dtfiterdata = GetCedaData(stateid, schemeCode, kpid);
+                //return;
+
+                //DataTable dtfiterdata = GetCedaData(stateid, schemeCode, kpid);
+                DataTable dtfiterdata = GetCedaDatafromlocal();
 
                 if (dt1.Rows.Count > 0 && dtfiterdata.Rows.Count > 0)
                 {
@@ -522,11 +568,10 @@ namespace TreeViewProject
 
                     gvLedgerDetail.DataSource = dt1;
                     gvLedgerDetail.DataBind();
+                    divgrdheader.Visible = true;
                 }
 
                 //return;
-
-
             }
 
 

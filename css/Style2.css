@@ -29,7 +29,28 @@ header {
   color: white;
 }
 
+/* grid Header */
+.headergrid {
+    background: white;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    justify-content: space-between;
+}
 
+.menugrid {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.menugrid .icon-btn {
+    width: 46px;
+    height: 36px;
+    cursor: pointer;
+    transition: 0.3s;
+}
 
 
 
@@ -195,14 +216,14 @@ th {
 
 /* COLOR INDICATORS */
 .match {
-  background: #00f0ff;
+    background: #b0f5a4;
 }
 .slight-mismatch {
   background: #ffff00;
 }
 .mismatch {
-  background: #ff4d4d;
-  color: white;
+    background: #f18445;
+    color: white;
 }
 
 /* BUTTONS */

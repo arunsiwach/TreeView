@@ -6,7 +6,7 @@
 <head runat="server">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>State Level Report</title>
+    <title>Data Sanity Platform</title>
     <link rel="stylesheet" href="css/Style2.css">
 
     <!-- Header Section -->
@@ -23,10 +23,12 @@
             <img class="icon-btn" src="./img/home.png" alt="Home">
             <img class="icon-btn" src="./img/reset.png" alt="Reset">
             <div class="dropdown">
-                <button>Detailed Report <i class="fas fa-chevron-down"></i></button>
+                <button><i class="fas fa-chevron-down"></i></button>
+                <%--Detailed Report --%>
             </div>
             <div class="dropdown">
-                <button>Granularity <i class="fas fa-chevron-down"></i></button>
+                <button><i class="fas fa-chevron-down"></i></button>
+                <%--Granularity --%>
             </div>
         </div>
      </header>
