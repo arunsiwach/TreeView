@@ -518,25 +518,24 @@ namespace TreeViewProject
                 int stateid = Convert.ToInt32(ddlState.SelectedValue);
                 int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
                 int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
+                string datevalue = txtdate.Text.Trim().Length > 0 ? txtdate.Text.Trim() : "";
 
-                if (txtdate.Text.Trim().Length > 0)
-                {
-                    DateTime date = Convert.ToDateTime(txtdate.Text.Trim(), DateFormat()); 
-                    string formattedDate = date.ToString("dd/MM/yyyy");
-                    KPIDate = formattedDate;
-                }
-                else
-                {
-                    KPIDate = "";
-                }
-                string datevalue = KPIDate;
-                DataTable dt1 = getDataFromLocal(stateid, schemeCode, kpid,datevalue);
+                DataTable dt1 = getDataFromLocal(stateid, schemeCode, kpid, datevalue);
                 lblh2.Text = ddlState.SelectedIndex == 1 ? "All STATES REPORT" : ddlState.SelectedItem.Text.Trim() + "  STATE REPORT";
                 //getdata from CEDA server using Query
                 //return;
-
-                //DataTable dtfiterdata = GetCedaData(stateid, schemeCode, kpid);
-                DataTable dtfiterdata = GetCedaDatafromlocal();
+                //string cedadateformat=string.Empty;
+                if (txtdate.Text.Trim().Length > 0)
+                {
+                    DateTime date = Convert.ToDateTime(txtdate.Text.Trim(), DateFormat());
+                    string formattedDate = date.ToString("dd/MM/yyyy");
+                    KPIDate = formattedDate;
+                    //cedadateformat = date.ToString("yyyy-MM-dd");
+                }
+                else{ KPIDate = "";}                                
+                //return;
+                DataTable dtfiterdata = GetCedaData(stateid, schemeCode, kpid, datevalue);
+                //DataTable dtfiterdata = GetCedaDatafromlocal();
 
                 if (dt1.Rows.Count > 0 && dtfiterdata.Rows.Count > 0)
                 {
@@ -671,7 +670,7 @@ namespace TreeViewProject
             }
         }
 
-        private DataTable GetCedaData(int stateCode, int SchemeCode, int KpiID)
+        private DataTable GetCedaData(int stateCode, int SchemeCode, int KpiID,string datevalue )
         {
             try
             {
@@ -680,10 +679,11 @@ namespace TreeViewProject
                 //int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
 
                 DataTable ds;
-                string paramdeclare = @"declare @stateid int=" + stateCode + " ,@schemecode int=" + SchemeCode + " ,@kpiid int=" + KpiID + "";                
+                string paramdeclare = @"declare @stateid int=" + stateCode + " ,@schemecode int=" + SchemeCode + " ,@kpiid int=" + KpiID + " ,@datevalue varchar(30)='" + datevalue + "'";
+
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine(paramdeclare);
-                string file = @"E:\TreeView\TreeView\ceda.txt";
+                string file = @"E:\TreeView\TreeView\ceda2.txt";
                 if (File.Exists(file))
                 {
                     string[] filedata = File.ReadAllLines(file);
@@ -889,23 +889,7 @@ namespace TreeViewProject
             public string DistrictValue 
             {
                 get;
-                set;
-                //get
-                //{
-                //    return DistrictValue;                    
-                //}
-                //set 
-                //{
-
-                //    if (string.IsNullOrEmpty(DistrictValue))
-                //    {
-                //       DistrictValue = "0.00";
-                //    }
-                //    else
-                //    {
-                //        DistrictValue = value;
-                //    }                    
-                //}
+                set;       
             }
             public string Date { get; set; }
         }

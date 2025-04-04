@@ -1,9 +1,8 @@
-﻿--declare @stateid int=0,@schemecode int=100359 ,@kpiid int=0, @datevalue varchar(30)='2025-03-01'                
+declare @stateid int=1,@schemecode int=100134 ,@kpiid int=1, @datevalue varchar(30)='2025-04-01'                
 Declare @maxdate varchar(30)
-
 if (@schemecode=100359)
 begin
-(Select @maxdate = max(date) from [JJM_Daily_Blocks_Villages_updated])
+Select @maxdate = max(date) from [JJM_Daily_Blocks_Villages_updated]
 if (@stateid=0 and @kpiid =0)
 begin
 select data_freq,state_code,state_name,[Date],project_code,project_name,indicator,sum([value]) as national_value
