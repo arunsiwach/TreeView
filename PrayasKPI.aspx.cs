@@ -41,10 +41,26 @@ namespace TreeViewProject
 
         protected string KPIDate
         {
-            set;
-            get;
+            set
+            {
+                if (value != null)
+                {
+                    ViewState["KPIDate"] = value;
+                }
+            }
+            get
+            {
+                if (Convert.ToString(ViewState["KPIDate"]) !="")
+                {
+                    return Convert.ToString(ViewState["KPIDate"]);
+                }
+                else
+                {
+                    return "";
+                }
+            }
         }
-
+     
         public static DateTimeFormatInfo DateFormat()
         {
             return new DateTimeFormatInfo { ShortDatePattern = "dd/MM/yyyy" };
@@ -312,10 +328,7 @@ namespace TreeViewProject
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void gvLedgerDetail_RowCommand(object sender, GridViewCommandEventArgs e)
-        {
-
-        }
+     
         protected void gvLedgerDetail_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.Header)
@@ -372,6 +385,15 @@ namespace TreeViewProject
             //}
 
         }
+
+
+        protected void gvLedgerDetail_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gvLedgerDetail.PageIndex = e.NewPageIndex;
+            gvLedgerDetail.DataSource = (DataTable)ViewState["data"];
+            gvLedgerDetail.DataBind();
+        }
+
         #endregion
 
         private string validateDropdowns()
@@ -426,151 +448,10 @@ namespace TreeViewProject
                 ScriptManager.RegisterStartupScript(updatepnl, updatepnl.GetType(), "alertScript", sc, true);
                 return;
             }
-            
+
             try
             {
-                /*       (API Code)
-                //Task.Run(async () =>
-                //{
-                //    string schemestring1 = await GetJSONStringFromAPI("", 123);
-                //}).GetAwaiter().GetResult();
-                //return;
-                string schemestring = GetJSONString();
-                if (!string.IsNullOrEmpty(schemestring))
-                {
-                    //Deserializing JSON
-                    Scheme myschemeclass = JsonConvert.DeserializeObject<Scheme>(schemestring);
-                    // Convert List to DataTable
-                    DataTable dt = ConvertToDataTable(myschemeclass.Data);
-                    DataTable dtfiterdata = FilterRows(Convert.ToInt32(ddlState.SelectedValue), ddlKpi.SelectedItem.Text, ddlScheme.SelectedItem.Text, dt);
-
-                    //getdata from CEDA server using Query
-                    //DataTable dtfiterdata = GetCedaData(stateid, schemeCode, kpid);      
-
-                    int stateid = Convert.ToInt32(ddlState.SelectedValue);
-                    int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
-                    int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
-                    DataTable dt1 = getDataFromLocal(stateid, schemeCode, kpid);
-                    //return;
-
-                    //Code to update CedaValue of matching rows 
-                    dt1.Columns.Add("CedaValue");
-                    // Perform LINQ Join and Update
-                    var query = from row1 in dt1.AsEnumerable()
-                                join row2 in dtfiterdata.AsEnumerable()
-                                on new
-                                {
-                                    KpiName = row1.Field<string>("KPI_Name_E"),
-                                    StateCode = row1.Field<int>("state_Code"),
-                                    SchemeName = row1.Field<string>("Project_Name_E")
-                                }
-                                equals new
-                                {
-                                    KpiName = row2.Field<string>("KpiName"),
-                                    StateCode = row2.Field<int>("StateCode"),
-                                    SchemeName = row2.Field<string>("SchemeName")
-                                }
-                                select new { Row1 = row1, NewScore = row2.Field<decimal>("national_value") };
-
-                                // Update dt1 using the joined result
-                                foreach (var item in query)
-                                {
-                                    item.Row1["CedaValue"] = item.NewScore; // Update the "Score" column
-                                }
-                    //Code ends to update matching rows
-
-
-                    if (dt1.Rows.Count > 0 && dtfiterdata.Rows.Count > 0)
-                    {
-                        //dt1.Columns.Add("CedaValue");
-                        dt1.Columns.Add("Diffvalue");
-                        dt1.Columns.Add("Diffpercnt");
-                        decimal v1, v2, Avg;
-
-                        for (int i = 0; i < dt1.Rows.Count; i++)
-                        {
-                            //dt1.Rows[i]["DepartmentName"] = DepartmentName;
-                            //dt1.Rows[i]["CedaValue"] = dtfiterdata.Rows[i]["national_value"];
-
-                            v1 = Convert.ToDecimal(dt1.Rows[i]["outvalue"]);
-                            //v2 = Convert.ToDecimal(dtfiterdata.Rows[i]["national_value"]);
-                            v2 = Convert.ToDecimal(dt1.Rows[i]["CedaValue"]);
-                            if ((v1 + v2) != 0)
-                            {
-                                Avg = (v1 + v2) / 2;
-                                dt1.Rows[i]["Diffvalue"] = Convert.ToString(v2 - v1);
-                                dt1.Rows[i]["Diffpercnt"] = Convert.ToString(Math.Round((Math.Abs(v2 - v1) / Avg) * 100, 2)) + " %";
-                            }
-                            else
-                            {
-                                dt1.Rows[i]["Diffvalue"] = "0.00000";
-                                dt1.Rows[i]["Diffpercnt"] = Convert.ToString("0 %");
-                            }
-
-                        }
-
-                        gvLedgerDetail.DataSource = dt1;
-                        gvLedgerDetail.DataBind();
-                    }
-                }
-                */
-               
-                int stateid = Convert.ToInt32(ddlState.SelectedValue);
-                int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
-                int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
-                string datevalue = txtdate.Text.Trim().Length > 0 ? txtdate.Text.Trim() : "";
-
-                DataTable dt1 = getDataFromLocal(stateid, schemeCode, kpid, datevalue);
-                lblh2.Text = ddlState.SelectedIndex == 1 ? "All STATES REPORT" : ddlState.SelectedItem.Text.Trim() + "  STATE REPORT";
-                //getdata from CEDA server using Query
-                //return;
-                //string cedadateformat=string.Empty;
-                if (txtdate.Text.Trim().Length > 0)
-                {
-                    DateTime date = Convert.ToDateTime(txtdate.Text.Trim(), DateFormat());
-                    string formattedDate = date.ToString("dd/MM/yyyy");
-                    KPIDate = formattedDate;
-                    //cedadateformat = date.ToString("yyyy-MM-dd");
-                }
-                else{ KPIDate = "";}                                
-                //return;
-                DataTable dtfiterdata = GetCedaData(stateid, schemeCode, kpid, datevalue);
-                //DataTable dtfiterdata = GetCedaDatafromlocal();
-
-                if (dt1.Rows.Count > 0 && dtfiterdata.Rows.Count > 0)
-                {
-                    dt1.Columns.Add("CedaValue");
-                    dt1.Columns.Add("Diffvalue");
-                    dt1.Columns.Add("Diffpercnt");
-                    decimal v1, v2, Avg;
-
-                    for (int i = 0; i < dt1.Rows.Count; i++)
-                    {
-                        //dt1.Rows[i]["DepartmentName"] = DepartmentName;
-                        dt1.Rows[i]["CedaValue"] = dtfiterdata.Rows[i]["national_value"];
-                        v1 = Convert.ToDecimal(dt1.Rows[i]["outvalue"]);
-                        v2 = Convert.ToDecimal(dtfiterdata.Rows[i]["national_value"]);
-                        
-                        if ((v1 + v2) != 0)
-                        {
-                            Avg = (v1 + v2) / 2;
-                            dt1.Rows[i]["Diffvalue"] = Convert.ToString(v2 - v1);
-                            dt1.Rows[i]["Diffpercnt"] = Convert.ToString(Math.Round((Math.Abs(v2 - v1) / Avg) * 100, 2)) + " %";
-                        }
-                        else
-                        {
-                            dt1.Rows[i]["Diffvalue"] = "0.00000";
-                            dt1.Rows[i]["Diffpercnt"] = Convert.ToString("0 %");
-                        }
-
-                    }
-
-                    gvLedgerDetail.DataSource = dt1;
-                    gvLedgerDetail.DataBind();
-                    divgrdheader.Visible = true;
-                }
-
-                //return;
+                BindDataForGrid();
             }
 
 
@@ -579,7 +460,154 @@ namespace TreeViewProject
                 string sc = "alert('" + ex.Message + "');";
                 ScriptManager.RegisterStartupScript(updatepnl, updatepnl.GetType(), "alertScript", sc, true);
                 return;
-            }          
+            }
+        }
+
+
+
+        protected void  BindDataForGrid()
+        {
+            /*       (API Code)
+               //Task.Run(async () =>
+               //{
+               //    string schemestring1 = await GetJSONStringFromAPI("", 123);
+               //}).GetAwaiter().GetResult();
+               //return;
+               string schemestring = GetJSONString();
+               if (!string.IsNullOrEmpty(schemestring))
+               {
+                   //Deserializing JSON
+                   Scheme myschemeclass = JsonConvert.DeserializeObject<Scheme>(schemestring);
+                   // Convert List to DataTable
+                   DataTable dt = ConvertToDataTable(myschemeclass.Data);
+                   DataTable dtfiterdata = FilterRows(Convert.ToInt32(ddlState.SelectedValue), ddlKpi.SelectedItem.Text, ddlScheme.SelectedItem.Text, dt);
+
+                   //getdata from CEDA server using Query
+                   //DataTable dtfiterdata = GetCedaData(stateid, schemeCode, kpid);      
+
+                   int stateid = Convert.ToInt32(ddlState.SelectedValue);
+                   int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
+                   int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
+                   DataTable dt1 = getDataFromLocal(stateid, schemeCode, kpid);
+                   //return;
+
+                   //Code to update CedaValue of matching rows 
+                   dt1.Columns.Add("CedaValue");
+                   // Perform LINQ Join and Update
+                   var query = from row1 in dt1.AsEnumerable()
+                               join row2 in dtfiterdata.AsEnumerable()
+                               on new
+                               {
+                                   KpiName = row1.Field<string>("KPI_Name_E"),
+                                   StateCode = row1.Field<int>("state_Code"),
+                                   SchemeName = row1.Field<string>("Project_Name_E")
+                               }
+                               equals new
+                               {
+                                   KpiName = row2.Field<string>("KpiName"),
+                                   StateCode = row2.Field<int>("StateCode"),
+                                   SchemeName = row2.Field<string>("SchemeName")
+                               }
+                               select new { Row1 = row1, NewScore = row2.Field<decimal>("national_value") };
+
+                               // Update dt1 using the joined result
+                               foreach (var item in query)
+                               {
+                                   item.Row1["CedaValue"] = item.NewScore; // Update the "Score" column
+                               }
+                   //Code ends to update matching rows
+
+
+                   if (dt1.Rows.Count > 0 && dtfiterdata.Rows.Count > 0)
+                   {
+                       //dt1.Columns.Add("CedaValue");
+                       dt1.Columns.Add("Diffvalue");
+                       dt1.Columns.Add("Diffpercnt");
+                       decimal v1, v2, Avg;
+
+                       for (int i = 0; i < dt1.Rows.Count; i++)
+                       {
+                           //dt1.Rows[i]["DepartmentName"] = DepartmentName;
+                           //dt1.Rows[i]["CedaValue"] = dtfiterdata.Rows[i]["national_value"];
+
+                           v1 = Convert.ToDecimal(dt1.Rows[i]["outvalue"]);
+                           //v2 = Convert.ToDecimal(dtfiterdata.Rows[i]["national_value"]);
+                           v2 = Convert.ToDecimal(dt1.Rows[i]["CedaValue"]);
+                           if ((v1 + v2) != 0)
+                           {
+                               Avg = (v1 + v2) / 2;
+                               dt1.Rows[i]["Diffvalue"] = Convert.ToString(v2 - v1);
+                               dt1.Rows[i]["Diffpercnt"] = Convert.ToString(Math.Round((Math.Abs(v2 - v1) / Avg) * 100, 2)) + " %";
+                           }
+                           else
+                           {
+                               dt1.Rows[i]["Diffvalue"] = "0.00000";
+                               dt1.Rows[i]["Diffpercnt"] = Convert.ToString("0 %");
+                           }
+
+                       }
+
+                       gvLedgerDetail.DataSource = dt1;
+                       gvLedgerDetail.DataBind();
+                   }
+               }
+               */
+
+            int stateid = Convert.ToInt32(ddlState.SelectedValue);
+            int kpid = Convert.ToInt32(ddlKpi.SelectedValue);
+            int schemeCode = Convert.ToInt32(ddlScheme.SelectedValue);
+            string datevalue = txtdate.Text.Trim().Length > 0 ? txtdate.Text.Trim() : "";
+
+            DataTable dt1 = getDataFromLocal(stateid, schemeCode, kpid, datevalue);
+            lblh2.Text = ddlState.SelectedIndex == 1 ? "All STATES REPORT" : ddlState.SelectedItem.Text.Trim() + "  STATE REPORT";
+
+            if (txtdate.Text.Trim().Length > 0)
+            {
+                DateTime date = Convert.ToDateTime(txtdate.Text.Trim(), DateFormat());
+                string formattedDate = date.ToString("dd/MM/yyyy");
+                KPIDate = formattedDate;
+                //cedadateformat = date.ToString("yyyy-MM-dd");
+            }
+            else { KPIDate = ""; }
+            //return;
+            DataTable dtfiterdata = GetCedaData(stateid, schemeCode, kpid, datevalue);
+            //DataTable dtfiterdata = GetCedaDatafromlocal();
+
+            if (dt1.Rows.Count > 0 && dtfiterdata.Rows.Count > 0)
+            {
+                dt1.Columns.Add("CedaValue");
+                dt1.Columns.Add("Diffvalue");
+                dt1.Columns.Add("Diffpercnt");
+                decimal v1, v2, Avg;
+
+                for (int i = 0; i < dt1.Rows.Count; i++)
+                {
+                    //dt1.Rows[i]["DepartmentName"] = DepartmentName;
+                    dt1.Rows[i]["CedaValue"] = dtfiterdata.Rows[i]["national_value"];
+                    v1 = Convert.ToDecimal(dt1.Rows[i]["outvalue"]);
+                    v2 = Convert.ToDecimal(dtfiterdata.Rows[i]["national_value"]);
+
+                    if ((v1 + v2) != 0)
+                    {
+                        Avg = (v1 + v2) / 2;
+                        dt1.Rows[i]["Diffvalue"] = Convert.ToString(v2 - v1);
+                        dt1.Rows[i]["Diffpercnt"] = Convert.ToString(Math.Round((Math.Abs(v2 - v1) / Avg) * 100, 2)) + " %";
+                    }
+                    else
+                    {
+                        dt1.Rows[i]["Diffvalue"] = "0.00000";
+                        dt1.Rows[i]["Diffpercnt"] = Convert.ToString("0 %");
+                    }
+
+                }
+                ViewState["data"]= dt1;
+                gvLedgerDetail.DataSource = dt1;
+                gvLedgerDetail.DataBind();
+                divgrdheader.Visible = true;
+            }
+
+            //return;
+
         }
 
         private async Task<DataTable> GetDateFromAPIAsync (int schemeCode)
@@ -899,6 +927,8 @@ namespace TreeViewProject
             public string Status { get; set; }
             public List<SchemeAttributes> Data { get; set; }
         }
+
+
         #endregion
 
        
