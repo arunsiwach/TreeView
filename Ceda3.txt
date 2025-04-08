@@ -1,0 +1,714 @@
+﻿--declare @stateid int=0,@schemecode int=100359 ,@kpiid int=0, @datevalue varchar(30)='2025-02-01'                
+
+--CEDA is pushing entry for daily weekly Fortnightly since 01 mar 2025 
+--prior 01 mar 2025 we need to filter Data_Freq IN('Monthly')
+Declare @MindateNonMonthly varchar(30)='',@maxdate varchar(30)='',@IsMnth bit=0
+
+Declare @datafreqtbl table (FreqName varchar(50),Id char(2) )
+Insert @datafreqtbl
+Select 'Daily','NM' union Select 'Weekly','NM' union Select 'Fortnightly','NM' union Select 'Monthly','MM'
+
+if (@schemecode=100359)
+begin
+Select @maxdate = max(date) from [JJM_Daily_Blocks_Villages_updated] where [date]<= @datevalue
+select @MindateNonMonthly= isnull(min([Date]),'') from [JJM_Daily_Blocks_Villages_updated] where data_freq NOT IN ('Monthly')
+if(@MindateNonMonthly != '') begin 
+SET @IsMnth = CASE when @maxdate<@MindateNonMonthly then 1 else 0 end 
+end
+
+if (@stateid=0 and @kpiid =0)
+begin
+select data_freq,state_code,state_name,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [JJM_Daily_Blocks_Villages_updated]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select data_freq,state_code,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [JJM_Daily_Blocks_Villages_updated]
+where [date]=@maxdate --case when @datevalue='' then  @maxdate  else @datevalue end 
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and [label]=@kpiid and state_code=@stateid
+group by state_code,project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by state_code,[label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [JJM_Daily_Blocks_Villages_updated]
+where [date]=@maxdate  --case when @datevalue='' then @maxdate else @datevalue end 
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [JJM_Daily_Blocks_Villages_updated]
+where [date]=@maxdate --case when @datevalue='' then @maxdate else @datevalue end 
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and state_code=@stateid 
+group by project_code,state_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by state_code,[label]
+END
+end
+
+/*PM SVANIDHI 100134 Number of Loans Disbursed [pm_svanidhi] this schemes have the data_freq column*/
+else if (@schemecode=100134)
+begin
+Select @maxdate = max(date) from [pm_svanidhi] where [date]<= @datevalue
+select @MindateNonMonthly= isnull(min([Date]),'') from [pm_svanidhi] where data_freq NOT IN ('Monthly')
+if(@MindateNonMonthly != '') begin 
+SET @IsMnth = CASE when @maxdate<@MindateNonMonthly then 1 else 0 end 
+end
+
+if (@stateid=0 and @kpiid =0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [pm_svanidhi]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select state_code,data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [pm_svanidhi]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+and [label]=@kpiid and state_code=@stateid
+group by state_code,project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by state_code,[label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [pm_svanidhi]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,state_code,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [pm_svanidhi]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+and state_code=@stateid 
+group by project_code,state_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by state_code,[label]
+END
+end
+
+/*PM Kaushal Vikas Yojana - Short Term Training 100396 Candidates Trained [pmkvy_stt] this schemes have the data_freq column*/
+else if (@schemecode=100396)
+begin
+Select @maxdate = max(date) from [pmkvy_stt] where [date]<= @datevalue
+select @MindateNonMonthly= isnull(min([Date]),'') from [pmkvy_stt] where data_freq NOT IN ('Monthly')
+if(@MindateNonMonthly != '') begin 
+SET @IsMnth = CASE when @maxdate<@MindateNonMonthly then 1 else 0 end 
+end
+
+
+if (@stateid=0 and @kpiid =0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [pmkvy_stt]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select state_code,data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [pmkvy_stt]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+and [label]=@kpiid and state_code=@stateid
+group by project_code,state_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by state_code,[label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [pmkvy_stt]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select state_code,data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [pmkvy_stt]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+and state_code=@stateid 
+group by project_code,state_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by state_code,[label]
+END
+END
+
+/*MGNREGA 70007 HH Provided Employment  [PM_DASBOARD_MGNREGA_Updated] this schemes have the data_freq column*/
+else if (@schemecode=70007)
+begin
+
+Select @maxdate = max(date) from [PM_DASBOARD_MGNREGA_Updated] where [date]<= @datevalue
+select @MindateNonMonthly= isnull(min([Date]),'') from [PM_DASBOARD_MGNREGA_Updated] where data_freq NOT IN ('Monthly')
+if(@MindateNonMonthly != '') begin 
+SET @IsMnth = CASE when @maxdate<@MindateNonMonthly then 1 else 0 end 
+end
+
+if (@stateid=0 and @kpiid =0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [PM_DASBOARD_MGNREGA_Updated]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [PM_DASBOARD_MGNREGA_Updated]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+and [label]=@kpiid and state_code=@stateid
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [PM_DASBOARD_MGNREGA_Updated]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [PM_DASBOARD_MGNREGA_Updated]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+--and data_freq in ('Daily','Weekly','Fortnightly')  
+and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+and state_code=@stateid 
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+END
+
+----------------------------------------these schemes do not have the data_freq column
+/*PM Awaas Yojana - Grameen 100135 Sanctioned Beneficiaries- [pradhan mantri awaas yojana gramin]--monthly--100135*/
+else if (@schemecode=100135)
+begin
+Select @maxdate = max(date) from [pradhan mantri awaas yojana gramin] where [date]<= @datevalue
+if (@stateid=0 and @kpiid =0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [pradhan mantri awaas yojana gramin]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [pradhan mantri awaas yojana gramin]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+ and [label]=@kpiid and state_code=@stateid
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [pradhan mantri awaas yojana gramin]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+  and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [pradhan mantri awaas yojana gramin]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and state_code=@stateid 
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+
+end
+
+/*SVAMITVA 100405 Property Card Distributed [svamitva scheme]--monthly--100405*/
+else if (@schemecode=100405)
+begin
+Select @maxdate = max(date) from [svamitva scheme] where [date]<= @datevalue
+if (@stateid=0 and @kpiid =0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [svamitva scheme]
+where [date]= @maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [svamitva scheme]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+ and [label]=@kpiid and state_code=@stateid
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [svamitva scheme]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+  and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [svamitva scheme]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and state_code=@stateid 
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+
+end
+
+/* National Rural Livelihood Mission 70010 HHs Mobilised into SHGs [deendayal antyodaya yojana nrlm]--monthly--70010*/
+else if (@schemecode=70010)
+begin
+Select @maxdate = max(date) from  [deendayal antyodaya yojana nrlm] where [date]<= @datevalue and project_code=@schemecode
+if (@stateid=0 and @kpiid =0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=70010 and  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=70010 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+ and [label]=@kpiid and state_code=@stateid
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=70010 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+  and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=70010 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and state_code=@stateid 
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+
+end
+
+/* National Rural Livelihood Mission 70012 HHs Mobilised into SHGs [deendayal antyodaya yojana nrlm]--monthly--70010*/
+else if (@schemecode=70012)
+begin
+Select @maxdate = max(date) from  [deendayal antyodaya yojana nrlm] where [date]<= @datevalue and project_code=@schemecode
+if (@stateid=0 and @kpiid =0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=70012 and  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=70012 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+ and [label]=@kpiid and state_code=@stateid
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=70012 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+  and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=70012 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and state_code=@stateid 
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+
+end
+
+/* National Rural Livelihood Mission 70013 HHs Mobilised into SHGs [deendayal antyodaya yojana nrlm]--monthly--70010*/
+else if (@schemecode=70013)
+begin
+Select @maxdate = max(date) from  [deendayal antyodaya yojana nrlm] where [date]<= @datevalue and project_code=@schemecode
+if (@stateid=0 and @kpiid =0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=70013 and  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+SELECT project_code,project_name,[label],state_name,indicator,data_freq,[Date],sum([value]) as national_value
+FROM [deendayal antyodaya yojana nrlm]
+WHERE project_code=70013 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and [label]=@kpiid and state_code=@stateid
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=70013 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+  and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=70013 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and state_code=@stateid 
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+
+end
+
+/* National Rural Livelihood Mission 100156 HHs Mobilised into SHGs [deendayal antyodaya yojana nrlm]--monthly--70010*/
+else if (@schemecode=100156)
+begin
+Select @maxdate = max(date) from  [deendayal antyodaya yojana nrlm] where [date]<= @datevalue and project_code=@schemecode
+if (@stateid=0 and @kpiid =0)
+begin
+select  state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=100156 and  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+group by  state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=100156 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+ and [label]=@kpiid and state_code=@stateid
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select  state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=100156 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+  and [label]=@kpiid 
+group by  state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [deendayal antyodaya yojana nrlm]
+where project_code=100156 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and state_code=@stateid 
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+
+end
+
+/*  PM Gram Sadak Yojana 10046 Road Length Built 2014 -19  [pradhan mantri gram sadak yojana]--monthly--10046*/
+else if (@schemecode=10046)
+begin
+Select @maxdate = max(date) from  [pradhan mantri gram sadak yojana]  where [date]<= @datevalue 
+if (@stateid=0 and @kpiid =0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [pradhan mantri gram sadak yojana]
+where   [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [pradhan mantri gram sadak yojana]
+where  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+ and [label]=@kpiid and state_code=@stateid
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [pradhan mantri gram sadak yojana]
+where  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+  and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [pradhan mantri gram sadak yojana]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and state_code=@stateid 
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+end
+
+/*PM Garib Kalyan Anna Yojana 100565 Number of Beneficiaries in absolute [onorc_v3] this schemes have the data_freq column*/
+else if (@schemecode=100565)
+begin
+Select @maxdate = max(date) from  [onorc_v3]  where [date]<= @datevalue and  project_code=@schemecode
+if (@stateid=0 and @kpiid =0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [onorc_v3]
+where  project_code=100565 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by [label],state_code
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [onorc_v3]
+where project_code=100565 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+ and [label]=@kpiid and state_code=@stateid
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [onorc_v3]
+where project_code=100565 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+  and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [onorc_v3]
+where project_code=100565 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and state_code=@stateid 
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+end
+
+/*PM Garib Kalyan Anna Yojana 100646 Number of Beneficiaries in absolute [onorc_v3] this schemes have the data_freq column*/
+else if (@schemecode=100646)
+begin
+Select @maxdate = max(date) from  [onorc_v3]  where [date]<= @datevalue and  project_code=@schemecode
+if (@stateid=0 and @kpiid =0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [onorc_v3]
+where  project_code=100646 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [onorc_v3]
+where project_code=100646 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+ and [label]=@kpiid and state_code=@stateid
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [onorc_v3]
+where project_code=100646 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+  and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [onorc_v3]
+where project_code=100646 and [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and state_code=@stateid 
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+end
+
+/*PM Awaas Yojana - Urban 100201 Sanctioned Dwelling Units [pm_awaas_yojana_urban_weekly] this schemes have the data_freq column*/
+else if (@schemecode=100201)
+begin
+Select @maxdate = max(date) from  [pm_awaas_yojana_urban_weekly]  where [date]<= @datevalue 
+if (@stateid=0 and @kpiid =0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [pm_awaas_yojana_urban_weekly]
+where   [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [pm_awaas_yojana_urban_weekly]
+where  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+ and [label]=@kpiid and state_code=@stateid
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [pm_awaas_yojana_urban_weekly]
+where  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+  and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [pm_awaas_yojana_urban_weekly]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and state_code=@stateid 
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+end
+
+/*UJALA 70051 LEDs Distributed by Government [ujala] this schemes have the data_freq column*/
+else if (@schemecode=70051)
+begin
+Select @maxdate = max(date) from  [ujala]  where [date]<= @datevalue 
+if (@stateid=0 and @kpiid =0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+from [ujala]
+where   [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid <>0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [ujala]
+where  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+ and [label]=@kpiid and state_code=@stateid
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+if (@stateid=0 and @kpiid <>0)
+begin
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+from [ujala]
+where  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+  and [label]=@kpiid 
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+order by state_code,[label]
+
+END
+if (@stateid<>0 and @kpiid =0)
+begin
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+from [ujala]
+where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and state_code=@stateid 
+group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+order by [label]
+END
+end
+    
