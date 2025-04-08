@@ -12,6 +12,7 @@
     filter: alpha(opacity=70);
     opacity: 0.7;
     -moz-opacity: 0.8;
+
 }
 
 .center1 {
