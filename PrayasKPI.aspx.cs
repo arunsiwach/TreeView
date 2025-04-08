@@ -605,6 +605,13 @@ namespace TreeViewProject
                 gvLedgerDetail.DataBind();
                 divgrdheader.Visible = true;
             }
+            else
+            {
+                ViewState["data"] =null;
+                gvLedgerDetail.DataSource = null;
+                gvLedgerDetail.DataBind();
+                divgrdheader.Visible = true;
+            }
 
             //return;
 
