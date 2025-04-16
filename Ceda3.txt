@@ -1,4 +1,5 @@
-﻿--declare @stateid int=0,@schemecode int=100359 ,@kpiid int=0, @datevalue varchar(30)='2025-02-01'                
+﻿--declare @stateid int=0,@schemecode int=100405 ,@kpiid int=0, @datevalue varchar(30)='2025-01-15'                
+--declare @stateid int=0,@schemecode int=100613 ,@kpiid int=0, @datevalue varchar(30)='2025-02-01'                
 
 --CEDA is pushing entry for daily weekly Fortnightly since 01 mar 2025 
 --prior 01 mar 2025 we need to filter Data_Freq IN('Monthly')
@@ -10,6 +11,7 @@ Select 'Daily','NM' union Select 'Weekly','NM' union Select 'Fortnightly','NM' u
 
 if (@schemecode=100359)
 begin
+
 Select @maxdate = max(date) from [JJM_Daily_Blocks_Villages_updated] where [date]<= @datevalue
 select @MindateNonMonthly= isnull(min([Date]),'') from [JJM_Daily_Blocks_Villages_updated] where data_freq NOT IN ('Monthly')
 if(@MindateNonMonthly != '') begin 
@@ -122,64 +124,67 @@ end
 /*PM Kaushal Vikas Yojana - Short Term Training 100396 Candidates Trained [pmkvy_stt] this schemes have the data_freq column*/
 else if (@schemecode=100396)
 begin
+
 Select @maxdate = max(date) from [pmkvy_stt] where [date]<= @datevalue
-select @MindateNonMonthly= isnull(min([Date]),'') from [pmkvy_stt] where data_freq NOT IN ('Monthly')
-if(@MindateNonMonthly != '') begin 
-SET @IsMnth = CASE when @maxdate<@MindateNonMonthly then 1 else 0 end 
-end
+--select @MindateNonMonthly= isnull(min([Date]),'') from [pmkvy_stt] where data_freq NOT IN ('Monthly')
+--if(@MindateNonMonthly != '') begin 
+--SET @IsMnth = CASE when @maxdate<@MindateNonMonthly then 1 else 0 end 
+--end
 
 
 if (@stateid=0 and @kpiid =0)
 begin
-select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,[label],indicator,sum([value]) as national_value
 from [pmkvy_stt]
-where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+where [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
 --and data_freq in ('Daily','Weekly','Fortnightly')  
-and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
-group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+group by state_code,state_name,[label],indicator
 order by state_code,[label]
 
 END
 if (@stateid<>0 and @kpiid <>0)
 begin
-select state_code,data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+
+select state_code,state_name,[label],indicator,sum([value]) as national_value
 from [pmkvy_stt]
-where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+where [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
 --and data_freq in ('Daily','Weekly','Fortnightly')  
-and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
 and [label]=@kpiid and state_code=@stateid
-group by project_code,state_code,project_name,[label],state_name,indicator,data_freq,[Date]
+group by state_code,[label],state_name,indicator
 order by state_code,[label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,[label],indicator,sum([value]) as national_value
 from [pmkvy_stt]
-where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+where [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
 --and data_freq in ('Daily','Weekly','Fortnightly')  
-and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
 and [label]=@kpiid 
-group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+group by state_code,[label],state_name,indicator
 order by state_code,[label]
 
 END
 if (@stateid<>0 and @kpiid =0)
 begin
-select state_code,data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+select state_code,state_name,[label],indicator,sum([value]) as national_value
 from [pmkvy_stt]
-where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+where [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
 --and data_freq in ('Daily','Weekly','Fortnightly')  
-and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
 and state_code=@stateid 
-group by project_code,state_code,project_name,[label],state_name,indicator,data_freq,[Date]
+group by state_code,[label],state_name,indicator
 order by state_code,[label]
 END
 END
 
 /*MGNREGA 70007 HH Provided Employment  [PM_DASBOARD_MGNREGA_Updated] this schemes have the data_freq column*/
-else if (@schemecode=70007)
+else if (@schemecode=100613)
 begin
 
+SET @schemecode=70007
 Select @maxdate = max(date) from [PM_DASBOARD_MGNREGA_Updated] where [date]<= @datevalue
 select @MindateNonMonthly= isnull(min([Date]),'') from [PM_DASBOARD_MGNREGA_Updated] where data_freq NOT IN ('Monthly')
 if(@MindateNonMonthly != '') begin 
@@ -192,7 +197,8 @@ select state_code,state_name,data_freq,[Date],project_code,project_name,indicato
 from [PM_DASBOARD_MGNREGA_Updated]
 where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
 --and data_freq in ('Daily','Weekly','Fortnightly')  
-and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+and data_freq in ('Weekly')
+--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
 group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
 order by state_code,[label]
 
@@ -203,7 +209,8 @@ select data_freq,[Date],project_code,project_name,[label],state_name,indicator,s
 from [PM_DASBOARD_MGNREGA_Updated]
 where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
 --and data_freq in ('Daily','Weekly','Fortnightly')  
-and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+and data_freq in ('Weekly')
+--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
 and [label]=@kpiid and state_code=@stateid
 group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
 order by [label]
@@ -214,7 +221,8 @@ select state_code,state_name,data_freq,[Date],project_code,project_name,[label],
 from [PM_DASBOARD_MGNREGA_Updated]
 where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
 --and data_freq in ('Daily','Weekly','Fortnightly')  
-and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+and data_freq in ('Weekly')
+--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
 and [label]=@kpiid 
 group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
 order by state_code,[label]
@@ -226,7 +234,8 @@ select data_freq,[Date],project_code,project_name,[label],state_name,indicator,s
 from [PM_DASBOARD_MGNREGA_Updated]
 where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
 --and data_freq in ('Daily','Weekly','Fortnightly')  
-and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+and data_freq in ('Weekly')
+--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
 and state_code=@stateid 
 group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
 order by [label]
@@ -240,7 +249,7 @@ begin
 Select @maxdate = max(date) from [pradhan mantri awaas yojana gramin] where [date]<= @datevalue
 if (@stateid=0 and @kpiid =0)
 begin
-select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,ISNULL(sum([value]),0.00) as national_value
 from [pradhan mantri awaas yojana gramin]
 where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
 group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
@@ -249,7 +258,7 @@ order by state_code,[label]
 END
 if (@stateid<>0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,ISNULL(sum([value]),0.00) as national_value
 from [pradhan mantri awaas yojana gramin]
 where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
  and [label]=@kpiid and state_code=@stateid
@@ -258,7 +267,7 @@ order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,ISNULL(sum([value]),0.00) as national_value
 from [pradhan mantri awaas yojana gramin]
 where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
   and [label]=@kpiid 
@@ -268,7 +277,7 @@ order by state_code,[label]
 END
 if (@stateid<>0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+select data_freq,[Date],project_code,project_name,[label],state_name,indicator,ISNULL(sum([value]),0.00) as national_value
 from [pradhan mantri awaas yojana gramin]
 where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
 and state_code=@stateid 
@@ -284,39 +293,39 @@ begin
 Select @maxdate = max(date) from [svamitva scheme] where [date]<= @datevalue
 if (@stateid=0 and @kpiid =0)
 begin
-select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,project_code,project_name,indicator,ISNULL(sum([value]),0.00) as national_value
 from [svamitva scheme]
-where [date]= @maxdate --case when @datevalue='' then @maxdate  else @datevalue end
-group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+where [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq
 order by state_code,[label]
 
 END
 if (@stateid<>0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+select data_freq,project_code,project_name,[label],state_name,indicator,ISNULL(sum([value]),0.00) as national_value
 from [svamitva scheme]
-where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+where [date]<=@maxdate  --case when @datevalue='' then @maxdate  else @datevalue end
  and [label]=@kpiid and state_code=@stateid
-group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+group by project_code,project_name,[label],state_name,indicator,data_freq
 order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,project_code,project_name,[label],indicator,ISNULL(sum([value]),0.00) as national_value
 from [svamitva scheme]
-where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+where [date]<=@maxdate  --case when @datevalue='' then @maxdate  else @datevalue end
   and [label]=@kpiid 
-group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq
 order by state_code,[label]
 
 END
 if (@stateid<>0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+select data_freq,project_code,project_name,[label],state_name,indicator,ISNULL(sum([value]),0.00) as national_value
 from [svamitva scheme]
 where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
 and state_code=@stateid 
-group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+group by project_code,project_name,[label],state_name,indicator,data_freq
 order by [label]
 END
 
@@ -583,7 +592,9 @@ order by [label]
 END
 end
 
-/*PM Garib Kalyan Anna Yojana 100646 Number of Beneficiaries in absolute [onorc_v3] this schemes have the data_freq column*/
+/*PM Garib Kalyan Anna Yojana 100646 Number of Beneficiaries in absolute [onorc_v3] this schemes have the data_freq column
+food subsidy
+*/
 else if (@schemecode=100646)
 begin
 Select @maxdate = max(date) from  [onorc_v3]  where [date]<= @datevalue and  project_code=@schemecode
@@ -635,6 +646,7 @@ begin
 select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
 from [pm_awaas_yojana_urban_weekly]
 where   [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and data_freq in ('Weekly')  
 group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
 order by state_code,[label]
 
@@ -644,7 +656,8 @@ begin
 select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
 from [pm_awaas_yojana_urban_weekly]
 where  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
- and [label]=@kpiid and state_code=@stateid
+and data_freq in ('Weekly')  
+and [label]=@kpiid and state_code=@stateid
 group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
 order by [label]
 END
@@ -653,7 +666,8 @@ begin
 select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
 from [pm_awaas_yojana_urban_weekly]
 where  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
-  and [label]=@kpiid 
+and [label]=@kpiid 
+and data_freq in ('Weekly')  
 group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
 order by state_code,[label]
 
@@ -664,51 +678,58 @@ select data_freq,[Date],project_code,project_name,[label],state_name,indicator,s
 from [pm_awaas_yojana_urban_weekly]
 where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
 and state_code=@stateid 
+and data_freq in ('Weekly')  
 group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
 order by [label]
 END
 end
 
 /*UJALA 70051 LEDs Distributed by Government [ujala] this schemes have the data_freq column*/
-else if (@schemecode=70051)
+else if (@schemecode=10051 OR @schemecode=10052)
 begin
+SET @schemecode=70051
+
 Select @maxdate = max(date) from  [ujala]  where [date]<= @datevalue 
+
 if (@stateid=0 and @kpiid =0)
 begin
-select state_code,state_name,data_freq,[Date],project_code,project_name,indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,project_code,project_name,indicator,sum([value]) as national_value
 from [ujala]
-where   [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
-group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+where   [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and state_name is not null
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq
 order by state_code,[label]
 
 END
 if (@stateid<>0 and @kpiid <>0)
 begin
-select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+select data_freq,project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
 from [ujala]
-where  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
- and [label]=@kpiid and state_code=@stateid
-group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+where  [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and [label]=@kpiid and state_code=@stateid
+group by project_code,project_name,[label],state_name,indicator,data_freq
 order by [label]
 END
 if (@stateid=0 and @kpiid <>0)
 begin
-select state_code,state_name,data_freq,[Date],project_code,project_name,[label],indicator,sum([value]) as national_value
+select state_code,state_name,data_freq,project_code,project_name,[label],indicator,sum([value]) as national_value
 from [ujala]
-where  [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
-  and [label]=@kpiid 
-group by state_code,state_name,project_code,project_name,[label],indicator,data_freq,[Date]
+where  [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+and [label]=@kpiid 
+and state_name is not null
+group by state_code,state_name,project_code,project_name,[label],indicator,data_freq
 order by state_code,[label]
 
 END
 if (@stateid<>0 and @kpiid =0)
 begin
-select data_freq,[Date],project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
+select data_freq,project_code,project_name,[label],state_name,indicator,sum([value]) as national_value
 from [ujala]
-where [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
+where [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end
 and state_code=@stateid 
-group by project_code,project_name,[label],state_name,indicator,data_freq,[Date]
+group by project_code,project_name,[label],state_name,indicator,data_freq
 order by [label]
 END
 end
-    
+
+

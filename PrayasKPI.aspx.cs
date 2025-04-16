@@ -457,7 +457,7 @@ namespace TreeViewProject
 
             catch (Exception ex)
             {
-                string sc = "alert('" + ex.Message + "');";
+                string sc = "alert('" + ex.Message.Replace("'","") + "');";
                 ScriptManager.RegisterStartupScript(updatepnl, updatepnl.GetType(), "alertScript", sc, true);
                 return;
             }
@@ -733,6 +733,7 @@ namespace TreeViewProject
                     using (SqlCommand command = new SqlCommand(finalQuery, con))
                     {
                         //command.CommandType = CommandType.StoredProcedure;
+                        command.CommandTimeout =900;
                         using (SqlDataAdapter adapter = new SqlDataAdapter(command))
                         {
                             ds = new DataTable();
