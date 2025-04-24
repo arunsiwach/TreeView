@@ -108,6 +108,7 @@
     <Content Include="ceda.txt" />
     <Content Include="Ceda2.txt" />
     <Content Include="Ceda3.txt" />
+    <Content Include="Ceda4.txt" />
     <Content Include="ceda\ceda.txt" />
     <Content Include="ceda\Ceda2.txt" />
     <Content Include="CEDA_2.sql" />

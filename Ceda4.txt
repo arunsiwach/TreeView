@@ -1,0 +1,1101 @@
+﻿DECLARE @stateid int=0,@schemecode int=100370 ,@kpiid int=0, @datevalue varchar(30)='2025-04-23'     
+DECLARE @MindateNonMonthly varchar(30)='',@maxdate varchar(30)='',@IsMnth bit=0
+
+Declare @datafreqtbl table (FreqName varchar(50),Id char(2) )
+Insert @datafreqtbl
+Select 'Daily','NM' union Select 'Weekly','NM' union Select 'Fortnightly','NM' union Select 'Monthly','MM'
+
+
+/* 100372 Aatmanirbhar Bharat Rojgar Yojana] */
+if (@schemecode=100372)
+BEGIN
+    /* IN This Scheme- DATA Frequency NO, Actual_Flag is Cumulative */
+	
+	Select @maxdate = max(date) from [ABRY_Weekly] where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	--FROM [Aatmanirbhar Bharat Rojgar Yojana]
+	from ABRY_Weekly
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	order by state_code,[label]
+
+END
+/* 10018 Atal pension Yojana] */
+ELSE if (@schemecode=10018)
+BEGIN
+	Select @maxdate = max(date) from [APY] where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	--FROM [Aatmanirbhar Bharat Rojgar Yojana]
+	from APY
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	order by state_code,[label]
+END
+/* 100238 Ayushman Bharat Health Wellness Centres] */
+ELSE if (@schemecode=100238)
+BEGIN
+	Select @maxdate = max(date) from AB_Health_Wellness_Centres where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from AB_Health_Wellness_Centres
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	order by state_code,[label]
+END
+/* 10021 AB PMJAY daily] */
+ELSE if (@schemecode=10021)
+BEGIN
+	Select @maxdate = max(date) from [AB PMJAY daily] where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [AB PMJAY daily]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	order by state_code,[label]
+END
+/* 100351 bharat net] */
+ELSE if (@schemecode = 100351)
+BEGIN
+	Select @maxdate = max(date) from [BharatNet_CurrentMonth] where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [BharatNet_CurrentMonth]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	order by state_code,[label]
+END
+/* 100575 amrit bharat stations] */
+ELSE if (@schemecode = 100575)
+BEGIN
+	Select @maxdate = max(date) from Amrit_Bharat_Stations where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from Amrit_Bharat_Stations
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	order by state_code,[label]
+END
+
+/* 100197 Common Services Centre] */
+ELSE if (@schemecode = 100197)
+BEGIN
+	Select @maxdate = max(date) from [Common Services Centre] where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Common Services Centre]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	order by state_code,[label]
+END
+
+/* 100476 Agriculture Infrastructure Fund] */
+ELSE if (@schemecode = 100476)
+BEGIN
+	Select @maxdate = max(date) from [Agriculture Infrastructure Fund] where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Agriculture Infrastructure Fund]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	order by state_code,[label]
+END
+
+/* 100689 Women_Helpline] */
+ELSE if (@schemecode = 100689)
+BEGIN
+	Select @maxdate = max(date) from Women_Helpline where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from Women_Helpline
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100561 5g bts] */
+ELSE if (@schemecode = 100561)
+BEGIN
+	Select @maxdate = max(date) from [5G_BTS] where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [5G_BTS]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100448 Agri Clinics and Business] */
+ELSE if (@schemecode = 100448)
+BEGIN
+	Select @maxdate = max(date) from [Agri Clinics and Business] where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Agri Clinics and Business]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+
+/* 100370 AI in defence] */
+ELSE if (@schemecode = 100370)
+BEGIN
+	Select @maxdate = max(date) from [AI IN DEFENCE] where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [AI IN DEFENCE]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+
+/* 100584 All Indian Survey of Higher Education (AISHE)] */
+ELSE if (@schemecode = 100584)
+BEGIN
+	Select @maxdate = max(date) from aishe where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from aishe
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100234 Biotech Intervention(Aspirational Distt) */
+ELSE if (@schemecode = 100234)
+BEGIN
+	Select @maxdate = max(date) from [Biotech Intervention(Aspirational Distt)] where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Biotech Intervention(Aspirational Distt)]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+
+/* 100155 Capacity Building */
+ELSE if (@schemecode = 100155)
+BEGIN
+     /* ALL KPI Actual Flag is Current*/
+	Select @maxdate = max(date) from [Capacity Building] where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Capacity Building]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100297 capital expenditure */
+ELSE if (@schemecode = 100297)
+BEGIN
+	Select @maxdate = max(date) from CAPEX_New where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from CAPEX_New
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100415 CEFPPC */
+ELSE if (@schemecode = 100415)
+BEGIN
+	Select @maxdate = max(date) from CEFPPC where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from CEFPPC
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100219 coal dispatch */
+ELSE if (@schemecode = 100219)
+BEGIN
+	Select @maxdate = max(date) from Coal_Dispatch where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from Coal_Dispatch
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100143 Coal Production */
+ELSE if (@schemecode = 100143)
+BEGIN
+	Select @maxdate = max(date) from [Coal Production] where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Coal Production]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100600 Craftsmen_Training_Scheme_ITI */
+ELSE if (@schemecode = 100600)
+BEGIN
+	Select @maxdate = max(date) from Craftsmen_Training_Scheme_ITI where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from Craftsmen_Training_Scheme_ITI
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100242 CGTMSE */
+ELSE if (@schemecode = 100242)
+BEGIN
+	Select @maxdate = max(date) from CGTMSE where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from CGTMSE
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100589 dgqi */
+ELSE if (@schemecode = 100589)
+BEGIN
+	Select @maxdate = max(date) from DGQI where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from DGQI
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100127 DDU-Grameen Kaushalya Yojana */
+ELSE if (@schemecode = 100127)
+BEGIN
+    /* Data Frequency = Monthly,Actual_Flag = Cumulative */ 
+	Select @maxdate = max(date) from [DDU GKY] where [date]<= @datevalue
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [DDU GKY]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100210 Defence Exports I */
+ELSE if (@schemecode = 100210)
+BEGIN    
+    /* Data Frequency = Monthly,Actual_Flag = Current */ 
+	Select @maxdate = max(date) from [Defence Exports] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Defence Exports]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100397 Defence Exports */
+ELSE if (@schemecode = 100397)
+BEGIN    
+    /* Data Frequency = Monthly,Actual_Flag = Cummulative */ 
+	Select @maxdate = max(date) from [Defence Exports] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Defence Exports]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100366 DEFENCE OFFSET */
+ELSE if (@schemecode = 100366)
+BEGIN    
+    /* Data Frequency = Monthly,Actual_Flag = Cummulative */ 
+	Select @maxdate = max(date) from [DEFENCE OFFSET] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [DEFENCE OFFSET]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100138 Development of National Highways */
+ELSE if (@schemecode = 100138)
+BEGIN    
+    /* Data Frequency = Monthly,Actual_Flag = Cummulative */ 
+	Select @maxdate = max(date) from [Development of National Highways] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Development of National Highways]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 70086 Digital India Land Records Modernization */
+ELSE if (@schemecode = 70086)
+BEGIN    
+    /* Data Frequency = Monthly,Actual_Flag = Cummulative */ 
+	Select @maxdate = max(date) from [DILRM] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [DILRM]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 70063 Direct Benefit Transfer for LPG DBTL */
+ELSE if (@schemecode = 70063)
+BEGIN    
+    /* Data Frequency = Monthly,Actual_Flag = Cummulative */ 
+	Select @maxdate = max(date) from [Direct Benefit Transfer for LPG DBTL] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Direct Benefit Transfer for LPG DBTL]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100449 Ease of Doing Business */
+ELSE if (@schemecode = 100449)
+BEGIN    
+    /*ALL KPI have Actual Flag = Current */
+    /* Data Frequency = Monthly,Fortnightly Actual_Flag = Current */ 
+	Select @maxdate = max(date) from [Ease_of_Doing_Business_updated] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Ease_of_Doing_Business_updated]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100474 eBISv3 */
+ELSE if (@schemecode = 100474)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag = Cummulative */ 
+	Select @maxdate = max(date) from [eBISv4] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [eBISv4]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100240 Area Protected under Eco Sensitive Zone */
+ELSE if (@schemecode = 100240)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag = Cummulative */ 
+	Select @maxdate = max(date) from [Area protected] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Area protected]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100157 EPFO Payroll DATA */
+ELSE if (@schemecode = 100157)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag =Cummulative */ 
+	Select @maxdate = max(date) from [EPFO Payroll] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [EPFO Payroll]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100382 eSHRAM */
+ELSE if (@schemecode = 100382)
+BEGIN    
+
+    /*All KPI have Actual Flag= Current*/
+    /* Data Frequency = Monthly Actual_Flag = Current */ 
+	Select @maxdate = max(date) from [eSHRAM] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [eSHRAM]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100387 ESI CORPORATION */
+ELSE if (@schemecode = 100387)
+BEGIN    
+	/*All KPI have Actual Flag= Current*/
+    /* Data Frequency = Monthly Actual_Flag = Current */ 
+	Select @maxdate = max(date) from [ESI Corporation Daily] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [ESI Corporation Daily]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 70104 eTaal */
+ELSE if (@schemecode = 70104)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag = Current bhi hia cummulative bhi */ 
+	Select @maxdate = max(date) from [eTaal] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [eTaal]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100231 Commodity Wise Exports and Imports */
+ELSE if (@schemecode = 100231)
+BEGIN    
+    /*All KPI have Actual Flag= Current*/ 
+    /* Data Frequency = Not Found Actual_Flag = Current  */ 
+	Select @maxdate = max(date) from [I/E Commodity Wise] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [I/E Commodity Wise]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100202 Service Trade Imports and Exports */
+ELSE if (@schemecode = 100202)
+BEGIN    
+	 /*All KPI have Actual Flag= Current*/
+    /* Data Frequency = Monthly Actual_Flag = Current  */ 
+	Select @maxdate = max(date) from [Services Trade I/E] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Services Trade I/E]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100249 Exports of States Not Specified */
+ELSE if (@schemecode = 100249)
+BEGIN    
+     /*All KPI have Actual Flag= Current*/
+    /* Data Frequency = not found Actual_Flag = Current  */ 
+	Select @maxdate = max(date) from [Principal Commodity] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Principal Commodity]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100475 Extension Reforms (ATMA) */
+ELSE if (@schemecode = 100475)
+BEGIN    
+    /*All KPI have Actual Flag= Current*/
+    /* Data Frequency = Monthly Actual_Flag = Current  */ 
+	Select @maxdate = max(date) from [Extension Reforms (ATMA)] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Extension Reforms (ATMA)]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100416 Food Safety and Quality Assurance Infra */
+ELSE if (@schemecode = 100416)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag = Cumulative  */ 
+	Select @maxdate = max(date) from [Food Safety] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,[Date],district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Food Safety]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100580 GOVERNMENT EMARKETPLACE */
+ELSE if (@schemecode = 100580)
+BEGIN    
+    /* Data Frequency = Daily,Monthly Actual_Flag = Cumulative  */ 
+	Select @maxdate = max(date) from [Government_emarketplace] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,[Date],district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Government_emarketplace]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100614 GPs connected to Broadband */
+ELSE if (@schemecode = 100614)
+BEGIN    
+	 /*All KPI have Actual Flag= Current*/
+    /* Data Frequency = Not Found Actual_Flag = Current  */ 
+	Select @maxdate = max(date) from [GPs_connected_currmonth] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [GPs_connected_currmonth]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 70084 Gram Panchayat Development Plan GPDP */
+ELSE if (@schemecode = 70084)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag =Cummulative  */ 
+	Select @maxdate = max(date) from [Gram Panchayat Development Plan GPDP] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,[Date],district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Gram Panchayat Development Plan GPDP]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100411 HRD Activities */
+ELSE if (@schemecode = 100411)
+BEGIN    
+	 /*All KPI have Actual Flag= Current*/
+    /* Data Frequency = Monthly Actual_Flag =Current  */ 
+	Select @maxdate = max(date) from [HRD Activities] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [HRD Activities]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100180 Systems Project Income Tax Department */
+ELSE if (@schemecode = 100180)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag =Current,Cummulative  */ 
+	Select @maxdate = max(date) from [Income Tax Department] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Income Tax Department]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100439 India Post Payment Bank */
+ELSE if (@schemecode = 100439)
+BEGIN    
+    /* Data Frequency = Daily,Monthly Actual_Flag =Current  */ 
+	Select @maxdate = max(date) from [India Post Payment New_Daily] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [India Post Payment New_Daily]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100369 India Post Payment Bank */
+ELSE if (@schemecode = 100369)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag =cumulative  */ 
+	Select @maxdate = max(date) from [Innovations for Defence Excellence] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,[Date],dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Innovations for Defence Excellence]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 70102 INSPIRE */
+ELSE if (@schemecode = 70102)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag =cumulative  */ 
+	Select @maxdate = max(date) from [INSPIRE] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,[Date],dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [INSPIRE]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 70105 INSPIRE Awards MANAK */
+ELSE if (@schemecode = 70105)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag =cumulative  */ 
+	Select @maxdate = max(date) from [INSPIRE Awards MANAK] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,[Date],dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [INSPIRE Awards MANAK]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100414 Integrated Cold Chain */
+ELSE if (@schemecode = 100414)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag =cumulative  */ 
+	Select @maxdate = max(date) from [Integrated Cold Chain] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,[Date],dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [Integrated Cold Chain]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100359 [JJM_Daily_Blocks_Villages_updated] */
+ELSE if (@schemecode = 100359)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag =cumulative  */ 
+	Select @maxdate = max(date) from [JJM_Daily_Blocks_Villages_updated] where [date]<= @datevalue
+	select @MindateNonMonthly= isnull(min([Date]),'') from [JJM_Daily_Blocks_Villages_updated] where data_freq NOT IN ('Monthly')
+	if(@MindateNonMonthly != '') begin 
+		SET @IsMnth = CASE when @maxdate<@MindateNonMonthly then 1 else 0 end 
+	end
+
+	SELECT  state_code,state_name,[Date],dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [JJM_Daily_Blocks_Villages_updated]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100134 Number of Loans Disbursed [pm_svanidhi] this schemes have the data_freq column */
+ELSE if (@schemecode = 100134)
+BEGIN       
+	   /* Data Frequency = Monthly Actual_Flag =cumulative  */ 
+	Select @maxdate = max(date) from [pm_svanidhi] where [date]<= @datevalue
+	select @MindateNonMonthly= isnull(min([Date]),'') from [pm_svanidhi] where data_freq NOT IN ('Monthly')
+	if(@MindateNonMonthly != '') begin 
+		SET @IsMnth = CASE when @maxdate<@MindateNonMonthly then 1 else 0 end 
+	end
+
+	SELECT  state_code,state_name,[Date],dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [pm_svanidhi]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* 100396 PM Kaushal Vikas Yojana - Short Term Training 100396 Candidates Trained [pmkvy_stt] this schemes have the data_freq column */
+ELSE if (@schemecode = 100396)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag =cumulative  */ 
+	Select @maxdate = max(date) from [pmkvy_stt] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,[Date],dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [pmkvy_stt]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* MGNREGA 70007 HH Provided Employment  [PM_DASBOARD_MGNREGA_Updated] this schemes have the data_freq column */
+ELSE if (@schemecode = 100613)
+BEGIN    
+    /* Data Frequency = Monthly Actual_Flag =cumulative  */ 
+	Select @maxdate = max(date) from [PM_DASBOARD_MGNREGA_Updated] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,[Date],dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [PM_DASBOARD_MGNREGA_Updated]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
+	and data_freq in ('Weekly')
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/*PM Awaas Yojana - Grameen 100135 Sanctioned Beneficiaries- [pradhan mantri awaas yojana gramin]--monthly--100135*/
+ELSE if (@schemecode = 100135)
+BEGIN        
+	Select @maxdate = max(date) from [pradhan mantri awaas yojana gramin] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,[Date],dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [pradhan mantri awaas yojana gramin]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )	
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/*SVAMITVA 100405 Property Card Distributed [svamitva scheme]--monthly--100405*/
+ELSE if (@schemecode = 100405)
+BEGIN       
+	 /*All KPI have Actual Flag= Current*/
+	Select @maxdate = max(date) from [svamitva scheme] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [svamitva scheme]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )	
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* National Rural Livelihood Mission 70010 HHs Mobilised into SHGs [deendayal antyodaya yojana nrlm]--monthly--70010*/
+ELSE if (@schemecode = 70010)
+BEGIN        
+	Select @maxdate = max(date) from [deendayal antyodaya yojana nrlm] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [deendayal antyodaya yojana nrlm]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )	
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* National Rural Livelihood Mission 70012 HHs Mobilised into SHGs [deendayal antyodaya yojana nrlm]--monthly--70010*/
+ELSE if (@schemecode = 70012)
+BEGIN        
+	Select @maxdate = max(date) from [deendayal antyodaya yojana nrlm] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [deendayal antyodaya yojana nrlm]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )	
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* National Rural Livelihood Mission 70013 HHs Mobilised into SHGs [deendayal antyodaya yojana nrlm]--monthly--70010*/
+ELSE if (@schemecode = 70013)
+BEGIN        
+	Select @maxdate = max(date) from [deendayal antyodaya yojana nrlm] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [deendayal antyodaya yojana nrlm]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )	
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/* National Rural Livelihood Mission 100156 HHs Mobilised into SHGs [deendayal antyodaya yojana nrlm]--monthly--70010*/
+ELSE if (@schemecode = 100156)
+BEGIN        
+	Select @maxdate = max(date) from [deendayal antyodaya yojana nrlm] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [deendayal antyodaya yojana nrlm]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )	
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/*  PM Gram Sadak Yojana 10046 Road Length Built 2014 -19  [pradhan mantri gram sadak yojana]--monthly--10046*/
+ELSE if (@schemecode = 10046)
+BEGIN        
+	Select @maxdate = max(date) from [pradhan mantri gram sadak yojana] where [date]<= @datevalue --and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [pradhan mantri gram sadak yojana]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	--and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )	
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/*PM Garib Kalyan Anna Yojana 100565 Number of Beneficiaries in absolute [onorc_v3] this schemes have the data_freq column*/
+ELSE if (@schemecode = 100565)
+BEGIN        
+	Select @maxdate = max(date) from [onorc_v3] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [onorc_v3]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )	
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/*PM Garib Kalyan Anna Yojana 100646 Number of Beneficiaries in absolute [onorc_v3] this schemes have the data_freq column food subsidy*/
+ELSE if (@schemecode = 100646)
+BEGIN        
+	Select @maxdate = max(date) from [onorc_v3] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [onorc_v3]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )	
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/*PM Awaas Yojana - Urban 100201 Sanctioned Dwelling Units [pm_awaas_yojana_urban_weekly] this schemes have the data_freq column*/
+ELSE if (@schemecode = 100201)
+BEGIN        
+	Select @maxdate = max(date) from [pm_awaas_yojana_urban_weekly] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,[Date],project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [pm_awaas_yojana_urban_weekly]
+	WHERE [date]=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	and data_freq in ('Weekly')  
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )	
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator,[Date]
+	having sum([value])>=0
+	order by state_code,[label]
+END
+/*UJALA 70051 LEDs Distributed by Government [ujala] this schemes have the data_freq column*/
+else if (@schemecode=10051 OR @schemecode=10052)
+BEGIN        
+	 /*All KPI have Actual Flag= Current*/
+	SET @schemecode=70051 
+	Select @maxdate = max(date) from [ujala] where [date]<= @datevalue and project_code=@schemecode
+
+	SELECT  state_code,state_name,dist_code,district_name,project_code,project_name,indicator,[label],sum([value]) as national_value
+	from [ujala]
+	WHERE [date]<=@maxdate --case when @datevalue='' then @maxdate  else @datevalue end 
+	AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+	and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+	and project_code=@schemecode
+	--and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )	
+	group by state_code,state_name,dist_code,district_name,project_code,project_name,[label],indicator
+	having sum([value])>=0
+	order by state_code,[label]
+END
