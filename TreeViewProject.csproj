@@ -153,6 +153,7 @@
     <Content Include="newProject.html" />
     <Content Include="PrayasKPI.aspx" />
     <Content Include="Sql_Server.txt" />
+    <Content Include="Summary.aspx" />
     <Content Include="TreeView1.aspx" />
     <Content Include="TreeViewPage1.aspx" />
     <Content Include="TreeviewPage2.aspx" />
@@ -197,6 +198,13 @@
     </Compile>
     <Compile Include="Site2.Master.designer.cs">
       <DependentUpon>Site2.Master</DependentUpon>
+    </Compile>
+    <Compile Include="Summary.aspx.cs">
+      <DependentUpon>Summary.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Summary.aspx.designer.cs">
+      <DependentUpon>Summary.aspx</DependentUpon>
     </Compile>
     <Compile Include="TreeView1.aspx.cs">
       <DependentUpon>TreeView1.aspx</DependentUpon>

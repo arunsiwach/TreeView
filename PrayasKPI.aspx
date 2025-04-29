@@ -145,7 +145,7 @@
 
                     <asp:GridView ID="gvLedgerDetail" runat="server"
                         OnRowDataBound="gvLedgerDetail_RowDataBound"  EmptyDataText="No Record Found!"
-                        AutoGenerateColumns="false" AllowPaging="true" PageSize="10" ShowFooter="true"                          
+                        AutoGenerateColumns="false" AllowPaging="true" PageSize="20" ShowFooter="true"                          
                         OnPageIndexChanging="gvLedgerDetail_PageIndexChanging" FooterStyle-BorderWidth="0px" >
                         <Columns>
                             <asp:TemplateField HeaderText="Sl.No." HeaderStyle-HorizontalAlign="Left">
