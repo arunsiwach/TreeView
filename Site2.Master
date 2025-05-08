@@ -7,7 +7,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Sanity Platform</title>
-    <link rel="stylesheet" href="css/Style2.css">
+    <%--<link rel="stylesheet" href="css/Style2.css">--%>
+    <link rel="stylesheet" href="css/Wrapper.css">
 
     <!-- Header Section -->
     <header class="status-header">
@@ -21,14 +22,18 @@
         <div class="logo">Data Sanity Platform</div>
         <div class="menu">
             <img class="icon-btn" src="./img/home.png" alt="Home">
-            <img class="icon-btn" src="./img/reset.png" alt="Reset">
+         <%--   <img class="icon-btn" src="./img/reset.png" alt="Reset">--%>
             <div class="dropdown">
-                <button><i class="fas fa-chevron-down"></i></button>
-                <%--Detailed Report --%>
+               <a href="PrayasKPI.aspx" target="_self " class="rounded-button">Sate Wise</a>                                
             </div>
             <div class="dropdown">
-                <button><i class="fas fa-chevron-down"></i></button>
-                <%--Granularity --%>
+               <a href="Summary.aspx" target="_self " class="rounded-button">Summary</a>                                
+            </div>
+            <div class="dropdown">
+                <a href="FrmReport1.aspx" target="_self " class="rounded-button">Dash Board</a>                                                                                 
+            </div>
+            <div class="dropdown">
+                <a href="FrmReport2.aspx" target="_self " class="rounded-button">Summary Report</a>                                                                                 
             </div>
         </div>
      </header>

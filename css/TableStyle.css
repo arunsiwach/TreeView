@@ -1,0 +1,48 @@
+﻿/* RESPONSIVE TABLE */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    font-size: 14px;
+}
+
+th {
+    background: #d5c4ff;
+}
+
+/* COLOR INDICATORS */
+.match {
+    background: #b0f5a4;
+}
+
+.slight-mismatch {
+    background: #ffff00;
+}
+
+.mismatch {
+    background: #f18445;
+    color: white;
+}
+
+/* MOBILE RESPONSIVENESS */
+@media (max-width: 768px) {
+    th,
+    td {
+        font-size: 12px;
+        padding: 8px;
+    }
+}

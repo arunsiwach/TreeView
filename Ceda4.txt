@@ -1,4 +1,4 @@
-﻿DECLARE @stateid int=0,@schemecode int=100370 ,@kpiid int=0, @datevalue varchar(30)='2025-04-23'     
+﻿--DECLARE @stateid int=0,@schemecode int=100370 ,@kpiid int=0, @datevalue varchar(30)='2025-04-23'     
 DECLARE @MindateNonMonthly varchar(30)='',@maxdate varchar(30)='',@IsMnth bit=0
 
 Declare @datafreqtbl table (FreqName varchar(50),Id char(2) )

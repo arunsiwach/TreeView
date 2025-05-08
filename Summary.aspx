@@ -1,7 +1,8 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site2.Master" AutoEventWireup="true" CodeBehind="Summary.aspx.cs" Inherits="TreeViewProject.Summary" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <style type="text/css">
+ <link rel="stylesheet" href="css/TableStyle.css">
+ <style type="text/css">
         .modal1 {
             position: fixed;
             z-index: 999;
@@ -29,11 +30,11 @@
             */
         }
 
-            .center1 img1 {
-                /* position: center;*/
-                height: 200px;
-                width: 200px;
-            }
+        .center1 img1 {
+            /* position: center;*/
+            height: 200px;
+            width: 200px;
+        }
         /* Remove pager border */
         .custom-pager {
             border: none;
@@ -41,34 +42,37 @@
             text-align: right;
         }
 
-            /* Style the paging buttons */
-            .custom-pager a,
-            .custom-pager span {
-                display: inline-block;
-                margin: 0 1px;
-                padding: 6px 12px;
-                border-radius: 20px;
-                background-color: #007bff;
-                color: #fff;
-                text-decoration: none;
-                font-size: 14px;
-                transition: background-color 0.3s ease;
-            }
+        /* Style the paging buttons */
+        .custom-pager a,
+        .custom-pager span {
+            display: inline-block;
+            margin: 0 1px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
 
-                /* Hover effect for active page links */
-                .custom-pager a:hover {
-                    background-color: #0056b3;
-                }
-            /* Style for current page (non-clickable span) */
-            .custom-pager span {
-                background-color: #6c757d;
-                cursor: default;
-            }
+        /* Hover effect for active page links */
+        .custom-pager a:hover {
+            background-color: #0056b3;
+        }
+        /* Style for current page (non-clickable span) */
+        .custom-pager span {
+            background-color: #6c757d;
+            cursor: default;
+        }
     </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:ScriptManager ID="smParayas" runat="server"></asp:ScriptManager>
     <div class="container">
+          <h2>
+            <asp:Label ID="lblh2" runat="server" Text="Summary All KPI's"></asp:Label>
+          </h2>    
         <asp:UpdatePanel ID="updatepnlsummary" UpdateMode="Always" runat="server">
             <ContentTemplate>
                 <div class="table-container">
@@ -81,7 +85,7 @@
                  </div>
                     <asp:GridView ID="gvLedgerDetail" runat="server"
                         OnRowDataBound="gvLedgerDetail_RowDataBound" EmptyDataText="No Record Found!"
-                        AutoGenerateColumns="false" AllowPaging="true" PageSize="30" ShowFooter="true"
+                        AutoGenerateColumns="false" AllowPaging="false" PageSize="30" ShowFooter="true"
                         OnPageIndexChanging="gvLedgerDetail_PageIndexChanging" FooterStyle-BorderWidth="0px">
                         <Columns>
                             <asp:TemplateField HeaderText="Sl.No." HeaderStyle-HorizontalAlign="Left">
@@ -98,6 +102,9 @@
                                 </asp:BoundField>--%>
                             <asp:BoundField HeaderText='Scheme Name' DataField="Project_Name_E" ItemStyle-HorizontalAlign="Left"  HtmlEncode="true" />
                             <asp:BoundField HeaderText='KPI Name' DataField="KPI_Name_E" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
+
+                            <asp:BoundField HeaderText='Unit Name' DataField="KPI_Name_E" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
+                            <asp:BoundField HeaderText='Date Freq.' DataField="KPI_Name_E" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
                             <asp:BoundField HeaderText='' DataField="outvalue" HtmlEncode="true" ItemStyle-HorizontalAlign="Right" />
                             <asp:BoundField HeaderText='' DataField="CedaValue" HtmlEncode="true" ItemStyle-HorizontalAlign="Right" />
 

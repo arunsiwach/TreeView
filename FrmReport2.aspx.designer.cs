@@ -11,52 +11,34 @@ namespace TreeViewProject
 {
 
 
-    public partial class Summary
+    public partial class FrmReport2
     {
 
         /// <summary>
-        /// smParayas control.
+        /// smRep2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.ScriptManager smParayas;
+        protected global::System.Web.UI.ScriptManager smRep2;
 
         /// <summary>
-        /// lblh2 control.
+        /// updatepnlrpt2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblh2;
+        protected global::System.Web.UI.UpdatePanel updatepnlrpt2;
 
         /// <summary>
-        /// updatepnlsummary control.
+        /// RepViewer2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel updatepnlsummary;
-
-        /// <summary>
-        /// divgrdheader control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divgrdheader;
-
-        /// <summary>
-        /// gvLedgerDetail control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvLedgerDetail;
+        protected global::Microsoft.Reporting.WebForms.ReportViewer RepViewer2;
     }
 }

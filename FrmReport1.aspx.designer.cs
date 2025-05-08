@@ -11,52 +11,34 @@ namespace TreeViewProject
 {
 
 
-    public partial class Summary
+    public partial class FrmReport1
     {
 
         /// <summary>
-        /// smParayas control.
+        /// smRep control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.ScriptManager smParayas;
+        protected global::System.Web.UI.ScriptManager smRep;
 
         /// <summary>
-        /// lblh2 control.
+        /// updatepnlrpt1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblh2;
+        protected global::System.Web.UI.UpdatePanel updatepnlrpt1;
 
         /// <summary>
-        /// updatepnlsummary control.
+        /// RepViewer control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel updatepnlsummary;
-
-        /// <summary>
-        /// divgrdheader control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divgrdheader;
-
-        /// <summary>
-        /// gvLedgerDetail control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvLedgerDetail;
+        protected global::Microsoft.Reporting.WebForms.ReportViewer RepViewer;
     }
 }

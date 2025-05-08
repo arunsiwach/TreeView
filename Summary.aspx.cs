@@ -42,7 +42,7 @@ namespace TreeViewProject
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
                 // Ceda Value - local value
-                if ((Convert.ToDecimal(e.Row.Cells[4].Text) - Convert.ToDecimal(e.Row.Cells[3].Text)) == 0)
+                if ((Convert.ToDecimal(e.Row.Cells[6].Text) - Convert.ToDecimal(e.Row.Cells[5].Text)) == 0)
                 {
                     e.Row.Cells[5].CssClass = "match";
                     e.Row.Cells[6].CssClass = "match";

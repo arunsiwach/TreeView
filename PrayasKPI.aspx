@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site2.Master" AutoEventWireup="true" CodeBehind="PrayasKPI.aspx.cs" Inherits="TreeViewProject.PrayasKPI" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+ <link rel="stylesheet" href="css/TableStyle.css">
 <style type="text/css">
 .modal1 {
     position: fixed;
