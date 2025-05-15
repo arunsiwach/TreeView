@@ -103,8 +103,8 @@
                             <asp:BoundField HeaderText='Scheme Name' DataField="Project_Name_E" ItemStyle-HorizontalAlign="Left"  HtmlEncode="true" />
                             <asp:BoundField HeaderText='KPI Name' DataField="KPI_Name_E" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
 
-                            <asp:BoundField HeaderText='Unit Name' DataField="KPI_Name_E" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
-                            <asp:BoundField HeaderText='Date Freq.' DataField="KPI_Name_E" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
+                            <asp:BoundField HeaderText='Unit Name' DataField="Unit_Name" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
+                            <asp:BoundField HeaderText='Date Freq.' DataField="Data_Freq" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
                             <asp:BoundField HeaderText='' DataField="outvalue" HtmlEncode="true" ItemStyle-HorizontalAlign="Right" />
                             <asp:BoundField HeaderText='' DataField="CedaValue" HtmlEncode="true" ItemStyle-HorizontalAlign="Right" />
 

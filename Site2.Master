@@ -24,7 +24,7 @@
             <img class="icon-btn" src="./img/home.png" alt="Home">
          <%--   <img class="icon-btn" src="./img/reset.png" alt="Reset">--%>
             <div class="dropdown">
-               <a href="PrayasKPI.aspx" target="_self " class="rounded-button">Sate Wise</a>                                
+               <a href="PrayasKPI.aspx" target="_self " class="rounded-button">Scheme Wise</a>                                
             </div>
             <div class="dropdown">
                <a href="Summary.aspx" target="_self " class="rounded-button">Summary</a>                                

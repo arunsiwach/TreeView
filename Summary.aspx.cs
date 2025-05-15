@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.SQLite;
+using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.DynamicData;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -13,11 +16,15 @@ namespace TreeViewProject
     public partial class Summary : System.Web.UI.Page
     {
         private string connectionString = ConfigurationManager.AppSettings["MyConnectionString"];
+        //static string appDataPath = "~/App_Data/datasanity.db";
+        private string connectionStringSqlite = ConfigurationManager.AppSettings["SQLiteDbConnection"];
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!Page.IsPostBack)
             {
                 BindDataForGrid();
+
             }
         }
 
@@ -29,13 +36,13 @@ namespace TreeViewProject
             {
                 if (KPIDate.Length > 0)
                 {
-                    e.Row.Cells[3].Text = "Darpan Data (A)" + "<br/>" + "As On " + KPIDate;
-                    e.Row.Cells[4].Text = "Paryas Data / View (B)" + "<br/>" + "As On " + KPIDate;
+                    e.Row.Cells[5].Text = "Darpan Data (A)" + "<br/>" + "As On " + KPIDate;
+                    e.Row.Cells[6].Text = "Paryas Data / View (B)" + "<br/>" + "As On " + KPIDate;
                 }
                 else
                 {
-                    e.Row.Cells[3].Text = "Darpan Data (A)";
-                    e.Row.Cells[4].Text = "Paryas Data / View (B)";
+                    e.Row.Cells[5].Text = "Darpan Data (A)";
+                    e.Row.Cells[6].Text = "Paryas Data / View (B)";
                 }
             }
 
@@ -44,13 +51,13 @@ namespace TreeViewProject
                 // Ceda Value - local value
                 if ((Convert.ToDecimal(e.Row.Cells[6].Text) - Convert.ToDecimal(e.Row.Cells[5].Text)) == 0)
                 {
-                    e.Row.Cells[5].CssClass = "match";
-                    e.Row.Cells[6].CssClass = "match";
+                    e.Row.Cells[7].CssClass = "match";
+                    e.Row.Cells[8].CssClass = "match";
                 }
                 else
                 {
-                    e.Row.Cells[5].CssClass = "mismatch";
-                    e.Row.Cells[6].CssClass = "mismatch";
+                    e.Row.Cells[7].CssClass = "mismatch";
+                    e.Row.Cells[8].CssClass = "mismatch";
                 }
             }
 
@@ -95,7 +102,8 @@ namespace TreeViewProject
         /// </summary>
         protected void BindDataForGrid()
         {
-            DataTable dt1= getSummaryFromLocal();
+            //DataTable dt1= getSummaryFromLocal();
+            DataTable dt1 = getSummaryFromSqlite();
             if (dt1.Rows.Count > 0 )
             {                
                 dt1.Columns.Add("Diffvalue");
@@ -136,9 +144,32 @@ namespace TreeViewProject
 
         }
 
+        private DataTable getSummaryFromSqlite()
+        {
+            DataTable dt ;
+            try
+            {
+                dt = new DataTable();
+                using (SQLiteConnection sqlitecon = new SQLiteConnection(connectionStringSqlite))
+                {
+                    sqlitecon.Open();
+                    string query = "Select * FROM View_Summary";                           
+                    using (var adapter = new SQLiteDataAdapter(query, sqlitecon))
+                    {
+                        adapter.Fill(dt); // This fills the DataTable with the query result
+                    }                    
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return dt;
+        }
+
         private DataTable getSummaryFromLocal()
         {
-
             try
             {
                 DataTable dt;
@@ -147,11 +178,7 @@ namespace TreeViewProject
                     con.Open();
                     using (SqlCommand command = new SqlCommand("[spGetSummaryData]", con))
                     {
-                        command.CommandType = CommandType.StoredProcedure;
-                        //command.Parameters.AddWithValue("@stateid", stateCode);
-                        //command.Parameters.AddWithValue("@scheme_code", SchemeCode);
-                        //command.Parameters.AddWithValue("@kpiid", KpiID);
-                        //command.Parameters.AddWithValue("@datevalue", datevalue);
+                        command.CommandType = CommandType.StoredProcedure;                      
                         using (SqlDataAdapter adapter = new SqlDataAdapter(command))
                         {
                             dt = new DataTable();
