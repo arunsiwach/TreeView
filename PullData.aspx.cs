@@ -18,6 +18,7 @@ namespace TreeViewProject
     public partial class PullData : System.Web.UI.Page
     {
         private string connectionStringCEDA = ConfigurationManager.AppSettings["MyConnectionStringCEDA"];
+        private string connectionStringDarpan = ConfigurationManager.AppSettings["MyConnectionStringCEDA1"];
         private string connectionStringLocal = ConfigurationManager.AppSettings["MyConnectionString"];
         private string connectionStringSqlite = ConfigurationManager.AppSettings["SQLiteDbConnection"];
         protected void Page_Load(object sender, EventArgs e)
@@ -32,12 +33,29 @@ namespace TreeViewProject
 
         private void FillData()
         {
+            UpdateLocalScheme(connectionStringSqlite);
+            return;
+            DataTable dt1 = null;            
             int stateid = 0;int kpid = 0;int schemeCode = 0;
             string datevalue = txtdate.Text.Trim().Length > 0 ? txtdate.Text.Trim() : "";
+
             //DataTable dt = GetCedaConsolidatedData(stateid, kpid, schemeCode, datevalue);
             DataTable dt = GetCedaConsolidatedDataLocal(stateid, kpid, schemeCode, datevalue);
-            FilldataintoSqliteTable(dt, connectionStringSqlite, "Tbl_Display_Consolidate_View");
-            //UpdateLocalScheme(connectionStringSqlite);
+
+            /* darpan Data Code will be here      
+             * 
+                do some thing
+            */
+
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                FilldataintoSqliteTable(dt, connectionStringSqlite, "Tbl_Display_Consolidate_View");
+            }
+            if (dt1 != null && dt1.Rows.Count > 0)
+            {
+                FilldataintoSqliteTable(dt, connectionStringSqlite, "Tbl_Display_Consolidate");
+            }
+            
         }
 
         private DataTable GetCedaConsolidatedDataLocal(int stateCode, int SchemeCode, int KpiID, string datevalue)
@@ -45,8 +63,7 @@ namespace TreeViewProject
             try
             {
                 DataTable ds;
-                string finalQuery = @"Select Top 2 Scheme_Code,Scheme_Name,KPIID,KPI_Name,DataDate,
-                                      Viewkpi_value,Local_Scheme_Code,Localkpi_Value from Tbl_Display_Consolidate_View";
+                string finalQuery = @"Select Scheme_Code,Scheme_Name,KPIID,KPI_Name,DataDate,Viewkpi_value,NULL as 'Local_Scheme_Code' ,NULL as 'Localkpi_Value' from Tbl_Display_Consolidate_View";
                 using (SqlConnection con = new SqlConnection(connectionStringLocal))
                 {
                     con.Open();
@@ -111,6 +128,18 @@ namespace TreeViewProject
         {
             try
             {
+                /*
+                    if (tableName == "Tbl_Display_Consolidate_View")
+                    {
+                        DataColumn idCol1 = new DataColumn("Local_Scheme_Code", typeof(int));
+                        DataColumn idCol2 = new DataColumn("Localkpi_Value", typeof(decimal));
+                        idCol1.AllowDBNull = true;
+                        idCol2.AllowDBNull = true;
+                        dtdata.Columns.Add(idCol1);
+                        dtdata.Columns.Add(idCol2);
+                     }
+                */
+
                 using (var connection = new SQLiteConnection(connectionstring))
                 {
                     connection.Open();
@@ -168,7 +197,7 @@ namespace TreeViewProject
 
                 using (var transaction = connection.BeginTransaction())
                 {                  
-                        string insertQuery = $"UPDATE Tbl_Display_Consolidate_View set Local_Scheme_Code=vm.Local_SchemeCode\r\nFROM Tbl_Display_Consolidate_View cv \r\ninner join Tbl_Scheme_ViewName_Mapping vm ON cv.Scheme_Code = vm.PmoDB_SchemeCode\r\nwhere vm.PmoDB_SchemeCode is not NULL";
+                        string insertQuery = $"UPDATE Tbl_Display_Consolidate_View\r\nSET Local_Scheme_Code = (\r\n    SELECT vm.Local_SchemeCode\r\n    FROM Tbl_Scheme_ViewName_Mapping vm\r\n    WHERE vm.PmoDB_SchemeCode_OLD = Tbl_Display_Consolidate_View.Scheme_Code\r\n)\r\nWHERE EXISTS (\r\n    SELECT 1\r\n    FROM Tbl_Scheme_ViewName_Mapping\r\n    WHERE Tbl_Scheme_ViewName_Mapping.PmoDB_SchemeCode_OLD = Tbl_Display_Consolidate_View.Scheme_Code\r\n);";
 
                         using (var command = new SQLiteCommand(insertQuery, connection))
                         {                      

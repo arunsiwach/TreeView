@@ -142,6 +142,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Mapping_Script_16_May_2025.sql" />
+    <Content Include="App_Data\Update_Style_In_Sqlite.sql" />
     <Content Include="ceda.txt" />
     <Content Include="Ceda2.txt" />
     <Content Include="Ceda3.txt" />
@@ -304,7 +306,6 @@
     <Content Include="Data\ceda.json" />
     <Content Include="Data\request.json" />
     <Content Include="App_Data\datasanity.db" />
-    <Content Include="App_Data\Migration1.sqlce" />
     <None Include="packages.config" />
     <Content Include="Site1.Master" />
     <Content Include="Prayas.Master" />
