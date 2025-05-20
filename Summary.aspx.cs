@@ -10,6 +10,9 @@ using System.Web;
 using System.Web.DynamicData;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using iTextSharp.text;
+using iTextSharp.text.html.simpleparser;
+using iTextSharp.text.pdf;
 
 namespace TreeViewProject
 {
@@ -30,7 +33,7 @@ namespace TreeViewProject
 
         protected void gvLedgerDetail_RowDataBound(object sender, GridViewRowEventArgs e)
         {
-            KPIDate = "24 Apr 2025";
+            KPIDate = DateTime.Now.ToString("dddd, dd MMMM yyyy"); //"24 Apr 2025";
             //Header Row Code
             if (e.Row.RowType == DataControlRowType.Header)
             {
@@ -59,35 +62,35 @@ namespace TreeViewProject
                     e.Row.Cells[7].CssClass = "mismatch";
                     e.Row.Cells[8].CssClass = "mismatch";
                 }
-            }
+            }            
+        }
 
+        protected void gvLedgerDetail_PreRender(object sender, EventArgs e)
+        {
+            int colIndex =1; // Change this to the index of the column you want to merge (0-based)
 
-            /* ROWSPAN CODE    
-            for (int i = gvLedgerDetail.Rows.Count - 1; i > 0; i--)
+            for (int rowIndex = gvLedgerDetail.Rows.Count - 2; rowIndex >= 0; rowIndex--)
             {
-                GridViewRow row = gvLedgerDetail.Rows[i];
-                GridViewRow previousRow = gvLedgerDetail.Rows[i - 1];
-                for (int j = 0; j < row.Cells.Count; j++)
+                GridViewRow currentRow = gvLedgerDetail.Rows[rowIndex];
+                GridViewRow nextRow = gvLedgerDetail.Rows[rowIndex + 1];
+
+                string currentText = currentRow.Cells[colIndex].Text.Trim();
+                string nextText = nextRow.Cells[colIndex].Text.Trim();
+
+                if (currentText == nextText)
                 {
-                    if (row.Cells[j].Text == previousRow.Cells[j].Text)
+                    if (nextRow.Cells[colIndex].RowSpan < 2)
                     {
-                        if (previousRow.Cells[j].RowSpan == 0)
-                        {
-                            if (row.Cells[j].RowSpan == 0)
-                            {
-                                previousRow.Cells[j].RowSpan += 2;
-                            }
-                            else
-                            {
-                                previousRow.Cells[j].RowSpan = row.Cells[j].RowSpan + 1;
-                            }
-                            row.Cells[j].Visible = false;
-                        }
+                        currentRow.Cells[colIndex].RowSpan = 2;
                     }
+                    else
+                    {
+                        currentRow.Cells[colIndex].RowSpan = nextRow.Cells[colIndex].RowSpan + 1;
+                    }
+
+                    nextRow.Cells[colIndex].Visible = false;
                 }
             }
-            */
-
         }
 
         protected void gvLedgerDetail_PageIndexChanging(object sender, GridViewPageEventArgs e)
@@ -119,12 +122,12 @@ namespace TreeViewProject
                     if ((v1 + v2) != 0)
                     {
                         Avg = (v1 + v2) / 2;
-                        dt1.Rows[i]["Diffvalue"] = Convert.ToString(v2 - v1);
-                        dt1.Rows[i]["Diffpercnt"] = Convert.ToString(Math.Round((Math.Abs(v2 - v1) / Avg) * 100, 2)) + " %";
+                        dt1.Rows[i]["Diffvalue"] = Convert.ToString(v1 - v2);
+                        dt1.Rows[i]["Diffpercnt"] = Convert.ToString(Math.Round((Math.Abs(v1 - v2) / Avg) * 100, 2)) + " %";
                     }
                     else
                     {
-                        dt1.Rows[i]["Diffvalue"] = "0.00000";
+                        dt1.Rows[i]["Diffvalue"] = "0.00";
                         dt1.Rows[i]["Diffpercnt"] = Convert.ToString("0 %");
                     }
 
@@ -214,6 +217,76 @@ namespace TreeViewProject
                     return "";
                 }
             }
+        }
+
+        protected void imgEx_Click(object sender, ImageClickEventArgs e)
+        {
+            ExportGridToExcel();
+        }
+
+        protected void imgPdf_Click(object sender, ImageClickEventArgs e)
+        {
+            ExportGridToPDF();
+        }
+
+        public void ExportGridToPDF()
+        {
+            Response.ContentType = "application/pdf";
+            Response.AddHeader("content-disposition", "attachment;filename=GridViewExport.pdf");
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+
+            using (StringWriter sw = new StringWriter())
+            using (HtmlTextWriter hw = new HtmlTextWriter(sw))
+            {
+                // Disable paging before exporting
+                gvLedgerDetail.AllowPaging = false;
+                // Optionally rebind data here
+
+                gvLedgerDetail.RenderControl(hw);
+
+                using (StringReader sr = new StringReader(sw.ToString()))
+                {
+                    Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
+                    PdfWriter writer = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                    pdfDoc.Open();
+
+                    HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
+                    htmlparser.Parse(sr);
+
+                    pdfDoc.Close();
+                    Response.Write(pdfDoc);
+                    Response.End();
+                }
+            }
+        }
+
+        private void ExportGridToExcel()
+        {
+            Response.Clear();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment;filename=GridViewExport.xls");
+            Response.Charset = "";
+            Response.ContentType = "application/vnd.ms-excel";
+
+            using (StringWriter sw = new StringWriter())
+            {
+                HtmlTextWriter hw = new HtmlTextWriter(sw);
+
+                // To Export all pages
+                gvLedgerDetail.AllowPaging = false;
+                // Optionally rebind the data here
+
+                gvLedgerDetail.RenderControl(hw);
+
+                Response.Output.Write(sw.ToString());
+                Response.Flush();
+                Response.End();
+            }
+        }
+
+        public override void VerifyRenderingInServerForm(Control control)
+        {
+            // Required to avoid runtime error during export
         }
 
     }

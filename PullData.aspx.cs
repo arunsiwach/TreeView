@@ -33,8 +33,8 @@ namespace TreeViewProject
 
         private void FillData()
         {
-            UpdateLocalScheme(connectionStringSqlite);
-            return;
+            //UpdateLocalScheme(connectionStringSqlite);
+            //return;
             DataTable dt1 = null;            
             int stateid = 0;int kpid = 0;int schemeCode = 0;
             string datevalue = txtdate.Text.Trim().Length > 0 ? txtdate.Text.Trim() : "";

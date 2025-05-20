@@ -1,8 +1,8 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site2.Master" AutoEventWireup="true" CodeBehind="Summary.aspx.cs" Inherits="TreeViewProject.Summary" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
- <link rel="stylesheet" href="css/TableStyle.css">
- <style type="text/css">
+    <link rel="stylesheet" href="css/TableStyle.css">
+    <style type="text/css">
         .modal1 {
             position: fixed;
             z-index: 999;
@@ -30,11 +30,11 @@
             */
         }
 
-        .center1 img1 {
-            /* position: center;*/
-            height: 200px;
-            width: 200px;
-        }
+            .center1 img1 {
+                /* position: center;*/
+                height: 200px;
+                width: 200px;
+            }
         /* Remove pager border */
         .custom-pager {
             border: none;
@@ -42,51 +42,54 @@
             text-align: right;
         }
 
-        /* Style the paging buttons */
-        .custom-pager a,
-        .custom-pager span {
-            display: inline-block;
-            margin: 0 1px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            background-color: #007bff;
-            color: #fff;
-            text-decoration: none;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
+            /* Style the paging buttons */
+            .custom-pager a,
+            .custom-pager span {
+                display: inline-block;
+                margin: 0 1px;
+                padding: 6px 12px;
+                border-radius: 20px;
+                background-color: #007bff;
+                color: #fff;
+                text-decoration: none;
+                font-size: 14px;
+                transition: background-color 0.3s ease;
+            }
 
-        /* Hover effect for active page links */
-        .custom-pager a:hover {
-            background-color: #0056b3;
-        }
-        /* Style for current page (non-clickable span) */
-        .custom-pager span {
-            background-color: #6c757d;
-            cursor: default;
-        }
+                /* Hover effect for active page links */
+                .custom-pager a:hover {
+                    background-color: #0056b3;
+                }
+            /* Style for current page (non-clickable span) */
+            .custom-pager span {
+                background-color: #6c757d;
+                cursor: default;
+            }
     </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:ScriptManager ID="smParayas" runat="server"></asp:ScriptManager>
     <div class="container">
-          <h2>
-            <asp:Label ID="lblh2" runat="server" Text="Summary All KPI's"></asp:Label>
-          </h2>    
+        <h2>
+            <asp:Label ID="lblh2" runat="server" Text="Data Comparison Summary All Critical KPI's"></asp:Label>
+        </h2>
         <asp:UpdatePanel ID="updatepnlsummary" UpdateMode="Always" runat="server">
             <ContentTemplate>
                 <div class="table-container">
-                  <div class="headergrid" id="divgrdheader" runat="server" visible="true">
-                  <div class="logo"></div>
-                  <div class="menugrid">
-                      <img class="icon-btn" src="./img/match.png" alt="Matched" /><span style="color: #b0f5a4">Matched</span>
-                      <img class="icon-btn" src="img/Mismatched.png" alt="Mis-Matched" /><span style="color: #f18445">Mis-Matched</span>
-                  </div>
-                 </div>
+                    <div class="headergrid" id="divgrdheader" runat="server" visible="true">
+                        <div class="logo"></div>
+                        <div class="menugrid">
+                            <asp:ImageButton ID="imgEx" ImageUrl="~/img/Excel.png" runat="server" OnClick="imgEx_Click" />
+                            <asp:ImageButton ID="imgPdf" ImageUrl="~/img/PDF.png" runat="server" OnClick="imgPdf_Click" />
+                            <img class="icon-btn" src="./img/match.png" alt="Matched" /><span style="color: #b0f5a4">Matched</span>
+                            <img class="icon-btn" src="img/Mismatched.png" alt="Mis-Matched" /><span style="color: #f18445">Mis-Matched</span>
+                        </div>
+                    </div>
                     <asp:GridView ID="gvLedgerDetail" runat="server"
                         OnRowDataBound="gvLedgerDetail_RowDataBound" EmptyDataText="No Record Found!"
                         AutoGenerateColumns="false" AllowPaging="false" PageSize="30" ShowFooter="true"
-                        OnPageIndexChanging="gvLedgerDetail_PageIndexChanging" FooterStyle-BorderWidth="0px">
+                        OnPageIndexChanging="gvLedgerDetail_PageIndexChanging" FooterStyle-BorderWidth="0px"
+                        OnPreRender="gvLedgerDetail_PreRender">
                         <Columns>
                             <asp:TemplateField HeaderText="Sl.No." HeaderStyle-HorizontalAlign="Left">
                                 <ItemTemplate>
@@ -100,7 +103,7 @@
                             <%--  <asp:BoundField ItemStyle-HorizontalAlign="Left" HeaderText='State' DataField="State_name_e" HtmlEncode="true">
                                 <ItemStyle HorizontalAlign="Left" />
                                 </asp:BoundField>--%>
-                            <asp:BoundField HeaderText='Scheme Name' DataField="Project_Name_E" ItemStyle-HorizontalAlign="Left"  HtmlEncode="true" />
+                            <asp:BoundField HeaderText='Scheme Name' DataField="Project_Name_E" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
                             <asp:BoundField HeaderText='KPI Name' DataField="KPI_Name_E" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
 
                             <asp:BoundField HeaderText='Unit Name' DataField="Unit_Name" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
@@ -118,10 +121,10 @@
                                 <asp:Label ID="lblDepDashValue" runat="server" Text=''> </asp:Label>
                                 </ItemTemplate>
                                 </asp:TemplateField>--%>
-                            <asp:TemplateField HeaderText='Difference (B-A)'>
-                                <ItemTemplate>                                    
+                            <asp:TemplateField HeaderText='Difference (A-B)'>
+                                <ItemTemplate>
                                     <asp:Label ID="lblDiffofBandA" runat="server"
-                                        Text='<%# Eval("Diffvalue") %>' >
+                                        Text='<%# Eval("Diffvalue") %>'>
                                     </asp:Label>
                                 </ItemTemplate>
                             </asp:TemplateField>
@@ -154,6 +157,10 @@
                     </asp:GridView>
                 </div>
             </ContentTemplate>
+              <Triggers>
+                <asp:PostBackTrigger ControlID="imgEx" />
+                <asp:PostBackTrigger ControlID="imgPdf" />
+              </Triggers>
         </asp:UpdatePanel>
     </div>
 </asp:Content>
