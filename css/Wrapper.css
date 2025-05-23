@@ -60,7 +60,7 @@ header {
     color: white;
     display: flex;
     align-items: center;
-    padding: 12px 20px;
+    padding: 0 0 12px 580px;
     justify-content: space-between;
 }
 
@@ -72,7 +72,7 @@ header {
 .menu {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
 }
 
     .menu .icon-btn {

@@ -190,6 +190,7 @@
     <Content Include="images\user.png" />
     <Content Include="img\dropdown.png" />
     <Content Include="img\Excel.png" />
+    <Content Include="img\header.svg" />
     <Content Include="img\header.png" />
     <Content Include="img\home.png" />
     <Content Include="img\match.png" />

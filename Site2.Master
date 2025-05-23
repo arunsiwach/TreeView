@@ -13,30 +13,30 @@
     <!-- Header Section -->
     <header class="status-header">
         <img
-            src="img/header.png"
+            src="img/header.svg"
             alt="STATUS Header Image"
             class="header-image" />
     </header>
-    <!-- Navigation Header -->
-    <header class="header">
+    <!-- Navigation Header -->    
+    <header1 class="header">       
         <div class="logo">Data Pipeline For Comparing OLTP and OLAAP Data Objects</div>
         <div class="menu">
             <img class="icon-btn" src="./img/home.png" alt="Home">
          <%--   <img class="icon-btn" src="./img/reset.png" alt="Reset">--%>
-         <%--   <div class="dropdown">
+            <div class="dropdown">
                <a href="PrayasKPI.aspx" target="_self " class="rounded-button">Scheme Wise</a>                                
-            </div>--%>
+            </div>
             <div class="dropdown">
                <a href="Summary.aspx" target="_self " class="rounded-button">Summary</a>                                
             </div>
-            <%--<div class="dropdown">
+            <div class="dropdown">
                 <a href="FrmReport1.aspx" target="_self " class="rounded-button">Dash Board</a>                                                                                 
             </div>
             <div class="dropdown">
                 <a href="FrmReport2.aspx" target="_self " class="rounded-button">Summary Report</a>                                                                                 
-            </div>--%>
+            </div>
         </div>
-     </header>
+     </header1>
         <asp:ContentPlaceHolder ID="head" runat="server">
         </asp:ContentPlaceHolder>
 </head>

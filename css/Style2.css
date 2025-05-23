@@ -60,12 +60,12 @@ header {
   color: white;
   display: flex;
   align-items: center;
-  padding: 12px 20px;
+  padding: 0px 0px 12px 600px;
   justify-content: space-between;
 }
 
 .logo {
-  font-size: 18px;
+  font-size: 180px;
   font-weight: bold;
 }
 

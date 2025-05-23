@@ -39,8 +39,8 @@ namespace TreeViewProject
             int stateid = 0;int kpid = 0;int schemeCode = 0;
             string datevalue = txtdate.Text.Trim().Length > 0 ? txtdate.Text.Trim() : "";
 
-            //DataTable dt = GetCedaConsolidatedData(stateid, kpid, schemeCode, datevalue);
-            DataTable dt = GetCedaConsolidatedDataLocal(stateid, kpid, schemeCode, datevalue);
+            DataTable dt = GetCedaConsolidatedViewData(stateid, kpid, schemeCode, datevalue);
+            //DataTable dt = GetCedaConsolidatedDataLocal(stateid, kpid, schemeCode, datevalue);
 
             /* darpan Data Code will be here      
              * 
@@ -86,7 +86,7 @@ namespace TreeViewProject
             }
         }
 
-        private DataTable GetCedaConsolidatedData(int stateCode, int SchemeCode, int KpiID, string datevalue)
+        private DataTable GetCedaConsolidatedViewData(int stateCode, int SchemeCode, int KpiID, string datevalue)
         {            
             try
             {                   
@@ -95,7 +95,7 @@ namespace TreeViewProject
 
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine(paramdeclare);
-                string file = @"E:\TreeView\TreeView\Ceda4.txt";
+                string file = @"E:\TreeView\TreeView\Consolidate_View1.txt";
                 if (File.Exists(file))
                 {
                     string[] filedata = File.ReadAllLines(file);
