@@ -1,7 +1,8 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site2.Master" AutoEventWireup="true" CodeBehind="Summary.aspx.cs" Inherits="TreeViewProject.Summary" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site3.Master" AutoEventWireup="true" CodeBehind="Summary.aspx.cs" Inherits="TreeViewProject.Summary" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link rel="stylesheet" href="css/TableStyle.css">
+    <%--<link rel="stylesheet" href="css/TableStyle.css">--%>
+    <link rel="stylesheet" href="css/TableStyle1.css">
     <style type="text/css">
         .modal1 {
             position: fixed;
@@ -75,16 +76,16 @@
         </h2>
         <asp:UpdatePanel ID="updatepnlsummary" UpdateMode="Always" runat="server">
             <ContentTemplate>
-                <div class="table-container">
-                    <div class="headergrid" id="divgrdheader" runat="server" visible="true">
-                        <div class="logo"></div>
-                        <div class="menugrid">
-                            <asp:ImageButton ID="imgEx" ImageUrl="~/img/Excel.png" runat="server" OnClick="imgEx_Click" />
-                            <asp:ImageButton ID="imgPdf" ImageUrl="~/img/PDF.png" runat="server" OnClick="imgPdf_Click" />
-                            <img class="icon-btn" src="./img/match.png" alt="Matched" /><span style="color: #b0f5a4">Matched</span>
-                            <img class="icon-btn" src="img/Mismatched.png" alt="Mis-Matched" /><span style="color: #f18445">Mis-Matched</span>
-                        </div>
-                    </div>
+                <div class="headergrid" id="divgrdheader" runat="server" visible="true">
+                <div class="logo"></div>
+                <div class="menugrid">
+                    <asp:ImageButton ID="imgEx" class="header_logo" ImageUrl="~/Data Sanity Platform_files/Excel.svg" runat="server" OnClick="imgEx_Click" />
+                    <asp:ImageButton ID="imgPdf" class="header_logo" ImageUrl="~/Data Sanity Platform_files/PDF.svg" runat="server" OnClick="imgPdf_Click" />
+                    <img class="icon-btn" src="./Data Sanity Platform_files/Matched.svg" alt="Matched" /><span class="font_match">Matched</span>
+                    <img class="icon-btn" src="./Data Sanity Platform_files/Mis-Matched.svg" alt="Mis-Matched" /><span class="font_mismatch">Mis-Matched</span>
+                </div>
+                </div>
+                <div class="table-container">                 
                     <asp:GridView ID="gvLedgerDetail" runat="server"
                         OnRowDataBound="gvLedgerDetail_RowDataBound" EmptyDataText="No Record Found!"
                         AutoGenerateColumns="false" AllowPaging="false" PageSize="30" ShowFooter="true"

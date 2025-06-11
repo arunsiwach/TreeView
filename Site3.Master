@@ -1,0 +1,58 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site3.master.cs" Inherits="TreeViewProject.Site3" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+    <title>Data Sanity Platform</title>
+    <link rel="stylesheet" href="css/Wrapper1.css">
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <div class="main-wrapper">
+        <header class="status-header">
+            <img src="./Data Sanity Platform_files/header.svg" alt="STATUS Header Image" class="header-image">
+        </header>
+
+        <div class="header">
+            <div class="logo">Data Pipeline For Comparing OLTP and OLAP Data Objects</div>
+            <%--<button class="mobile-toggle" onclick="toggleMenu()">☰</button>--%>
+            <div class="menu" id="mobileMenu">
+                <img class="icon-btn" src="./Data Sanity Platform_files/Home.svg" alt="Home">
+                <a href="Summary.aspx" target="_self" class="rounded-button">Summary</a>
+                <a href="PrayasKPI.aspx" target="_self" class="rounded-button">Scheme Wise</a>
+                <a href="FrmReport1.aspx" target="_self" class="rounded-button">Dash Board</a>
+                <a href="PullData.aspx" target="_self" class="rounded-button">Push Data</a>
+            </div>             
+        </div>
+
+        <form id="form1" runat="server">
+            <div>
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                </asp:ContentPlaceHolder>
+            </div>
+        </form>
+    </div>
+    
+    <footer class="footer">
+        <div class="footer-container">
+            <img src="./Data Sanity Platform_files/nic-logo.png" alt="NIC Logo" class="footer-logo">
+            <p class="footer-text">
+                <%--Prayas has been developed under the guidance of the Prime Minister’s Office with inputs from Ministries and
+       Departments.
+       The platform is designed and developed by the Data Analytics, Visualization, and Dashboard (DAVD) Division,
+       NIC,
+       and the Centre of Excellence for Data Analytics (CEDA), NICSI.--%>
+            </p>
+            <img src="./Data Sanity Platform_files/nicsi-logo.png" alt="NICSI Logo" class="footer-logo">
+        </div>
+    </footer>
+   <%-- <script>
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('show');
+        }
+    </script>--%>
+</body>
+</html>

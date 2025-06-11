@@ -31,8 +31,8 @@ namespace TreeViewProject
         //DataRow drFinal;
         #endregion
 
-        private string connectionString = ConfigurationManager.AppSettings["MyConnectionString"];
-        private string connectionStringCEDA = ConfigurationManager.AppSettings["MyConnectionStringCEDA"];
+        private string connectionString = ConfigurationManager.AppSettings["MyConnectionString"];    //207
+        private string connectionStringCEDA = ConfigurationManager.AppSettings["MyConnectionStringCEDA"]; //199
 
         /// <summary>
         /// Used to convert the Date into dd/MM/yyyy format
@@ -75,9 +75,7 @@ namespace TreeViewProject
         }
         
         #region(DropDown Events and function)
-        /// <summary>
-        /// 
-        /// </summary>
+      
         private void BindSector()
         {
             try
@@ -85,9 +83,12 @@ namespace TreeViewProject
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    using (SqlCommand command = new SqlCommand("spGetAllSector", con))
+                    string query = @"select Sector_ID,Sector_Name_e from M_Sector";
+                    //using (SqlCommand command = new SqlCommand("spGetAllSector", con))
+                    using (SqlCommand command = new SqlCommand(query, con))
                     {
-                        command.CommandType = CommandType.StoredProcedure;
+                        //command.CommandType = CommandType.StoredProcedure;
+                        command.CommandType = CommandType.Text;
                         using (SqlDataAdapter adapter = new SqlDataAdapter(command))
                         {
                             DataTable ds = new DataTable();
@@ -115,9 +116,15 @@ namespace TreeViewProject
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    using (SqlCommand command = new SqlCommand("spGetAllDepartmentBySectorId", con))
+                    
+                    string query = @"SELECT Depertment_ID, Depertment_Name_e FROM M_Department
+                                    WHERE (@sector_id = 0 OR Sector_ID = @sector_id)
+                                    ORDER BY Depertment_ID, Depertment_Name_e";
+                    //using (SqlCommand command = new SqlCommand("spGetAllDepartmentBySectorId", con))
+                    using (SqlCommand command = new SqlCommand(query, con))
                     {
-                        command.CommandType = CommandType.StoredProcedure;
+                        command.CommandType = CommandType.Text;
+                        //command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@sector_id", sectorID);
                         using (SqlDataAdapter adapter = new SqlDataAdapter(command))
                         {
@@ -148,9 +155,12 @@ namespace TreeViewProject
                     using (SqlConnection con = new SqlConnection(connectionString))
                     {
                         con.Open();
-                        using (SqlCommand command = new SqlCommand("spGetAllState", con))
+                        string query = @" select distinct Level2_code,Level2_name_e from m_level where Level1_code=91 and Data_Granularity_ID=2";  
+                        //using (SqlCommand command = new SqlCommand("spGetAllState", con))
+                        using (SqlCommand command = new SqlCommand(query, con))
                         {
-                            command.CommandType = CommandType.StoredProcedure;
+                            //command.CommandType = CommandType.StoredProcedure;
+                            command.CommandType = CommandType.Text;
                             using (SqlDataAdapter adapter = new SqlDataAdapter(command))
                             {
                                 DataTable ds = new DataTable();
@@ -209,25 +219,46 @@ namespace TreeViewProject
         {
             try
             {
-                string Deptids = string.Empty;
+                string deptIdsCsv = string.Empty;
                 if (deptID == 0){
-                    Deptids = string.Empty;
+                    deptIdsCsv = string.Empty;
                     foreach (ListItem items in ddlDepartment.Items)
                     {
                         if(items.Value != "0" && items.Value != "-1")
-                        Deptids += items.Value + ",";
+                            deptIdsCsv += items.Value + ",";
                     }
                 }
-                else { Deptids = Convert.ToString(deptID);  }
+                else { deptIdsCsv = Convert.ToString(deptID)+ ",";  }
 
-                    using (SqlConnection con = new SqlConnection(connectionString))
+                List<int> deptIds = deptIdsCsv
+                    .Split(',', (char)StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => {
+                    bool success = int.TryParse(s.Trim(), out int val);
+                     return (success, val);
+                 })
+                 .Where(t => t.success)
+                 .Select(t => t.val)
+                 .ToList();
+
+                var paramNames = deptIds.Select((id, index) => $"@id{index}").ToList();
+                string inClause = string.Join(", ", paramNames);
+
+                using (SqlConnection con = new SqlConnection(connectionString))
                     {
                         con.Open();
-                        using (SqlCommand command = new SqlCommand("[spGetAllscheme]", con))
+                        string query = $@"SELECT Project_Code,Project_Name_E from Tbl_Project_Detail_Intrim where             
+                        Project_Approved_Date is not null and Dept_Code IN ({inClause})     
+                        ORDER BY Project_Name_E";
+                        //using (SqlCommand command = new SqlCommand("[spGetAllscheme]", con))
+                        using (SqlCommand command = new SqlCommand(query, con))
                         {
-                            command.CommandType = CommandType.StoredProcedure;
-                            command.Parameters.AddWithValue("@dept_id", Deptids);
-                            using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        //command.CommandType = CommandType.StoredProcedure;
+                        command.CommandType = CommandType.Text;
+                        for (int i = 0; i < deptIds.Count; i++)
+                        {
+                            command.Parameters.AddWithValue($"@id{i}", deptIds[i]);
+                        }                                                
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
                             {
                                 DataTable ds = new DataTable();
                                 adapter.Fill(ds);
@@ -250,14 +281,31 @@ namespace TreeViewProject
         }
         private void GetAllKpiBySchemeCode(int SchemeCode)
         {
+            string query = string.Empty;
             try
             {
+             
+                if (SchemeCode == 10051 || SchemeCode == 10052)
+                {
+                    query = @"SELECT KPI_ID, KPI_Name_E FROM Tbl_Project_KPI_Detail_Intrim
+                                  WHERE Project_Code IN (10051, 10052) 
+                                  AND Project_Approved_Date IS NOT NULL";
+                }
+                else
+                {
+                    query = @"SELECT KPI_ID, KPI_Name_E FROM Tbl_Project_KPI_Detail_Intrim
+                                WHERE Project_Code = @schemecode 
+                                AND Project_Approved_Date IS NOT NULL";
+                }
+
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    using (SqlCommand command = new SqlCommand("spGetAllKPIByScheme", con))
+                    //using (SqlCommand command = new SqlCommand("spGetAllKPIByScheme", con))
+                    using (SqlCommand command = new SqlCommand(query, con))
                     {
-                        command.CommandType = CommandType.StoredProcedure;
+                        //command.CommandType = CommandType.StoredProcedure;
+                        command.CommandType = CommandType.Text;
                         command.Parameters.AddWithValue("@schemecode", SchemeCode);
                         using (SqlDataAdapter adapter = new SqlDataAdapter(command))
                         {

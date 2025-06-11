@@ -28,7 +28,23 @@ namespace TreeViewProject
 
         protected void btnShow_Click(object sender, EventArgs e)
         {
-            FillData();
+            try
+            {
+                if (txtdate.Text.Trim().Length == 0)
+                {
+                    string sc = "alert('Please select Date');";
+                    //ScriptManager.RegisterStartupScript(updatepnl, updatepnl.GetType(), "alertScript", sc, true);
+                    return;
+                }
+
+                FillData();
+            }
+            catch (Exception ex)
+            {
+                string sc = "alert('" + ex.Message + "');";
+                ScriptManager.RegisterStartupScript(this.Page,Page.GetType(), "alertScript", sc, true);
+                return;
+            }
         }
 
         private void FillData()
@@ -104,17 +120,22 @@ namespace TreeViewProject
                 }
                 string finalQuery = sb.ToString();
                 using (SqlConnection con = new SqlConnection(connectionStringCEDA))
-                {
+                {                    
                     con.Open();
                     using (SqlCommand command = new SqlCommand(finalQuery, con))
                     {
                         //command.CommandType = CommandType.StoredProcedure;
                         command.CommandTimeout = 900;
-                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
                             ds = new DataTable();
-                            adapter.Fill(ds);
+                            ds.Load(reader);
                         }
+                        //using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        //{
+                        //    ds = new DataTable();
+                        //    adapter.Fill(ds);
+                        //}
                     }
                 }
                 return ds;
@@ -128,17 +149,35 @@ namespace TreeViewProject
         {
             try
             {
-                /*
-                    if (tableName == "Tbl_Display_Consolidate_View")
+
+                if (tableName == "Tbl_Display_Consolidate_View")
+                {
+                    DataColumn idCol1 = new DataColumn("Local_Scheme_Code", typeof(int));
+                    DataColumn idCol2 = new DataColumn("Localkpi_Value", typeof(decimal));
+                    idCol1.AllowDBNull = true;
+                    idCol2.AllowDBNull = true;
+                    dtdata.Columns.Add(idCol1);
+                    dtdata.Columns.Add(idCol2);
+                }
+
+
+                var renameMap = new Dictionary<string, string>
+                {
+                    { "project_code", "Scheme_Code" },
+                    { "project_name", "Scheme_Name" },
+                    { "label", "KPIID" },
+                    { "indicator", "KPI_Name" },
+                    { "date", "DataDate" },
+                    { "national_value", "Viewkpi_value" },
+                };
+
+                foreach (var kvp in renameMap)
+                {
+                    if (dtdata.Columns.Contains(kvp.Key))
                     {
-                        DataColumn idCol1 = new DataColumn("Local_Scheme_Code", typeof(int));
-                        DataColumn idCol2 = new DataColumn("Localkpi_Value", typeof(decimal));
-                        idCol1.AllowDBNull = true;
-                        idCol2.AllowDBNull = true;
-                        dtdata.Columns.Add(idCol1);
-                        dtdata.Columns.Add(idCol2);
-                     }
-                */
+                        dtdata.Columns[kvp.Key].ColumnName = kvp.Value;
+                    }
+                }
 
                 using (var connection = new SQLiteConnection(connectionstring))
                 {

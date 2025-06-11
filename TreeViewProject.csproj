@@ -162,9 +162,28 @@
     <Content Include="css\style.css" />
     <Content Include="css\Style1.css" />
     <Content Include="css\Style2.css" />
+    <Content Include="css\TableStyle1.css" />
     <Content Include="css\Wrapper.css" />
     <Content Include="css\TableStyle.css" />
+    <Content Include="css\Wrapper1.css" />
     <Content Include="dashboard.html" />
+    <Content Include="Data Sanity Platform_files\Excel.png" />
+    <Content Include="Data Sanity Platform_files\Excel.svg" />
+    <Content Include="Data Sanity Platform_files\header.svg" />
+    <Content Include="Data Sanity Platform_files\header01.svg" />
+    <Content Include="Data Sanity Platform_files\home.png" />
+    <Content Include="Data Sanity Platform_files\Home.svg" />
+    <Content Include="Data Sanity Platform_files\index.html" />
+    <Content Include="Data Sanity Platform_files\match.png" />
+    <Content Include="Data Sanity Platform_files\Matched.svg" />
+    <Content Include="Data Sanity Platform_files\Mis-Matched.svg" />
+    <Content Include="Data Sanity Platform_files\Mismatched.png" />
+    <Content Include="Data Sanity Platform_files\nic-logo.png" />
+    <Content Include="Data Sanity Platform_files\nicsi-logo.png" />
+    <Content Include="Data Sanity Platform_files\PDF.png" />
+    <Content Include="Data Sanity Platform_files\PDF.svg" />
+    <Content Include="Data Sanity Platform_files\TableStyle.css" />
+    <Content Include="Data Sanity Platform_files\Wrapper.css" />
     <Content Include="Data\Scripts.sql" />
     <Content Include="FrmReport1.aspx" />
     <Content Include="FrmReport2.aspx" />
@@ -282,6 +301,13 @@
     <Compile Include="Site2.Master.designer.cs">
       <DependentUpon>Site2.Master</DependentUpon>
     </Compile>
+    <Compile Include="Site3.Master.cs">
+      <DependentUpon>Site3.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Site3.Master.designer.cs">
+      <DependentUpon>Site3.Master</DependentUpon>
+    </Compile>
     <Compile Include="Summary.aspx.cs">
       <DependentUpon>Summary.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -315,10 +341,14 @@
     <Content Include="Data\ceda.json" />
     <Content Include="Data\request.json" />
     <Content Include="App_Data\datasanity.db" />
+    <Content Include="Data Sanity Platform_files\ScriptResource%281%29.axd" />
+    <Content Include="Data Sanity Platform_files\ScriptResource.axd" />
+    <Content Include="Data Sanity Platform_files\WebResource.axd" />
     <None Include="packages.config" />
     <Content Include="Site1.Master" />
     <Content Include="Prayas.Master" />
     <Content Include="Site2.Master" />
+    <Content Include="Site3.Master" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

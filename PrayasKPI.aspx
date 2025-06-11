@@ -1,8 +1,10 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site2.Master" AutoEventWireup="true" CodeBehind="PrayasKPI.aspx.cs" Inherits="TreeViewProject.PrayasKPI" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site3.Master" AutoEventWireup="true" CodeBehind="PrayasKPI.aspx.cs" Inherits="TreeViewProject.PrayasKPI" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
- <link rel="stylesheet" href="css/TableStyle.css">
+<%-- <link rel="stylesheet" href="css/TableStyle.css">--%>
+ <link rel="stylesheet" href="css/TableStyle1.css">
 <style type="text/css">
+
 .modal1 {
     position: fixed;
     z-index: 999;
@@ -15,7 +17,6 @@
     -moz-opacity: 0.8;
 
 }
-
 .center1 {
     position: center;
     /*
@@ -91,45 +92,45 @@
                     <asp:Label ID="lblh2" runat="server" Text="State Level Report"></asp:Label>
                 </h2>
                 <!-- FILTER BUTTONS -->
-                <div class="filters">
+                <div class="filter-bar">
 
-                    <div class="select-wrapper">
+                 <%--   <div class="select-wrapper">--%>
                         <label for="Sector" class="label">Sector</label>
                         <asp:DropDownList ID="ddlSector" class="dropdown-new" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlSector_SelectedIndexChanged">
                         </asp:DropDownList>
-                    </div>
+                   <%-- </div>--%>
 
-                    <div class="select-wrapper">
+                   <%-- <div class="select-wrapper">--%>
                         <label for="Department" class="label">Department</label>
                         <asp:DropDownList ID="ddlDepartment" class="dropdown-new" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlDepartment_SelectedIndexChanged"></asp:DropDownList>
-                    </div>
+                    <%--</div>--%>
 
-                    <div class="select-wrapper">
+                    <%--<div class="select-wrapper">--%>
                         <label for="State" class="label">State</label>
                         <asp:DropDownList ID="ddlState" class="dropdown-new" runat="server">
                         </asp:DropDownList>
-                    </div>
+                    <%--</div>--%>
 
-                    <%--  <div class="select-wrapper">
-                        <label for="District" class="label">District</label>
-                        <asp:DropDownList ID="ddlDistrict" class="dropdown-new" AutoPostBack="true" runat="server" OnSelectedIndexChanged="ddlDistrict_SelectedIndexChanged">
-                        </asp:DropDownList>
-                    </div>--%>
+                            <%--  <div class="select-wrapper">
+                                    <label for="District" class="label">District</label>
+                                    <asp:DropDownList ID="ddlDistrict" class="dropdown-new" AutoPostBack="true" runat="server" OnSelectedIndexChanged="ddlDistrict_SelectedIndexChanged">
+                                    </asp:DropDownList>
+                                    </div>--%>
 
-                    <div class="select-wrapper">
+                    <%--<div class="select-wrapper">--%>
                         <label for="Scheme" class="label">Scheme</label>
                         <asp:DropDownList ID="ddlScheme" class="dropdown-new" AutoPostBack="true" runat="server" OnSelectedIndexChanged="ddlScheme_SelectedIndexChanged">
                         </asp:DropDownList>
-                    </div>
+                    <%--</div>--%>
 
-                    <div class="select-wrapper">
+                    <%--<div class="select-wrapper">--%>
                         <label for="KPI" class="label">KPI</label>
-                        <asp:DropDownList ID="ddlKpi" class="dropdown-new" Width="180px" runat="server"></asp:DropDownList>
-                    </div>
-                    <div class="select-wrapper">
+                        <asp:DropDownList ID="ddlKpi" class="dropdown-new" Width="150px" runat="server"></asp:DropDownList>
+                    <%--</div>--%>
+                    <%--<div class="select-wrapper">--%>
                         <label for="KPIDate" class="label">Date</label>
                         <asp:TextBox ID="txtdate" runat="server" class="dropdown-new" TextMode="Date"></asp:TextBox>
-                    </div>
+                    <%--</div>--%>
 
                     <asp:Button ID="btnShow" class="apply-btn" runat="server" Text="Apply" ToolTip="Click to Show" OnClick="btnShow_Click" />
                 </div>
@@ -216,10 +217,10 @@
                     </asp:GridView>
                 </div>
                 <!-- ACTION BUTTONS -->
-                <div class="action-buttons">
+              <%--  <div class="action-buttons">
                     <button class="pmo">PMO Report - State Wise</button>
                     <button class="summary">Summary Report</button>
-                </div>
+                </div>--%>
             </ContentTemplate>
         </asp:UpdatePanel>
     </div>

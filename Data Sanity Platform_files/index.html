@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Sanity Platform</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body {
+            background: #f5f5f5;
+        }
+
+        .menu {
+            align-items: center;
+        }
+
+        .status-header {
+            width: 100%;
+            background-color: #e6f0ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5px 0;
+        }
+
+        .header-image {
+            width: 100%;
+            max-width: 1920px;
+            height: auto;
+        }
+
+        .header {
+            background: #4c8cda;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            flex: 1 1 50%;
+            text-align: left;
+        }
+
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .rounded-button {
+            padding: 8px 15px;
+            background-color: #ffffff;
+            color: #4c8cda;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .rounded-button:hover {
+            background-color: #1666c0;
+            color: #ffffff;
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 10px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 25px;
+            padding: 25px;
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+            font-size: 14px
+        }
+
+        th {
+            background-color: #4c8cda;
+            color: white;
+        }
+
+        .match {
+            background-color: #b0f5a4;
+        }
+
+        .mismatch {
+            background-color: #f18445;
+            color: white;
+        }
+
+
+        .footer {
+            background-color: #4a90e2;
+            padding: 15px 20px;
+            text-align: center;
+            width: 100%;
+            margin-top: auto;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+        }
+
+        .footer-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: auto;
+            text-align: center;
+        }
+
+        .footer-logo {
+            width: 100px;
+            height: auto;
+        }
+
+        .footer-text {
+            color: white;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            flex: 1 1 100%;
+            padding: 10px 20px;
+        }
+
+
+        h2 {
+            font-size: 30px;
+            font-weight: bold;
+            background: #4c8cda;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .logo {
+                padding-bottom: 10px;
+            }
+
+            .menu {
+                flex-direction: column;
+            }
+
+            th,
+            td {
+                font-size: 12px;
+            }
+
+            .rounded-button {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+
+        .headergrid {
+            background: white;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            justify-content: space-between;
+        }
+
+
+        .menugrid {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+
+        .font_match {
+            /* color: #b0f5a4; */
+            color: #7abb6e;
+            font-weight: 700;
+        }
+
+        .font_mismatch {
+            /* color: #f18445; */
+            color: #d96f32;
+            font-weight: 700;
+        }
+
+        .header_logo {
+            width: 40px;
+            height: 40px;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 28px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .menu {
+                display: none;
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+                background-color: #4c8cda;
+                padding: 10px 0;
+            }
+
+                .menu.show {
+                    display: flex;
+                }
+
+            .mobile-toggle {
+                display: block;
+                position: absolute;
+                right: 20px;
+                top: 15px;
+            }
+
+            .header {
+                position: relative;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .logo {
+                padding-right: 40px;
+            }
+        }
+
+
+        @media (max-width: 768px) {
+            .headergrid {
+                align-items: center;
+                padding: 12px 20px;
+                justify-content: end;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-wrapper">
+        <header class="status-header">
+            <img src="./Data Sanity Platform_files/header.svg" alt="STATUS Header Image" class="header-image">
+        </header>
+
+        <div class="header">
+            <div class="logo">Data Pipeline For Comparing OLTP and OLAP Data Objects</div>
+            <button class="mobile-toggle" onclick="toggleMenu()">☰</button>
+            <div class="menu" id="mobileMenu">
+                <img class="icon-btn" src="./Data Sanity Platform_files/Home.svg" alt="Home">
+                <a href="Summary.aspx" class="rounded-button">Summary</a>
+                <a href="PrayasKPI.aspx" class="rounded-button">Scheme Wise</a>
+                <a href="FrmReport1.aspx" class="rounded-button">Dashboard</a>
+                <a href="PullData.aspx" class="rounded-button">Push Data</a>
+            </div>
+        </div>
+
+
+        <main class="container">
+            <h2>Data Comparison Summary - All Critical KPIs</h2>
+
+            <div id="ContentPlaceHolder1_divgrdheader" class="headergrid">
+                <div class="logo"></div>
+                <div class="menugrid">
+                    <input type="image" name="ctl00$ContentPlaceHolder1$imgEx" class="header_logo"
+                           id="ContentPlaceHolder1_imgEx" src="./Data Sanity Platform_files/Excel.svg">
+                    <input type="image" name="ctl00$ContentPlaceHolder1$imgPdf" class="header_logo"
+                           id="ContentPlaceHolder1_imgPdf" src="./Data Sanity Platform_files/PDF.svg">
+                    <img class="icon-btn" src="./Data Sanity Platform_files/Matched.svg" alt="Matched"><span class="font_match">Matched</span>
+                    <img class="icon-btn" src="./Data Sanity Platform_files/Mis-Matched.svg" alt="Mis-Matched"><span class="font_mismatch">Mis-Matched</span>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sl.No.</th>
+                            <th>Scheme Name</th>
+                            <th>KPI Name</th>
+                            <th>Unit Name</th>
+                            <th>Date Freq.</th>
+                            <th>Darpan Data (A)</th>
+                            <th>Prayas Data (B)</th>
+                            <th>Difference (A-B)</th>
+                            <th>Difference (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td rowspan="4">Agriculture Infrastructure Fund</td>
+                            <td>Total Applications Sanctioned</td>
+                            <td>Number</td>
+                            <td>Daily</td>
+                            <td>108840</td>
+                            <td>108840</td>
+                            <td class="match">0</td>
+                            <td class="match">0%</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Amount Sanctioned</td>
+                            <td>Rs. Lakhs</td>
+                            <td>Daily</td>
+                            <td>6332646.25</td>
+                            <td>6332646.25</td>
+                            <td class="match">0.00</td>
+                            <td class="match">0%</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Total Applications Disbursed</td>
+                            <td>Number</td>
+                            <td>Daily</td>
+                            <td>100325</td>
+                            <td>100325</td>
+                            <td class="match">0</td>
+                            <td class="match">0%</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Amount Disbursed</td>
+                            <td>Rs. Lakhs</td>
+                            <td>Daily</td>
+                            <td>4519422.95</td>
+                            <td>4519422.95</td>
+                            <td class="match">0.00</td>
+                            <td class="match">0%</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Atal Pension Yojna</td>
+                            <td>Registered Subscribers</td>
+                            <td>Number</td>
+                            <td>Monthly</td>
+                            <td>76625766</td>
+                            <td>76625766</td>
+                            <td class="match">0</td>
+                            <td class="match">0%</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td rowspan="2">Ayushman Bharat</td>
+                            <td>Operational Health & Wellness Centres</td>
+                            <td>Number</td>
+                            <td>Weekly</td>
+                            <td>177333</td>
+                            <td>177229</td>
+                            <td class="mismatch">104</td>
+                            <td class="mismatch">0.06%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <img src="nic-logo.png" alt="NIC Logo" class="footer-logo">
+            <p class="footer-text">
+                Prayas has been developed under the guidance of the Prime Minister’s Office with inputs from Ministries and
+                Departments.
+                The platform is designed and developed by the Data Analytics, Visualization, and Dashboard (DAVD) Division,
+                NIC,
+                and the Centre of Excellence for Data Analytics (CEDA), NICSI.
+            </p>
+            <img src="nicsi-logo.png" alt="NICSI Logo" class="footer-logo">
+        </div>
+    </footer>
+
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('show');
+        }
+    </script>
+
+
+</body>
+
+</html>
