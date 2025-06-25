@@ -49,7 +49,7 @@ body {
 .logo {
     font-size: 20px;
     font-weight: bold;
-    flex: 1 1 50%;
+    flex: 1 1 0%;
     text-align: left;
 }
 .menu {

@@ -51,6 +51,42 @@ namespace TreeViewProject
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl divgrdheader;
 
         /// <summary>
+        /// lbltotalScheme control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbltotalScheme;
+
+        /// <summary>
+        /// lbltotalkpi control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbltotalkpi;
+
+        /// <summary>
+        /// lblMatched control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblMatched;
+
+        /// <summary>
+        /// lblMisMatched control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblMisMatched;
+
+        /// <summary>
         /// imgEx control.
         /// </summary>
         /// <remarks>
@@ -67,6 +103,24 @@ namespace TreeViewProject
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ImageButton imgPdf;
+
+        /// <summary>
+        /// lnkbtnMatch control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkbtnMatch;
+
+        /// <summary>
+        /// lnkbtnMismatch control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkbtnMismatch;
 
         /// <summary>
         /// gvLedgerDetail control.

@@ -31,7 +31,7 @@ namespace TreeViewProject
         //DataRow drFinal;
         #endregion
 
-        private string connectionString = ConfigurationManager.AppSettings["MyConnectionString"];    //207
+        private string connectionString = ConfigurationManager.AppSettings["MyConnectionStringCEDA1"];    //207
         private string connectionStringCEDA = ConfigurationManager.AppSettings["MyConnectionStringCEDA"]; //199
 
         /// <summary>

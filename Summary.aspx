@@ -66,23 +66,38 @@
                 background-color: #6c757d;
                 cursor: default;
             }
+           .nowrap-header {
+               width: 120px;
+               white-space: nowrap;
+} 
+
     </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:ScriptManager ID="smParayas" runat="server"></asp:ScriptManager>
     <div class="container">
         <h2>
-            <asp:Label ID="lblh2" runat="server" Text="Data Comparison Summary All Critical KPI's"></asp:Label>
+            <asp:Label ID="lblh2" runat="server" Text="Data Comparison Sheet For Critical KPIs"></asp:Label>
         </h2>
         <asp:UpdatePanel ID="updatepnlsummary" UpdateMode="Always" runat="server">
             <ContentTemplate>
                 <div class="headergrid" id="divgrdheader" runat="server" visible="true">
-                <div class="logo"></div>
+              <%--  <div class="logo"></div>--%>
                 <div class="menugrid">
+                    <asp:Label CssClass="label-bold-blue" ID="lbltotalScheme" runat="server" ></asp:Label>
+                    <asp:Label CssClass="label-bold-blue" ID="lbltotalkpi" runat="server" ></asp:Label>
+                    <asp:Label CssClass="label-bold-blue" ID="lblMatched" runat="server" ></asp:Label>
+                    <asp:Label CssClass="label-bold-blue" ID="lblMisMatched" runat="server" ></asp:Label>
+                </div>  
+                <div class="item_right">
                     <asp:ImageButton ID="imgEx" class="header_logo" ImageUrl="~/Data Sanity Platform_files/Excel.svg" runat="server" OnClick="imgEx_Click" />
                     <asp:ImageButton ID="imgPdf" class="header_logo" ImageUrl="~/Data Sanity Platform_files/PDF.svg" runat="server" OnClick="imgPdf_Click" />
-                    <img class="icon-btn" src="./Data Sanity Platform_files/Matched.svg" alt="Matched" /><span class="font_match">Matched</span>
-                    <img class="icon-btn" src="./Data Sanity Platform_files/Mis-Matched.svg" alt="Mis-Matched" /><span class="font_mismatch">Mis-Matched</span>
+                    <img class="icon-btn" src="./Data Sanity Platform_files/Matched.svg" alt="Matched" />
+                    <asp:LinkButton ID="lnkbtnMatch" runat="server" CssClass="font_match" ToolTip="Click for Matched Records"  Text="Matched" OnClick="lnkbtnMatch_Click"></asp:LinkButton>
+                    <%--<span class="font_match">Matched</span>--%>
+                    <img class="icon-btn" src="./Data Sanity Platform_files/Mis-Matched.svg" alt="Mis-Matched" />
+                    <%--<span class="font_mismatch">Mis-Matched</span>--%>
+                    <asp:LinkButton ID="lnkbtnMismatch" runat="server" CssClass="font_mismatch" ToolTip="Click for Mis-Match Records" Text="Mis-Matched" OnClick="lnkbtnMismatch_Click"></asp:LinkButton>
                 </div>
                 </div>
                 <div class="table-container">                 
@@ -94,7 +109,8 @@
                         <Columns>
                             <asp:TemplateField HeaderText="Sl.No." HeaderStyle-HorizontalAlign="Left">
                                 <ItemTemplate>
-                                    <%# Container.DataItemIndex + 1 %>
+                                     <asp:Label ID="lblslno" runat="server"
+                                     Text=' <%# Container.DataItemIndex + 1 %>'/>                                   
                                 </ItemTemplate>
                                 <HeaderStyle HorizontalAlign="Left" />
                             </asp:TemplateField>
@@ -107,10 +123,12 @@
                             <asp:BoundField HeaderText='Scheme Name' DataField="Project_Name_E" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
                             <asp:BoundField HeaderText='KPI Name' DataField="KPI_Name_E" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
 
-                            <asp:BoundField HeaderText='Unit Name' DataField="Unit_Name" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
-                            <asp:BoundField HeaderText='Date Freq.' DataField="Data_Freq" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
-                            <asp:BoundField HeaderText='' DataField="outvalue" HtmlEncode="true" ItemStyle-HorizontalAlign="Right" />
-                            <asp:BoundField HeaderText='' DataField="CedaValue" HtmlEncode="true" ItemStyle-HorizontalAlign="Right" />
+                            <asp:BoundField HeaderText='Unit' DataField="Unit_Name" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />
+                            <asp:BoundField HeaderText='Date Freq.' DataField="Data_Freq" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />    
+                            <asp:BoundField HeaderText='Darpan  Date ' DataField="CedaDateP" HeaderStyle-CssClass="nowrap-header" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />    
+                            <asp:BoundField HeaderText='Darpan Data (A)' DataField="outvalue" HtmlEncode="true" ItemStyle-HorizontalAlign="Right" />
+                            <asp:BoundField HeaderText='Prayas  Date ' DataField="PrayasDateP" HeaderStyle-CssClass="nowrap-header" ItemStyle-HorizontalAlign="Left" HtmlEncode="true" />    
+                            <asp:BoundField HeaderText='Prayas Data /Tableau View (B)' DataField="CedaValue" HtmlEncode="true" ItemStyle-HorizontalAlign="Right" />
 
                             <%--   <asp:TemplateField HeaderText='Prayas Value(A)'>
                                 <ItemTemplate>
@@ -122,14 +140,14 @@
                                 <asp:Label ID="lblDepDashValue" runat="server" Text=''> </asp:Label>
                                 </ItemTemplate>
                                 </asp:TemplateField>--%>
-                            <asp:TemplateField HeaderText='Difference (A-B)'>
+                            <asp:TemplateField HeaderText='Diff. (A-B)'>
                                 <ItemTemplate>
                                     <asp:Label ID="lblDiffofBandA" runat="server"
                                         Text='<%# Eval("Diffvalue") %>'>
                                     </asp:Label>
                                 </ItemTemplate>
                             </asp:TemplateField>
-                            <asp:TemplateField HeaderText='Difference Percentage (%)'>
+                            <asp:TemplateField HeaderText='Diff. Percentage (%)'>
                                 <ItemTemplate>
                                     <asp:Label ID="lblDiffpercntofBandA" runat="server"
                                         Text='<%# Eval("Diffpercnt") %>'>
