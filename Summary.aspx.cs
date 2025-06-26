@@ -298,7 +298,7 @@ namespace TreeViewProject
                       );
 
             lbltotalScheme.Text = "Covered Schemes: " + Convert.ToString(Schemecnt);
-            lbltotalkpi.Text = "Covered Kpi's: " + Convert.ToString(Kpicnt);
+            lbltotalkpi.Text = "Covered KPIs: " + Convert.ToString(Kpicnt);
             lblMatched.Text = "Total Matched: " + Convert.ToString(totalmatch);
             lblMisMatched.Text = "Total MisMatched: " + Convert.ToString(totalmismatch);
         }
@@ -574,23 +574,37 @@ namespace TreeViewProject
         {
             Response.Clear();
             Response.Buffer = true;
-            Response.AddHeader("content-disposition", "attachment;filename=GridViewExport.xls");
+            Response.AddHeader("content-disposition", "attachment;filename=DataComparisonSheetForCriticalKPIs.xls");
             Response.Charset = "";
             Response.ContentType = "application/vnd.ms-excel";
 
             using (StringWriter sw = new StringWriter())
             {
-                HtmlTextWriter hw = new HtmlTextWriter(sw);
 
-                // To Export all pages
-                gvLedgerDetail.AllowPaging = false;
-                // Optionally rebind the data here
+                using (HtmlTextWriter hw = new HtmlTextWriter(sw))
+                {
+                    // === Custom Header ===
+                    hw.Write("<table><tr><td colspan='" + gvLedgerDetail.Columns.Count + "' style='font-size:18px; font-weight:bold; text-align:center;'>");
+                    hw.Write("Data Comparison Sheet For Critical KPIs");
+                    hw.Write("</td></tr>");
 
-                gvLedgerDetail.RenderControl(hw);
+                    // === Current Date ===
+                    hw.Write("<tr><td colspan='" + gvLedgerDetail.Columns.Count + "' style='font-size:12px; text-align:right;'>");
+                    hw.Write("Date: " + DateTime.Now.ToString("dd-MMM-yyyy"));
+                    hw.Write("</td></tr></table><br/>");
 
-                Response.Output.Write(sw.ToString());
-                Response.Flush();
-                Response.End();
+
+
+                    // To Export all pages
+                    gvLedgerDetail.AllowPaging = false;
+                    // Optionally rebind the data here
+
+                    gvLedgerDetail.RenderControl(hw);
+
+                    Response.Output.Write(sw.ToString());
+                    Response.Flush();
+                    Response.End();
+                }
             }
         }
 
