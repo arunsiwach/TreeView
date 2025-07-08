@@ -16,7 +16,7 @@
         </header>
 
         <div class="header">
-            <div class="logo">Data Pipeline b/w Data Collection Portal and Prayas Data</div>
+            <div class="logo">Data Comparison B/W DARPAN & Prayas Portal</div>
             <%--<button class="mobile-toggle" onclick="toggleMenu()">☰</button>--%>
             <div class="menu" id="mobileMenu">
                 <img class="icon-btn" src="./Data Sanity Platform_files/Home.svg" alt="Home">

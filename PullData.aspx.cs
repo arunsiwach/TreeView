@@ -30,12 +30,14 @@ namespace TreeViewProject
         {
             try
             {
-                if (txtdate.Text.Trim().Length == 0)
-                {
-                    string sc = "alert('Please select Date');";
-                    //ScriptManager.RegisterStartupScript(updatepnl, updatepnl.GetType(), "alertScript", sc, true);
-                    return;
-                }
+                /*
+                    if (txtdate.Text.Trim().Length == 0)
+                    {
+                        string sc = "alert('Please select Date');";
+                        //ScriptManager.RegisterStartupScript(updatepnl, updatepnl.GetType(), "alertScript", sc, true);
+                        return;
+                    }
+                */
 
                 FillData();
             }

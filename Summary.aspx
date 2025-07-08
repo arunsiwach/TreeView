@@ -71,23 +71,36 @@
                white-space: nowrap;
 } 
 
+            .font_black
+            {
+            color:black;             
+            }
+            .highlighted-link {
+            background-color: lightgrey;             
+            font-weight: bold;
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid #999;
+            text-decoration: none !important;
+            display: inline-block;
+            transition: all 0.2s ease;
+            }
+              
     </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:ScriptManager ID="smParayas" runat="server"></asp:ScriptManager>
     <div class="container">
         <h2>
-            <asp:Label ID="lblh2" runat="server" Text="Data Comparison Sheet For Critical KPIs"></asp:Label>
+<%--            Data Comparison Sheet For Critical KPIs--%>            
+            <asp:Label ID="lblh2" runat="server" CssClass=font_black Text="Data Comparison Sheet For Critical KPIs"></asp:Label>
         </h2>
         <asp:UpdatePanel ID="updatepnlsummary" UpdateMode="Always" runat="server">
             <ContentTemplate>
                 <div class="headergrid" id="divgrdheader" runat="server" visible="true">
               <%--  <div class="logo"></div>--%>
                 <div class="menugrid">
-                    <asp:Label CssClass="label-bold-blue" ID="lbltotalScheme" runat="server" ></asp:Label>
-                    <asp:Label CssClass="label-bold-blue" ID="lbltotalkpi" runat="server" ></asp:Label>
-                    <asp:Label CssClass="label-bold-blue" ID="lblMatched" runat="server" ></asp:Label>
-                    <asp:Label CssClass="label-bold-blue" ID="lblMisMatched" runat="server" ></asp:Label>
+                    <asp:Label CssClass="label-bold-blue" ID="lblstringbuilder" runat="server" ></asp:Label>               
                 </div>  
                 <div class="item_right">
                     <asp:ImageButton ID="imgEx" class="header_logo" ImageUrl="~/Data Sanity Platform_files/Excel.svg" runat="server" OnClick="imgEx_Click" />
@@ -97,7 +110,10 @@
                     <%--<span class="font_match">Matched</span>--%>
                     <img class="icon-btn" src="./Data Sanity Platform_files/Mis-Matched.svg" alt="Mis-Matched" />
                     <%--<span class="font_mismatch">Mis-Matched</span>--%>
-                    <asp:LinkButton ID="lnkbtnMismatch" runat="server" CssClass="font_mismatch" ToolTip="Click for Mis-Match Records" Text="Mis-Matched" OnClick="lnkbtnMismatch_Click"></asp:LinkButton>
+                    <asp:LinkButton ID="lnkbtnMismatch" runat="server" CssClass="font_mismatch" ToolTip="Click for Mis-Match Records" Text="Mis-Matched" OnClick="lnkbtnMismatch_Click"></asp:LinkButton>                    
+                    <asp:LinkButton ID="lnkbtndtmismatch" runat="server" CssClass="font_mismatch" ToolTip="Click for Date Mis-Match Records" Text="Mis-Matched (Date)" OnClick="lnkbtndtmismatch_Click" ></asp:LinkButton>
+                    <asp:LinkButton ID="lnkbtnwodtmismatch" runat="server" CssClass="font_mismatch" ToolTip="Click for figure Mis-Match Records" Text="Mis-Matched (Figure)" OnClick="lnkbtnwodtmismatch_Click" ></asp:LinkButton>
+                    <asp:LinkButton ID="lnkbtnAll" runat="server" CssClass="font_match" ToolTip="Click for All Records" Text="All Records" OnClick="lnkbtnAll_Click" Visible="false"></asp:LinkButton>
                 </div>
                 </div>
                 <div class="table-container">                 
@@ -107,13 +123,7 @@
                         OnPageIndexChanging="gvLedgerDetail_PageIndexChanging" FooterStyle-BorderWidth="0px"
                         OnPreRender="gvLedgerDetail_PreRender">
                         <Columns>
-                            <asp:TemplateField HeaderText="Sl.No." HeaderStyle-HorizontalAlign="Left">
-                                <ItemTemplate>
-                                     <asp:Label ID="lblslno" runat="server"
-                                     Text=' <%# Container.DataItemIndex + 1 %>'/>                                   
-                                </ItemTemplate>
-                                <HeaderStyle HorizontalAlign="Left" />
-                            </asp:TemplateField>
+                            <asp:BoundField HeaderText="Sl.No" />                             
                             <%-- <asp:BoundField HeaderText='State Code' DataField="StateCode" HtmlEncode="true" />
                                 <asp:BoundField HeaderText='Sector Name' DataField="SectorName" HtmlEncode="true" />
                                 <asp:BoundField HeaderText='Department Name' DataField="DepartmentName" HtmlEncode="true" />--%>
@@ -181,5 +191,41 @@
                 <asp:PostBackTrigger ControlID="imgPdf" />
               </Triggers>
         </asp:UpdatePanel>
-    </div>
+    </div>     
+  <script type="text/javascript">
+      var lastClickedId = null;
+
+      document.addEventListener("DOMContentLoaded", function () {
+          attachLinkButtonHandlers();
+      });
+
+      Sys.Application.add_load(function () {
+          attachLinkButtonHandlers();
+
+          if (lastClickedId) {
+            // Remove style from all link buttons
+            var links = document.querySelectorAll("#<%= updatepnlsummary.ClientID %> a");
+            links.forEach(function (link) {
+                link.classList.remove("highlighted-link");
+            });
+
+            // Add style to the last clicked button
+            var clicked = document.getElementById(lastClickedId);
+            if (clicked) {
+                clicked.classList.add("highlighted-link");
+            }
+        }
+    });
+
+    function attachLinkButtonHandlers() {
+        var links = document.querySelectorAll("#<%= updatepnlsummary.ClientID %> a");
+          links.forEach(function (link) {
+              link.addEventListener("click", function () {
+                  lastClickedId = this.id;
+              });
+          });
+      }
+  </script>
+
+
 </asp:Content>

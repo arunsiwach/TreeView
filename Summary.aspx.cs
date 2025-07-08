@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.DynamicData;
@@ -15,6 +16,7 @@ using System.Web.UI.WebControls;
 using iTextSharp.text;
 using iTextSharp.text.html.simpleparser;
 using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.parser;
 
 namespace TreeViewProject
 {
@@ -30,8 +32,9 @@ namespace TreeViewProject
             {
                 //DataTable dt1= getSummaryFromLocal();
                 DataTable dt1 = getSummaryFromSqlite();
-                BindDataForGrid(dt1);
-
+                Keywrd = "0";
+                BindDataForGrid(dt1,true);
+                lnkbtnAll.Visible = false;
             }
         }
 
@@ -82,11 +85,11 @@ namespace TreeViewProject
             }            
         }
 
-        protected void gvLedgerDetail_PreRender(object sender, EventArgs e)
+        protected void gvLedgerDetail_PreRender_OLD(object sender, EventArgs e)
         {
             // Merge Column 0 (primary column), and conditionally Columns 1 & 2
             int primaryCol = 1; // Department
-            int[] dependentCols = { 5, 7 }; // Team, Role
+            int[] dependentCols = {0, 5, 7 }; // Team, Role
 
             for (int rowIndex = gvLedgerDetail.Rows.Count - 2; rowIndex >= 0; rowIndex--)
             {
@@ -127,65 +130,75 @@ namespace TreeViewProject
             }
         }
 
+        protected void gvLedgerDetail_PreRender(object sender, EventArgs e)
+        {
+            int serialCol = 0;      // S.No. column
+            int groupCol = 1;       // Grouping column (e.g., Department)
+            int[] dependentCols = {5, 7 }; // Optional dependent columns (e.g., Team, Role)
 
-        //protected void gvLedgerDetail_PreRender(object sender, EventArgs e)
-        //{
-        //    // Specify the column indexes you want to merge
-        //    int[] mergeColumns = {1,5,7 }; // e.g., Column 0 and Column 1
+            // ---------- First Pass: Assign serial numbers (forward loop) ----------
+            int serialNo = 1;
+            for (int i = 0; i < gvLedgerDetail.Rows.Count; i++)
+            {
+                GridViewRow currentRow = gvLedgerDetail.Rows[i];
 
-        //    for (int rowIndex = gvLedgerDetail.Rows.Count - 2; rowIndex >= 0; rowIndex--)
-        //    {
-        //        GridViewRow currentRow = gvLedgerDetail.Rows[rowIndex];
-        //        GridViewRow nextRow = gvLedgerDetail.Rows[rowIndex + 1];
+                if (i == 0 || currentRow.Cells[groupCol].Text != gvLedgerDetail.Rows[i - 1].Cells[groupCol].Text)
+                {
+                    currentRow.Cells[serialCol].Text = serialNo.ToString();
+                    serialNo++;
+                }
+                else
+                {
+                    currentRow.Cells[serialCol].Text = ""; // will be hidden later
+                }
+            }
 
-        //        foreach (int colIndex in mergeColumns)
-        //        {
-        //            string currentText = currentRow.Cells[colIndex].Text.Trim();
-        //            string nextText = nextRow.Cells[colIndex].Text.Trim();
+            // ---------- Second Pass: Merge cells (reverse loop) ----------
+            for (int rowIndex = gvLedgerDetail.Rows.Count - 2; rowIndex >= 0; rowIndex--)
+            {
+                GridViewRow currentRow = gvLedgerDetail.Rows[rowIndex];
+                GridViewRow nextRow = gvLedgerDetail.Rows[rowIndex + 1];
 
-        //            if (currentText == nextText)
-        //            {
-        //                if (nextRow.Cells[colIndex].RowSpan < 2)
-        //                {
-        //                    currentRow.Cells[colIndex].RowSpan = 2;
-        //                }
-        //                else
-        //                {
-        //                    currentRow.Cells[colIndex].RowSpan = nextRow.Cells[colIndex].RowSpan + 1;
-        //                }
+                string currGroupValue = currentRow.Cells[groupCol].Text.Trim();
+                string nextGroupValue = nextRow.Cells[groupCol].Text.Trim();
 
-        //                nextRow.Cells[colIndex].Visible = false;
-        //            }
-        //        }
-        //    }
+                if (currGroupValue == nextGroupValue)
+                {
+                    // Merge group column
+                    if (nextRow.Cells[groupCol].RowSpan < 2)
+                        currentRow.Cells[groupCol].RowSpan = 2;
+                    else
+                        currentRow.Cells[groupCol].RowSpan = nextRow.Cells[groupCol].RowSpan + 1;
 
-        //    /*
-        //    int colIndex1 =1; // Change this to the index of the column you want to merge (0-based)
-        //    int colIndex7 = 7; // Change this to the index of the column you want to merge (0-based)
-        //    for (int rowIndex = gvLedgerDetail.Rows.Count - 2; rowIndex >= 0; rowIndex--)
-        //    {
-        //        GridViewRow currentRow = gvLedgerDetail.Rows[rowIndex];
-        //        GridViewRow nextRow = gvLedgerDetail.Rows[rowIndex + 1];
+                    nextRow.Cells[groupCol].Visible = false;
 
-        //        string currentText = currentRow.Cells[colIndex1].Text.Trim();
-        //        string nextText = nextRow.Cells[colIndex1].Text.Trim();
+                    // Merge serial number column along with group
+                    if (nextRow.Cells[serialCol].RowSpan < 2)
+                        currentRow.Cells[serialCol].RowSpan = 2;
+                    else
+                        currentRow.Cells[serialCol].RowSpan = nextRow.Cells[serialCol].RowSpan + 1;
 
-        //        if (currentText == nextText)
-        //        {
-        //            if (nextRow.Cells[colIndex1].RowSpan < 2)
-        //            {
-        //                currentRow.Cells[colIndex1].RowSpan = 2;
-        //            }
-        //            else
-        //            {
-        //                currentRow.Cells[colIndex1].RowSpan = nextRow.Cells[colIndex1].RowSpan + 1;
-        //            }
+                    nextRow.Cells[serialCol].Visible = false;
 
-        //            nextRow.Cells[colIndex1].Visible = false;
-        //        }
-        //    }
-        //    */
-        //}
+                    // Merge dependent columns if values match
+                    foreach (int col in dependentCols)
+                    {
+                        string currVal = currentRow.Cells[col].Text.Trim();
+                        string nextVal = nextRow.Cells[col].Text.Trim();
+
+                        if (currVal == nextVal)
+                        {
+                            if (nextRow.Cells[col].RowSpan < 2)
+                                currentRow.Cells[col].RowSpan = 2;
+                            else
+                                currentRow.Cells[col].RowSpan = nextRow.Cells[col].RowSpan + 1;
+
+                            nextRow.Cells[col].Visible = false;
+                        }
+                    }
+                }
+            }
+        }
 
         protected void gvLedgerDetail_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
@@ -197,14 +210,17 @@ namespace TreeViewProject
         /// <summary>
         /// 
         /// </summary>
-        protected void BindDataForGrid(DataTable dt1)
+        protected void BindDataForGrid(DataTable dt1, bool isShowheader)
         {
             //DataTable dt1= getSummaryFromLocal();
             //DataTable dt1 = getSummaryFromSqlite();
             
             if (dt1.Rows.Count > 0 )
             {
-                DisplayStatsonHeader(dt1);
+                if (isShowheader)
+                {
+                    DisplayStatsonHeader(dt1);
+                }
                 dt1.Columns.Add("Diffvalue");
                 dt1.Columns.Add("Diffpercnt");
                 dt1.Columns.Add("PrayasDateP");                
@@ -266,22 +282,21 @@ namespace TreeViewProject
 
         private void DisplayStatsonHeader(DataTable dt1)
         {
+            StringBuilder sb = new StringBuilder();
+
             var rows = dt1.AsEnumerable();
 
             //int Schemecnt = 39;
-            int Schemecnt = rows.AsEnumerable()
+            int TotalSchemecnt = rows.AsEnumerable()
                 .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != "")
                 .Select(row => row.Field<string>("Project_Name_E"))
                 .Distinct()
                 .Count();
 
-            //int Schemecnt = rows.AsEnumerable()
-            //         .Count(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E") != "");
-
-            int Kpicnt = rows.AsEnumerable()
+            int TotalKpicnt = rows.AsEnumerable()
                      .Count(row => !row.IsNull("KPI_Name_E") && row.Field<string>("KPI_Name_E") != "");
 
-            int totalmatch = rows.AsEnumerable()
+            int totalKPImatch = rows.AsEnumerable()
                      .Count(row =>
                         !row.IsNull("outvalue") &&
                         !row.IsNull("CedaValue") &&
@@ -289,7 +304,7 @@ namespace TreeViewProject
                         //row.Field<decimal>("outvalue") - row.Field<decimal>("CedaValue") == 0
                      );
 
-            int totalmismatch = rows.AsEnumerable()
+            int totalKPImismatch = rows.AsEnumerable()
                       .Count(row =>
                          !row.IsNull("outvalue") &&
                          !row.IsNull("CedaValue") &&
@@ -297,10 +312,81 @@ namespace TreeViewProject
                       //row.Field<decimal>("outvalue") - row.Field<decimal>("CedaValue") != 0
                       );
 
+            //int SchemecntMistach = rows.AsEnumerable()
+            //   .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != ""
+            //        && !row.IsNull("outvalue") && !row.IsNull("CedaValue")&& 
+            //        Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"])
+            //    )
+            //   .Select(row => row.Field<string>("Project_Name_E"))
+            //   .Distinct()
+            //   .Count();
+
+            int SchemecntMistach = rows.AsEnumerable()
+            .Where(row =>
+                !row.IsNull("Project_Name_E") &&
+                !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
+                !row.IsNull("outvalue") &&
+                !row.IsNull("CedaValue")
+            )
+            .GroupBy(row => row.Field<string>("Project_Name_E").Trim())
+            .Count(group =>
+                group.Any(row =>
+                    Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"])
+                )
+            );
+
+
+            int SchemecntMatch = rows.AsEnumerable()
+            .Where(row =>
+                !row.IsNull("Project_Name_E") &&
+                !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
+                !row.IsNull("outvalue") &&
+                !row.IsNull("CedaValue")
+            )
+            .GroupBy(row => row.Field<string>("Project_Name_E").Trim())
+            .Count(group =>
+                group.All(row =>
+                    Convert.ToDecimal(row["outvalue"]) == Convert.ToDecimal(row["CedaValue"])
+                )
+            );
+
+
+       
+
+            //int SchemecntMatch = rows.AsEnumerable()
+            // .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != ""
+            //      && !row.IsNull("outvalue") && !row.IsNull("CedaValue") &&
+            //      Convert.ToDecimal(row["outvalue"]) == Convert.ToDecimal(row["CedaValue"])
+            //  )
+            // .Select(row => row.Field<string>("Project_Name_E").Trim())  
+            // .Distinct()
+            // .Count();
+
+            sb.AppendLine(Convert.ToString(TotalSchemecnt) + " Schemes having " + Convert.ToString(TotalKpicnt) + " kpis have been Compared.  ");
+            sb.AppendLine(" A. " + Convert.ToString(SchemecntMatch) + " Schemes and "+ Convert.ToString(totalKPImatch) + " kpis are Matching");
+            sb.AppendLine("B. " + Convert.ToString(SchemecntMistach) + " Schemes and " + Convert.ToString(totalKPImismatch) + " kpis are not Matching");
+            
+            //lblh2.Text = sb.ToString().Replace(Environment.NewLine, "<br />");
+
+            lblh2.Text = sb.ToString();
+
+            /*
+            
+            sb.Append("Statement : "+ Convert.ToString(Schemecnt)+ " Schemes having");
+            sb.AppendLine(Convert.ToString(Kpicnt)+" KPIs have been compared, out of which " + Convert.ToString(SchemecntMistach)+ " Schemes and ");
+            sb.AppendLine(Convert.ToString(totalmismatch) + " KPIs are not matching" );
+            
             lbltotalScheme.Text = "Covered Schemes: " + Convert.ToString(Schemecnt);
             lbltotalkpi.Text = "Covered KPIs: " + Convert.ToString(Kpicnt);
             lblMatched.Text = "Total Matched: " + Convert.ToString(totalmatch);
             lblMisMatched.Text = "Total MisMatched: " + Convert.ToString(totalmismatch);
+            < asp:Label CssClass = "label-bold-blue" ID = "lbltotalScheme" runat = "server" ></ asp:Label >
+            < asp:Label CssClass = "label-bold-blue" ID = "lbltotalkpi" runat = "server" ></ asp:Label >
+            < asp:Label CssClass = "label-bold-blue" ID = "lblMatched" runat = "server" ></ asp:Label >
+            < asp:Label CssClass = "label-bold-blue" ID = "lblMisMatched" runat = "server" ></ asp:Label >
+
+            */
+
         }
 
         private DataTable getSummaryFromSqlite()
@@ -375,6 +461,29 @@ namespace TreeViewProject
             }
         }
 
+        protected string Keywrd
+        {
+            set
+            {
+                if (value != null)
+                {
+                    ViewState["Keywrd"] = value;
+                }
+            }
+            get
+            {
+                if (Convert.ToString(ViewState["Keywrd"]) != "")
+                {
+                    return Convert.ToString(ViewState["Keywrd"]);
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
+
+
         protected void imgEx_Click(object sender, ImageClickEventArgs e)
         {
             ExportGridToExcel();
@@ -420,7 +529,29 @@ namespace TreeViewProject
             pdfDoc.Open();
 
             // === Custom Header ===
-            Paragraph title = new Paragraph("Data Comparison Sheet For Critical KPIs", FontFactory.GetFont("Arial", 14, Font.BOLD));
+            string headingp = string.Empty;
+            // === Custom Header ===
+            switch (Keywrd)
+            {
+                case "0":
+                    headingp = "Data Comparison Sheet ( All Schemes )";
+                    break;
+                case "1":
+                    headingp = "Data Comparison Sheet ( Matched )";
+                    break;
+                case "2":
+                    headingp = "Data Comparison Sheet ( UnMatched )";
+                    break;
+                case "3":
+                    headingp = "Data Comparison Sheet ( UnMatched )";
+                    break;
+                case "4":
+                    headingp = "Data Comparison Sheet ( UnMatched )";
+                    break;
+                default:
+                    break;
+            }
+            Paragraph title = new Paragraph(headingp, FontFactory.GetFont("Arial", 14, Font.BOLD));
             title.Alignment = Element.ALIGN_CENTER;
             pdfDoc.Add(title);
 
@@ -548,9 +679,30 @@ namespace TreeViewProject
                     Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
                     PdfWriter writer = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
                     pdfDoc.Open();
-
+                    string headingp = string.Empty;
                     // === Custom Header ===
-                    Paragraph header = new Paragraph("Data Comparison Sheet For Critical KPIs", new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD));
+                    switch(Keywrd)
+                    {
+                        case "0":
+                            headingp = "Data Comparison Sheet ( All Schemes )";
+                            break;
+                        case "1":
+                            headingp = "Data Comparison Sheet ( Matched )";
+                            break;
+                        case "2":
+                            headingp = "Data Comparison Sheet ( UnMatched )";
+                            break;
+                        case "3":
+                            headingp = "Data Comparison Sheet ( UnMatched )";
+                            break;
+                        case "4":                        
+                            headingp = "Data Comparison Sheet ( UnMatched )";
+                            break;
+                        default:
+                            break;
+                    }
+                        
+                    Paragraph header = new Paragraph(headingp, new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD));
                     header.Alignment = Element.ALIGN_CENTER;
                     pdfDoc.Add(header);
 
@@ -584,8 +736,32 @@ namespace TreeViewProject
                 using (HtmlTextWriter hw = new HtmlTextWriter(sw))
                 {
                     // === Custom Header ===
+                    string headingp = string.Empty;
+                    // === Custom Header ===
+                    switch (Keywrd)
+                    {
+                        case "0":
+                            headingp = "Data Comparison Sheet ( All Schemes )";
+                            break;
+                        case "1":
+                            headingp = "Data Comparison Sheet ( Matched )";
+                            break;
+                        case "2":
+                            headingp = "Data Comparison Sheet ( UnMatched )";
+                            break;
+                        case "3":
+                            headingp = "Data Comparison Sheet ( UnMatched )";
+                            break;
+                        case "4":
+                            headingp = "Data Comparison Sheet ( UnMatched )";
+                            break;
+                        default:
+                            break;
+                    }
+
+
                     hw.Write("<table><tr><td colspan='" + gvLedgerDetail.Columns.Count + "' style='font-size:18px; font-weight:bold; text-align:center;'>");
-                    hw.Write("Data Comparison Sheet For Critical KPIs");
+                    hw.Write(headingp);
                     hw.Write("</td></tr>");
 
                     // === Current Date ===
@@ -615,48 +791,175 @@ namespace TreeViewProject
 
         protected void lnkbtnMatch_Click(object sender, EventArgs e)
         {
-            FilterRecord(true);
+            try
+            {
+                FilterRecord("1");
+                Keywrd = "1";
+                lnkbtnAll.Visible = true;
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         protected void lnkbtnMismatch_Click(object sender, EventArgs e)
         {
-            FilterRecord(false);
+            try
+            {
+                FilterRecord("2");
+                Keywrd = "2";
+                lnkbtnAll.Visible = true;
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
-        private void FilterRecord(bool isMatch)
+        protected void lnkbtndtmismatch_Click(object sender, EventArgs e)
         {
-            DataTable dtrecords = getSummaryFromSqlite();
-            DataTable dtfilter = dtrecords.Clone();  // Copy schema
-
-
-            if (isMatch)
+            try { 
+            FilterRecord("4");
+            Keywrd = "4";   
+            lnkbtnAll.Visible = true;
+            }
+            catch (Exception ex)
             {
-                var rows = dtrecords.AsEnumerable().Where(row =>
-                          !row.IsNull("outvalue") &&
-                          !row.IsNull("CedaValue") &&
+
+            }
+        }
+
+        protected void lnkbtnwodtmismatch_Click(object sender, EventArgs e)
+        {
+            try { 
+            FilterRecord("3");
+            Keywrd = "3";
+            lnkbtnAll.Visible = true;
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+        
+        protected void lnkbtnAll_Click(object sender, EventArgs e)
+        {
+            try { 
+            DataTable dt1 = getSummaryFromSqlite();
+            Keywrd = "0";
+            BindDataForGrid(dt1, true);
+            lnkbtnAll.Visible = false;
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+      
+        private void FilterRecord(string keywrd)
+        {
+
+            DataTable dtrecords = getSummaryFromSqlite();         
+            DataTable dtfilter = dtrecords.Clone();  // Copy schema            
+
+            if (keywrd == "1") //Match
+            {
+                //var rows = dtrecords.AsEnumerable().Where(row =>
+                //          !row.IsNull("outvalue") &&
+                //          !row.IsNull("CedaValue") &&
+                //          Convert.ToDecimal(row["outvalue"]) == Convert.ToDecimal(row["CedaValue"])
+                //       );
+
+                var rows1 = dtrecords.AsEnumerable()
+                  .Where(row =>
+                      !row.IsNull("Project_Name_E") &&
+                      !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
+                      !row.IsNull("outvalue") &&
+                      !row.IsNull("CedaValue")
+                  )
+                  .GroupBy(row => row.Field<string>("Project_Name_E").Trim())
+                  .Where(group =>
+                      group.All(row =>
                           Convert.ToDecimal(row["outvalue"]) == Convert.ToDecimal(row["CedaValue"])
-                       );
+                      )
+                  ).SelectMany(group => group);
 
-                foreach (var row in rows)
+                foreach (var row in rows1)
                 {
                     dtfilter.ImportRow(row);
                 }
             }
-            else
+            else if (keywrd == "2") //misMatch regardeless of date and data
             {
-               var rows = dtrecords.AsEnumerable().Where(row =>
-                       !row.IsNull("outvalue") &&
-                       !row.IsNull("CedaValue") &&
-                       Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"])
-                    );
+                //var rows = dtrecords.AsEnumerable().Where(row =>
+                //        !row.IsNull("outvalue") &&
+                //        !row.IsNull("CedaValue") &&
+                //        Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"])
+                //     );
 
-                foreach (var row in rows)
+                var rows1 = dtrecords.AsEnumerable()
+               .Where(row =>
+                   !row.IsNull("Project_Name_E") &&
+                   !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
+                   !row.IsNull("outvalue") &&
+                   !row.IsNull("CedaValue")
+               ).GroupBy(row => row.Field<string>("Project_Name_E").Trim())
+               .Where(group =>
+                   group.Any(row =>
+                       Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"])
+                   )
+               ).SelectMany(group => group);
+
+                foreach (var row in rows1)
                 {
                     dtfilter.ImportRow(row);
                 }
             }
-            
-            BindDataForGrid(dtfilter);
+            else if (keywrd == "3")//Mismatch but date are same 
+            {
+
+                var rows1 = dtrecords.AsEnumerable().Where(row =>
+                   !row.IsNull("Project_Name_E") &&
+                   !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
+                   !row.IsNull("outvalue") &&
+                   !row.IsNull("CedaValue")
+               ).GroupBy(row => row.Field<string>("Project_Name_E").Trim())
+               .Where(group =>
+                   group.Any(row =>
+                       Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"]) &&
+                       Convert.ToDateTime(row["PrayasDate"]) == Convert.ToDateTime(row["CedaDate"])
+                   )
+               ).SelectMany(group => group);
+
+                foreach (var row in rows1)
+                {
+                    dtfilter.ImportRow(row);
+                }
+            }
+            else if (keywrd == "4")//Mismatch with different date
+            {
+
+                var rows1 = dtrecords.AsEnumerable().Where(row =>
+                   !row.IsNull("Project_Name_E") &&
+                   !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
+                   !row.IsNull("outvalue") &&
+                   !row.IsNull("CedaValue")
+               ).GroupBy(row => row.Field<string>("Project_Name_E").Trim())
+               .Where(group =>
+                   group.Any(row =>
+                       Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"]) &&
+                       Convert.ToDateTime(row["PrayasDate"]) != Convert.ToDateTime(row["CedaDate"])
+                   )
+               ).SelectMany(group => group);
+
+                foreach (var row in rows1)
+                {
+                    dtfilter.ImportRow(row);
+                }
+            }
+
+            BindDataForGrid(dtfilter, false);
 
         }
     }
