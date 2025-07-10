@@ -1,0 +1,670 @@
+----- Exception Occurred -----
+Date: 2025-07-09 16:35:52
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Capacity Building](nolock)
+WHERE [date]=(Select max(date) from [Capacity Building](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:35:52
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
+from PM_SVANidhi
+WHERE [date]=(Select max(date) from PM_SVANidhi (nolock) where [date]<= @datevalue )--and project_code=100383)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END  
+and Actual_Flag='Current'  and Data_freq='Daily'
+group by project_code,project_name,[Date],[label],indicator
+--order by project_code,[label] -- Actual flag is current but value is like cumulative
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:35:52
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_value]) as national_value
+from [5G_BTS] (nolock)
+WHERE [date]=(Select max(date) from [5G_BTS]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:35:56
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [CAPEX_New](nolock)
+WHERE [date]=(Select max(date) from [CAPEX_New](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:35:56
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PM_Kisan_Mandhan_Scheme] (nolock)
+WHERE [date]=(Select max(date) from [PM_Kisan_Mandhan_Scheme]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:35:57
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Restoration of Land] (nolock)
+WHERE [date]=(Select max(date) from [Restoration of Land]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:35:58
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Watershed_Development_Component_PMKSY2] (nolock)
+WHERE [date]=(Select max(date) from [Watershed_Development_Component_PMKSY2]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:00
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Scholarship for Top Class ST Students] (nolock)
+WHERE [date]=(Select max(date) from [Scholarship for Top Class ST Students]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:03
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Samarth_Weekly (nolock)
+WHERE [date]=(Select max(date) from Samarth_Weekly  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:23
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([cumulative_value]) as national_value
+from [Ease_of_Doing_Business_updated](nolock)
+WHERE [date]=(Select max(date) from [Ease_of_Doing_Business_updated] (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+and project_code=100449
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:23
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
+from Swachh_Bharat_Mission_Grameen_New_Daily 
+WHERE [date]=(Select max(date) from Swachh_Bharat_Mission_Grameen_New_Daily (nolock) where [date]<= @datevalue )--and project_code=100383)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END  
+and data_freq='Daily'
+--and project_code=70032
+group by project_code,project_name,[label],indicator,[Date]
+--order by project_code,[label]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:23
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([cumulative_value]) as national_value
+from [ESI CORPORATION](nolock)
+WHERE [date]=(Select max(date) from [ESI CORPORATION](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:27
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_value]) as national_value
+from [Craftsmen_Training_Scheme_ITI] (nolock)
+WHERE [date]=(Select max(date) from [Craftsmen_Training_Scheme_ITI]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:29
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PM_Krishi_Sinchayee_Yojana] (nolock)
+WHERE [date]=(Select max(date) from [PM_Krishi_Sinchayee_Yojana]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:31
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from PLI_White_Goods (nolock)
+WHERE [date]=(Select max(date) from PLI_White_Goods  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+and project_code=100462
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:32
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([cumulative_value]) as national_value
+from [India Post Payment New_Daily](nolock)
+WHERE [date]=(Select max(date) from [India Post Payment New_Daily] (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:34
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [SARATHI Daily] (nolock)
+WHERE [date]=(Select max(date) from [SARATHI Daily]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:36
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from PLI_Automobile_and_Auto_Components_New (nolock)
+WHERE [date]=(Select max(date) from PLI_Automobile_and_Auto_Components_New  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:53
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([value]) as national_value
+from [Income Tax Department] (nolock)
+WHERE [date]=(Select max(date) from [Income Tax Department]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:57
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
+from startups_recognized_latest 
+WHERE [date]=(Select max(date) from startups_recognized_latest (nolock) where [date]<= @datevalue )--and project_code=100383)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+--and project_code=70032
+group by project_code,project_name,[label],indicator,[Date]
+--order by project_code,[label]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:36:58
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([value]) as national_value
+from [GPs_connected_currmonth] (nolock)
+WHERE [date]=(Select max(date) from [GPs_connected_currmonth]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:37:00
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from [Stand Up India] (nolock) where [date]<= @datevalue and project_code=70019),
+sum([value]) as national_value
+from [Stand Up India]
+WHERE [date]<=(Select max(date) from [Stand Up India] (nolock) where [date]<= @datevalue and project_code=70019)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code=70019
+group by project_code,project_name,[label],indicator
+--order by project_code,[label]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:37:02
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
+from PM_kisan_samman_nidhi_latest 
+WHERE [date]=(Select max(date) from PM_kisan_samman_nidhi_latest (nolock) where [date]<= @datevalue )--and project_code=70032)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+--and project_code=70032
+group by project_code,project_name,[label],indicator,[Date]
+--order by project_code,[label]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:37:03
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
+from PMJJBY 
+WHERE [date]=(Select max(date) from PMJJBY (nolock) where [date]<= @datevalue )--and project_code=70032)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+--and project_code=70032
+group by project_code,project_name,[label],indicator,[Date]
+--order by project_code,[label]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:37:08
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Solar_Roof_Top (nolock)
+WHERE [date]=(Select max(date) from Solar_Roof_Top  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:37:22
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
+from PMNDP_Programme_Daily 
+WHERE [date]=(Select max(date) from PMNDP_Programme_Daily (nolock) where [date]<= @datevalue )--and project_code=100383)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+and data_freq='Daily'
+--and project_code=70032
+group by project_code,project_name,[label],indicator,[Date]
+--order by project_code,[label]
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+--SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
+--from PM_Ujjwala_Phase1_Phase2 
+--WHERE [date]=(Select max(date) from PM_Ujjwala_Phase1_Phase2 (nolock) where [date]<= @datevalue and project_code=100383)  
+--AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+--and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+--and project_code=100383 and Data_freq='Daily'
+--group by project_code,project_name,[label],indicator,[Date]
+--order by project_code,[label]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:37:24
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+declare @value3 decimal(30,5),@value4 decimal(30,5)
+declare @tbltemp1 table (project_code int ,project_name varchar(250),[label] tinyint,indicator varchar(250),[date] date,national_value decimal(30,5))
+
+set @value3=(SELECT  sum([value]) as national_value
+from [Jan Aushadhi Pariyojana_Daily] (nolock)
+WHERE [date]<=(Select max(date) from [Jan Aushadhi Pariyojana_Daily] (nolock) where [date]<= @datevalue 
+and project_code=70054
+)  
+AND [label]=1 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70054 --and Data_freq='Daily'
+group by [label])
+
+set @value4=(SELECT  sum([value]) as national_value
+from [Jan Aushadhi Pariyojana_Daily] (nolock)
+WHERE [date]<=(Select max(date) from [Jan Aushadhi Pariyojana_Daily] (nolock) where [date]<= @datevalue 
+and project_code=70054
+)  
+AND [label]=2 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70054 --and Data_freq='Daily'
+group by [label])
+
+insert into @tbltemp1
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from [Jan Aushadhi Pariyojana_Daily] (nolock) where [date]<= @datevalue and project_code=100447),sum([value]) as national_value
+from [Jan Aushadhi Pariyojana_Daily] (nolock)
+WHERE [date]<=(Select max(date) from [Jan Aushadhi Pariyojana_Daily] (nolock) where [date]<= @datevalue and project_code=100447)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code=100447
+group by project_code,project_name,[label],indicator
+
+update @tbltemp1 set national_value=national_value + @value3
+where [label]=1
+update @tbltemp1 set national_value=national_value +@value4
+where [label]=3
+
+Select * from @tbltemp1
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:37:29
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from IR_PROJECTS (nolock)
+WHERE [date]=(Select max(date) from IR_PROJECTS  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:37:31
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
+from [Agriculture Infrastructure Fund](nolock)
+WHERE [date]=(Select max(date) from [Agriculture Infrastructure Fund](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and Data_freq IN('Daily')
+group by project_code,project_name,[label],indicator,[Date]
+--order by project_code,[label]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:37:32
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PO Small Savings Daily] (nolock)
+WHERE [date]=(Select max(date) from [PO Small Savings Daily]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:37:47
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Jan_Sikshan_Sansthan (nolock)
+WHERE [date]=(Select max(date) from Jan_Sikshan_Sansthan  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:37:52
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
+from [Nationwide Artificial Insemination Progr_update] 
+WHERE [date]=(Select max(date) from [Nationwide Artificial Insemination Progr_update] (nolock) where [date]<= @datevalue )--and project_code=70032)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+--and Data_freq IN('Daily')
+--and project_code=70032
+group by project_code,project_name,[label],indicator,[Date]
+--order by project_code,[label]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:37:59
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+declare @value5 decimal(30,5),@value6 decimal(30,5),@value7 decimal(30,5)
+declare @value8 decimal(30,5),@value9 decimal(30,5),@value10 decimal(30,5),@value11 decimal(30,5)
+declare @tbltemp2 table (project_code int ,project_name varchar(250),[label] tinyint,indicator varchar(250),[date] date,national_value decimal(30,5))
+
+set @value5=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=1 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+set @value6=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=2 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+set @value7=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=3 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+set @value8=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=4 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+
+
+set @value9=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=5 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+set @value10=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=6 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+set @value11=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=7
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+
+insert into @tbltemp2
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from PMKVY_RPL (nolock) 
+where [date]<= @datevalue and project_code=100406)
+,sum([value]) as national_value
+from PMKVY_RPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVY_RPL (nolock) where [date]<= @datevalue and project_code=100406)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code=100406
+--and Data_freq IN('Daily')
+group by project_code,project_name,[label],indicator
+--order by project_code,[label]
+
+update @tbltemp2 set national_value=national_value + @value5
+where [label]=1
+
+update @tbltemp2 set national_value=national_value + @value6
+where [label]=2
+
+update @tbltemp2 set national_value=national_value + @value7
+where [label]=3
+
+update @tbltemp2 set national_value=national_value + @value8
+where [label]=4
+update @tbltemp2 set national_value=national_value + @value9
+where [label]=5
+update @tbltemp2 set national_value=national_value + @value10
+where [label]=6
+update @tbltemp2 set national_value=national_value + @value11
+where [label]=7 
+
+Select * from @tbltemp2
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:38:01
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
+from AB_Health_Wellness_Centres (nolock)
+WHERE [date]=(Select max(date) from [AB_Health_Wellness_Centres](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and data_freq IN ('Weekly')
+group by project_code,project_name,[label],indicator,[Date]
+--order by project_code,[label]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:38:02
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Postal Life Insurance Daily] (nolock)
+WHERE [date]=(Select max(date) from [Postal Life Insurance Daily]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:38:12
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,CAST([Date] AS datetime),sum([value]) as national_value
+from APY (nolock)
+WHERE [date]=(Select max(date) from [APY](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[Date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:38:18
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from MCA_Daily (nolock)
+WHERE [date]=(Select max(date) from MCA_Daily  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:38:22
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from [PM Matsya Sampada] (nolock) where [date]<= @datevalue ),sum([value]) as national_value
+from [PM Matsya Sampada]
+WHERE [date]<=(Select max(date) from [PM Matsya Sampada] (nolock) where [date]<= @datevalue )--and project_code=100447)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+--and project_code=100447
+group by project_code,project_name,[label],indicator
+--order by project_code,[label]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:38:29
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from [PM Matsya Sampada] (nolock) where [date]<= @datevalue ),sum([value]) as national_value
+from [PM Matsya Sampada]
+WHERE [date]<=(Select max(date) from [PM Matsya Sampada] (nolock) where [date]<= @datevalue )--and project_code=100447)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+--and project_code=100447
+group by project_code,project_name,[label],indicator
+--order by project_code,[label]
+
+----- Exception Occurred -----
+Date: 2025-07-09 16:38:31
+Message: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-09'
+SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
+from [Common Services Centre](nolock)
+WHERE [date]=(Select max(date) from [Common Services Centre](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[Date]
+--order by project_code,[label]
+

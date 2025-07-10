@@ -1,67 +1,12 @@
-﻿--DECLARE @stateid int=0,@schemecode int=10018 ,@kpiid int=0, @datevalue varchar(30)='2025-05-26'     
-SET NOCOUNT ON
-DECLARE @MindateNonMonthly varchar(30)='',@maxdate varchar(30)='',@IsMnth bit=0
-declare @value1 decimal(30,5),@value2 decimal(30,5)
-declare @tbltemp table (project_code int ,project_name varchar(250),[label] tinyint,indicator varchar(250),[date] date,national_value decimal(30,5))
------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-set @value1=(SELECT  sum(Cumulative_Value) as national_value
-from PM_Ujjwala_Phase1_Phase2 
-WHERE [date]=(Select max(date) from PM_Ujjwala_Phase1_Phase2 (nolock) where [date]<= @datevalue 
-and project_code=70062
-)  
-AND [label]=1 
-and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
-and project_code =70062 --and Data_freq='Daily'
-group by [label])
-
-set @value2=(SELECT  sum(Cumulative_Value) as national_value
-from PM_Ujjwala_Phase1_Phase2 
-WHERE [date]=(Select max(date) from PM_Ujjwala_Phase1_Phase2 (nolock) where [date]<= @datevalue 
-and project_code=70062
-)  
-AND [label]=2 
-and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
-and project_code =70062 --and Data_freq='Daily'
-group by [label])
-
-
-insert into @tbltemp
-SELECT  project_code,project_name,[label],indicator,[date],sum(Cumulative_Value) as national_value
-from PM_Ujjwala_Phase1_Phase2 
-WHERE [date]=(Select max(date) from PM_Ujjwala_Phase1_Phase2 (nolock) where [date]<= @datevalue and project_code=100383)  
-AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
-and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
-and project_code =100383 --and Data_freq='Daily'
-group by project_code,project_name,[label],indicator,[Date]
-
-update @tbltemp set national_value=national_value + @value1
-where [label]=1
-update @tbltemp set national_value=national_value +@value2
-where [label]=2
-
------------------------------------------------------------------------------------------------------------------------------------------------
-Declare @datafreqtbl table (FreqName varchar(50),Id char(2) )
-Insert @datafreqtbl
-Select 'Daily','NM' union Select 'Weekly','NM' union Select 'Fortnightly','NM' union Select 'Monthly','MM'
-
-select @MindateNonMonthly= isnull(min([Date]),'') from [JJM_Daily_Blocks_Villages_updated] where data_freq NOT IN ('Monthly')
-if(@MindateNonMonthly != '') begin 
-	SET @IsMnth = CASE when @maxdate<@MindateNonMonthly then 1 else 0 end 
-end
-
-
-SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
+﻿SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from [Direct_Benefit_Transfer_New] 
 WHERE [date]=(Select max(date) from [Direct_Benefit_Transfer_New] (nolock) where [date]<= @datevalue )--and project_code=100383)  
 AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
-and project_code=70032
+and project_code=100137
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
-
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from PM_SVANidhi
 WHERE [date]=(Select max(date) from PM_SVANidhi (nolock) where [date]<= @datevalue )--and project_code=100383)  
@@ -70,22 +15,16 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 and Actual_Flag='Cumulative' and Data_freq='Daily'
 
 group by project_code,project_name,[label],indicator,[Date]
-UNION
-SELECT  project_code,project_name,[label],indicator,@datevalue,sum([value]) as national_value
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
 from PM_SVANidhi
-WHERE [date]<=(Select max(date) from PM_SVANidhi (nolock) where [date]<= @datevalue )--and project_code=100383)  
+WHERE [date]=(Select max(date) from PM_SVANidhi (nolock) where [date]<= @datevalue )--and project_code=100383)  
 AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END  
 and Actual_Flag='Current'  and Data_freq='Daily'
-group by project_code,project_name,[label],indicator
-
-
-
-
-
---order by project_code,[label]
-UNION ALL
-
+group by project_code,project_name,[Date],[label],indicator
+--order by project_code,[label] -- Actual flag is current but value is like cumulative
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from Swachh_Bharat_Mission_Grameen_New_Daily 
 WHERE [date]=(Select max(date) from Swachh_Bharat_Mission_Grameen_New_Daily (nolock) where [date]<= @datevalue )--and project_code=100383)  
@@ -95,8 +34,7 @@ and data_freq='Daily'
 --and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-union all
-
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from [Swachh Bharat Mission Urban] 
 WHERE [date]=(Select max(date) from [Swachh Bharat Mission Urban] (nolock) where [date]<= @datevalue )--and project_code=100383)  
@@ -104,12 +42,7 @@ AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
 --and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
-
-
-
-
-
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from [Sukanya Samriddhi Yojana] 
 WHERE [date]=(Select max(date) from [Sukanya Samriddhi Yojana] (nolock) where [date]<= @datevalue )--and project_code=100383)  
@@ -118,7 +51,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 --and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from startups_recognized_latest 
 WHERE [date]=(Select max(date) from startups_recognized_latest (nolock) where [date]<= @datevalue )--and project_code=100383)  
@@ -127,8 +60,9 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 --and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
-SELECT  project_code,project_name,[label],indicator,@datevalue,sum([value]) as national_value
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from [Stand Up India] (nolock) where [date]<= @datevalue and project_code=70019),
+sum([value]) as national_value
 from [Stand Up India]
 WHERE [date]<=(Select max(date) from [Stand Up India] (nolock) where [date]<= @datevalue and project_code=70019)  
 AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
@@ -136,7 +70,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 and project_code=70019
 group by project_code,project_name,[label],indicator
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from [Routine Immunization_New] 
 WHERE [date]=(Select max(date) from [Routine Immunization_New] (nolock) where [date]<= @datevalue )--and project_code=100383)  
@@ -145,7 +79,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 --and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from PMNDP_Programme_Daily 
 WHERE [date]=(Select max(date) from PMNDP_Programme_Daily (nolock) where [date]<= @datevalue )--and project_code=100383)  
@@ -155,11 +89,11 @@ and data_freq='Daily'
 --and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-select * from @tbltemp
+
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -171,7 +105,7 @@ select * from @tbltemp
 --and project_code=100383 and Data_freq='Daily'
 --group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from PMSBY 
 WHERE [date]=(Select max(date) from PMSBY (nolock) where [date]<= @datevalue )--and project_code=100383)  
@@ -180,7 +114,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 --and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from PM_POSHAN 
 WHERE [date]=(Select max(date) from PM_POSHAN (nolock) where [date]<= @datevalue )--and project_code=70032)  
@@ -189,7 +123,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 --and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from [Nationwide Artificial Insemination Progr_update] 
 WHERE [date]=(Select max(date) from [Nationwide Artificial Insemination Progr_update] (nolock) where [date]<= @datevalue )--and project_code=70032)  
@@ -199,7 +133,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 --and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from PMMY 
 WHERE [date]=(Select max(date) from PMMY (nolock) where [date]<= @datevalue )--and project_code=70032)  
@@ -208,8 +142,8 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 --and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
-SELECT  project_code,project_name,[label],indicator,@datevalue,sum([value]) as national_value
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from [PM Matsya Sampada] (nolock) where [date]<= @datevalue ),sum([value]) as national_value
 from [PM Matsya Sampada]
 WHERE [date]<=(Select max(date) from [PM Matsya Sampada] (nolock) where [date]<= @datevalue )--and project_code=100447)  
 AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
@@ -217,7 +151,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 --and project_code=100447
 group by project_code,project_name,[label],indicator
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from pm_matru_vandana_updated 
 WHERE [date]=(Select max(date) from pm_matru_vandana_updated (nolock) where [date]<= @datevalue )--and project_code=70032)  
@@ -226,7 +160,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 --and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from PM_kisan_samman_nidhi_latest 
 WHERE [date]=(Select max(date) from PM_kisan_samman_nidhi_latest (nolock) where [date]<= @datevalue )--and project_code=70032)  
@@ -235,7 +169,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 --and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from PMJJBY 
 WHERE [date]=(Select max(date) from PMJJBY (nolock) where [date]<= @datevalue )--and project_code=70032)  
@@ -244,7 +178,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 --and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from PMJDY 
 WHERE [date]=(Select max(date) from PMJDY (nolock) where [date]<= @datevalue and project_code=70032)  
@@ -253,7 +187,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 and project_code=70032
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from [PM Fasal Bima Yojana_New] 
 WHERE [date]=(Select max(date) from [PM Fasal Bima Yojana_New] (nolock) where [date]<= @datevalue )--and project_code=100646)  
@@ -261,17 +195,7 @@ AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
-SELECT  project_code,project_name,[label],indicator,@datevalue,sum([value]) as national_value
-from [Jan Aushadhi Pariyojana_Daily] 
-WHERE [date]<=(Select max(date) from [Jan Aushadhi Pariyojana_Daily] (nolock) where [date]<= @datevalue and project_code=100447)  
-AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
-and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
-and project_code=100447
---and Data_freq IN ('Daily')
-group by project_code,project_name,[label],indicator
---order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from [National Agriculture Market] 
 WHERE [date]=(Select max(date) from [National Agriculture Market] (nolock) where [date]<= @datevalue )--and project_code=100646)  
@@ -279,8 +203,9 @@ AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
-SELECT  project_code,project_name,[label],indicator,@datevalue,sum([value]) as national_value
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from [ujala] (nolock) where [date]<= @datevalue and project_code=70051)  
+,sum([value]) as national_value
 from [ujala] 
 WHERE [date]<=(Select max(date) from [ujala] (nolock) where [date]<= @datevalue and project_code=70051)  
 AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
@@ -288,7 +213,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 and project_code='70051'
 group by project_code,project_name,[label],indicator
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from [pm_awaas_yojana_urban_weekly] 
 WHERE [date]=(Select max(date) from [pm_awaas_yojana_urban_weekly] (nolock) where [date]<= @datevalue and project_code=100201)  
@@ -298,7 +223,7 @@ and project_code='100201'
 and data_freq in ('Weekly')  
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from [pradhan mantri gram sadak yojana] 
 WHERE [date]=(Select max(date) from [pradhan mantri gram sadak yojana] (nolock) where [date]<= @datevalue )--and project_code=100646)  
@@ -306,24 +231,24 @@ AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from [deendayal antyodaya yojana nrlm] 
-WHERE [date]=(Select max(date) from [deendayal antyodaya yojana nrlm] (nolock) where [date]<= @datevalue and project_code=100156)  
+WHERE [date]=(Select max(date) from [deendayal antyodaya yojana nrlm] (nolock) where [date]<= @datevalue and project_code=70010)  
 AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
-and project_code='100156'
+and project_code=70010--'100156'
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
-SELECT  project_code,project_name,[label],indicator,@datevalue,sum([value]) as national_value
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from [svamitva scheme] (nolock) where [date]<= @datevalue ),sum([value]) as national_value
 from [svamitva scheme] 
 WHERE [date]<=(Select max(date) from [svamitva scheme] (nolock) where [date]<= @datevalue )--and project_code=100396)  
 AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
 group by project_code,project_name,[label],indicator
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from [pradhan mantri awaas yojana gramin] 
 WHERE [date]=(Select max(date) from [pradhan mantri awaas yojana gramin] (nolock) where [date]<= @datevalue )--and project_code=70010)  
@@ -331,7 +256,7 @@ AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
 from [PM_DASBOARD_MGNREGA_Updated] 
 WHERE [date]=(Select max(date) from [PM_DASBOARD_MGNREGA_Updated] (nolock) where [date]<= @datevalue )--and project_code=70010)  
@@ -340,23 +265,18 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 and data_freq in ('Weekly')
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
-SELECT  project_code,project_name,[label],indicator,@datevalue,sum([value]) as national_value
-from [pmkvy_stt] 
-WHERE [date]<=(Select max(date) from [pmkvy_stt] (nolock) where [date]<= @datevalue and project_code=100396)  
-AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
-and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
-and project_code='100396'
---and Data_freq IN('Daily')
-group by project_code,project_name,[label],indicator
---order by project_code,[label]
-UNION ALL
---select @MindateNonMonthly= isnull(min([Date]),'') from [JJM_Daily_Blocks_Villages_updated] where data_freq NOT IN ('Monthly')
---if(@MindateNonMonthly != '') begin 
---	SET @IsMnth = CASE when @maxdate<@MindateNonMonthly then 1 else 0 end 
---end
+/*---block---*/
+
+Declare @datafreqtbl table (FreqName varchar(50),Id char(2) )
+DECLARE @MindateNonMonthly varchar(30)='',@maxdate varchar(30)='',@IsMnth bit=0
+Insert @datafreqtbl
+Select 'Daily','NM' UNION Select 'Weekly','NM' UNION Select 'Fortnightly','NM' UNION Select 'Monthly','MM'
+
+select @MindateNonMonthly= isnull(min([Date]),'') from [JJM_Daily_Blocks_Villages_updated] where data_freq NOT IN ('Monthly')
+if(@MindateNonMonthly != '') begin 
+	SET @IsMnth = CASE when @maxdate<@MindateNonMonthly then 1 else 0 end 
+end
 SELECT  project_code,project_name,[label],indicator,[date],sum([value]) as national_value
---SELECT  project_code,project_name,[label],indicator,@datevalue,sum([value]) as national_value
 from [JJM_Daily_Blocks_Villages_updated] 
 WHERE [date]=(Select max(date) from [JJM_Daily_Blocks_Villages_updated] (nolock) where [date]<= @datevalue )--and project_code=70010)  
 AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
@@ -364,7 +284,8 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 and data_freq IN (Select FreqName from @datafreqtbl where Id = CASE when @IsMnth=1 then 'MM' else 'NM' end )
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
 from [Agriculture Infrastructure Fund](nolock)
 WHERE [date]=(Select max(date) from [Agriculture Infrastructure Fund](nolock) where [date]<= @datevalue) 
@@ -373,7 +294,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 and Data_freq IN('Daily')
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
 from AB_Health_Wellness_Centres (nolock)
 WHERE [date]=(Select max(date) from [AB_Health_Wellness_Centres](nolock) where [date]<= @datevalue) 
@@ -382,7 +303,7 @@ and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
 and data_freq IN ('Weekly')
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
 from [Development of National Highways]
 WHERE [date]=(Select max(date) from [Development of National Highways] (nolock) where [date]<= @datevalue) 
@@ -390,7 +311,7 @@ AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
 from [Common Services Centre](nolock)
 WHERE [date]=(Select max(date) from [Common Services Centre](nolock) where [date]<= @datevalue) 
@@ -398,23 +319,24 @@ AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
 group by project_code,project_name,[label],indicator,[Date]
 --order by project_code,[label]
-UNION ALL
-SELECT  project_code,project_name,[label],indicator,@maxdate,sum([value]) as national_value
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from [BharatNet_CurrentMonth](nolock) where [date]<= @datevalue)
+,sum([value]) as national_value
 from [BharatNet_CurrentMonth](nolock)
 WHERE [date]<=(Select max(date) from [BharatNet_CurrentMonth](nolock) where [date]<= @datevalue) 
 AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   	
 group by project_code,project_name,[label],indicator
 --order by project_code,[label]
-UNION ALL
-SELECT  project_code,project_name,[label],indicator,@maxdate,sum([Current_Value]) as national_value
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from [AB PMJAY daily](nolock) where [date]<= @datevalue) ,sum([Current_Value]) as national_value
 from [AB PMJAY daily](nolock)	
 WHERE [date]<=(Select max(date) from [AB PMJAY daily](nolock) where [date]<= @datevalue) 
 AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
 group by project_code,project_name,[label],indicator
 --order by project_code,[label]
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,CAST([Date] AS datetime),sum([value]) as national_value
 from APY (nolock)
 WHERE [date]=(Select max(date) from [APY](nolock) where [date]<= @datevalue) 
@@ -422,11 +344,1788 @@ AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
 group by project_code,project_name,[label],indicator,[Date]
 
-UNION ALL
+/*---block---*/
 SELECT  project_code,project_name,[label],indicator,CAST([Date] AS datetime),sum([value]) as national_value
 from [ONORC_v3] (nolock)
 WHERE [date]=(Select max(date) from [ONORC_v3](nolock) where [date]<= @datevalue) 
 AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
 and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
 group by project_code,project_name,[label],indicator,[Date]
+
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,CAST([Date] AS datetime),sum([value]) as national_value
+from Direct_Benefit_Transfer_New (nolock)
+WHERE [date]=(Select max(date) from Direct_Benefit_Transfer_New(nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code=100137
+group by project_code,project_name,[label],indicator,[Date]
+
+-----------------------------------------------------------------------------------------critical schemes ends here----------------------------------------------------------------------
+/*---block---*/ 
+SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
+from [Direct Benefit Transfer for LPG DBTL](nolock)
+WHERE [date]=(Select max(date) from [Direct Benefit Transfer for LPG DBTL](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[Date]
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
+from [Gram Panchayat Development Plan GPDP](nolock)
+WHERE [date]=(Select max(date) from [Gram Panchayat Development Plan GPDP](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[Date]
+
+/*---block---*/ 
+
+SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
+from [DILRM](nolock)
+WHERE [date]=(Select max(date) from [DILRM](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[Date]
+
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
+from [INSPIRE](nolock)
+WHERE [date]=(Select max(date) from [INSPIRE](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[Date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
+from [eTaal](nolock)
+WHERE [date]=(Select max(date) from [eTaal](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[Date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,[Date],sum([value]) as national_value
+from [INSPIRE Awards MANAK](nolock)
+WHERE [date]=(Select max(date) from [INSPIRE Awards MANAK](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[Date]
+
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date] ,
+sum([Cumulative_Value]) as national_value
+from [DDU GKY](nolock)
+WHERE [date]=(Select max(date) from [DDU GKY](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/ 
+
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Coal Production](nolock)
+WHERE [date]=(Select max(date) from [Coal Production](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Capacity Building](nolock)
+WHERE [date]=(Select max(date) from [Capacity Building](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [EPFO Payroll](nolock)
+WHERE [date]=(Select max(date) from [EPFO Payroll](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [CAPEX_New](nolock)
+WHERE [date]=(Select max(date) from [CAPEX_New](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Services Trade I/E](nolock)
+WHERE [date]=(Select max(date) from [Services Trade I/E](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Value]) as national_value
+from [Defence Production](nolock)
+WHERE [date]=(Select max(date) from [Defence Production](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Coal_Dispatch](nolock)
+WHERE [date]=(Select max(date) from [Coal_Dispatch](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [MEA_new](nolock)
+WHERE [date]=(Select max(date) from [MEA_new](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code=100407
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Value]) as national_value
+from [I/E Commodity Wise](nolock)
+WHERE [date]=(Select max(date) from [I/E Commodity Wise](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Biotech Intervention(Aspirational Distt)](nolock)
+WHERE [date]=(Select max(date) from [Biotech Intervention(Aspirational Distt)](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Area protected](nolock)
+WHERE [date]=(Select max(date) from [Area protected](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [CGTMSE](nolock)
+WHERE [date]=(Select max(date) from [CGTMSE](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [DEFENCE OFFSET](nolock)
+WHERE [date]=(Select max(date) from [DEFENCE OFFSET](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Innovations for Defence Excellence](nolock)
+WHERE [date]=(Select max(date) from [Innovations for Defence Excellence](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [AI IN DEFENCE](nolock)
+WHERE [date]=(Select max(date) from [AI IN DEFENCE](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [ABRY_Weekly](nolock)
+WHERE [date]=(Select max(date) from [ABRY_Weekly](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [eSHRAM](nolock)
+WHERE [date]=(Select max(date) from [eSHRAM](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([cumulative_value]) as national_value
+from [ESI CORPORATION](nolock)
+WHERE [date]=(Select max(date) from [ESI CORPORATION](nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/ 
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([cumulative_value]) as national_value
+from [Defence Exports](nolock)
+WHERE [date]=(Select max(date) from [Defence Exports] (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([cumulative_value]) as national_value
+from [HRD Activities](nolock)
+WHERE [date]=(Select max(date) from [HRD Activities] (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/ 
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([cumulative_value]) as national_value
+from [Integrated Cold Chain](nolock)
+WHERE [date]=(Select max(date) from [Integrated Cold Chain] (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([cumulative_value]) as national_value
+from [CEFPPC](nolock)
+WHERE [date]=(Select max(date) from [CEFPPC] (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/ 
+
+---dated : 1 jul 25
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([cumulative_value]) as national_value
+from [Food Safety](nolock)
+WHERE [date]=(Select max(date) from [Food Safety] (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/ 
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([cumulative_value]) as national_value
+from [India Post Payment New_Daily](nolock)
+WHERE [date]=(Select max(date) from [India Post Payment New_Daily] (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([cumulative_value]) as national_value
+from [Agri Clinics and Business](nolock)
+WHERE [date]=(Select max(date) from [Agri Clinics and Business] (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([cumulative_value]) as national_value
+from [Ease_of_Doing_Business_updated](nolock)
+WHERE [date]=(Select max(date) from [Ease_of_Doing_Business_updated] (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+and project_code=100449
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([cumulative_value]) as national_value
+from [Extension Reforms (ATMA)] (nolock)
+WHERE [date]=(Select max(date) from [Extension Reforms (ATMA)]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_value]) as national_value
+from [DigiLocker_new] (nolock)
+WHERE [date]=(Select max(date) from [DigiLocker_new]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_value]) as national_value
+from [5G_BTS] (nolock)
+WHERE [date]=(Select max(date) from [5G_BTS]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_value]) as national_value
+from [Amrit_Bharat_Stations] (nolock)
+WHERE [date]=(Select max(date) from [Amrit_Bharat_Stations]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_value]) as national_value
+from [Government_emarketplace] (nolock)
+WHERE [date]=(Select max(date) from [Government_emarketplace]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_value]) as national_value
+from [aishe] (nolock)
+WHERE [date]=(Select max(date) from [aishe]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_value]) as national_value
+from [Craftsmen_Training_Scheme_ITI] (nolock)
+WHERE [date]=(Select max(date) from [Craftsmen_Training_Scheme_ITI]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([value]) as national_value
+from [GPs_connected_currmonth] (nolock)
+WHERE [date]=(Select max(date) from [GPs_connected_currmonth]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([value]) as national_value
+from [Women_Helpline] (nolock)
+WHERE [date]=(Select max(date) from [Women_Helpline]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([value]) as national_value
+from [DEFENCE CORRIDOR] (nolock)
+WHERE [date]=(Select max(date) from [DEFENCE CORRIDOR]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+and project_code=100666
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([value]) as national_value
+from Fertilizers (nolock)
+WHERE [date]=(Select max(date) from Fertilizers  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+and project_code=100122
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([value]) as national_value
+from [Income Tax Department] (nolock)
+WHERE [date]=(Select max(date) from [Income Tax Department]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [IR_OPERATIONS_CAPEX] (nolock)
+WHERE [date]=(Select max(date) from [IR_OPERATIONS_CAPEX]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+--and Data_freq='Monthly'
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from IR_PROJECTS (nolock)
+WHERE [date]=(Select max(date) from IR_PROJECTS  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from IVFRT (nolock)
+WHERE [date]=(Select max(date) from IVFRT  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Jan_Sikshan_Sansthan (nolock)
+WHERE [date]=(Select max(date) from Jan_Sikshan_Sansthan  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [MAKE II PROJECTS] (nolock)
+WHERE [date]=(Select max(date) from [MAKE II PROJECTS]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from MCA_Daily (nolock)
+WHERE [date]=(Select max(date) from MCA_Daily  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Mega Food Parks] (nolock)
+WHERE [date]=(Select max(date) from [Mega Food Parks]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Merchandise Trade Export and Import] (nolock)
+WHERE [date]=(Select max(date) from [Merchandise Trade Export and Import]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Mission_Raksha_Gyan (nolock)
+WHERE [date]=(Select max(date) from Mission_Raksha_Gyan  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Mission_Saksham_Anganwadi (nolock)
+WHERE [date]=(Select max(date) from Mission_Saksham_Anganwadi  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Merit cum Means based] (nolock)
+WHERE [date]=(Select max(date) from [Merit cum Means based]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Minority_Post_Matric (nolock)
+WHERE [date]=(Select max(date) from Minority_Post_Matric  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Minority_Pre_Matric (nolock)
+WHERE [date]=(Select max(date) from Minority_Pre_Matric  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from MPLADS (nolock)
+WHERE [date]=(Select max(date) from MPLADS  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [MSE Cluster Development Programme] (nolock)
+WHERE [date]=(Select max(date) from [MSE Cluster Development Programme]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+(Select max(date) from Nagar_VAN(nolock) where [date]<= @datevalue),
+sum([Value]) as national_value
+from Nagar_VAN (nolock)
+WHERE [date]<=(Select max(date) from Nagar_VAN  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Namami Gange Programme] (nolock)
+WHERE [date]=(Select max(date) from [Namami Gange Programme]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [National Animal Disease Control Programm] (nolock)
+WHERE [date]=(Select max(date) from [National Animal Disease Control Programm]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from National_Ayush_Mission_Monthly (nolock)
+WHERE [date]=(Select max(date) from National_Ayush_Mission_Monthly  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [national_career_service_project] (nolock)
+WHERE [date]=(Select max(date) from [national_career_service_project]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+and project_code=100642
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [National Food Security Mission (NFSM)] (nolock)
+WHERE [date]=(Select max(date) from [National Food Security Mission (NFSM)]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [National_Medicinal_Plants_Board] (nolock)
+WHERE [date]=(Select max(date) from [National_Medicinal_Plants_Board]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [SICKLE_CELL_DISEASE_CONTROL_PROGRAMME_NEW] (nolock)
+WHERE [date]=(Select max(date) from [SICKLE_CELL_DISEASE_CONTROL_PROGRAMME_NEW]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [National Social Assistance Programme] (nolock)
+WHERE [date]=(Select max(date) from [National Social Assistance Programme]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [NextGen_eHospital_daily] (nolock)
+WHERE [date]=(Select max(date) from [NextGen_eHospital_daily]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [NJDG District and Subordinate Courts] (nolock)
+WHERE [date]=(Select max(date) from [NJDG District and Subordinate Courts]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [NJDG High court] (nolock)
+WHERE [date]=(Select max(date) from [NJDG High court]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [NPCDCS_Programme] (nolock)
+WHERE [date]=(Select max(date) from [NPCDCS_Programme]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Nurturing Biotech Ecosystem] (nolock)
+WHERE [date]=(Select max(date) from [Nurturing Biotech Ecosystem]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Osmart (nolock)
+WHERE [date]=(Select max(date) from Osmart  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [One Stop Centre] (nolock)
+WHERE [date]=(Select max(date) from [One Stop Centre]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [One_Station_One_Product] (nolock)
+WHERE [date]=(Select max(date) from [One_Station_One_Product]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PM_Krishi_Sinchayee_Yojana] (nolock)
+WHERE [date]=(Select max(date) from [PM_Krishi_Sinchayee_Yojana]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PLI - Bulk Drugs] (nolock)
+WHERE [date]=(Select max(date) from [PLI - Bulk Drugs]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PLI - Medical Devices] (nolock)
+WHERE [date]=(Select max(date) from [PLI - Medical Devices]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PLI - Pharmaceuticals] (nolock)
+WHERE [date]=(Select max(date) from [PLI - Pharmaceuticals]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PLI_Telecom_Networking] (nolock)
+WHERE [date]=(Select max(date) from [PLI_Telecom_Networking]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from PLI_White_Goods (nolock)
+WHERE [date]=(Select max(date) from PLI_White_Goods  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+and project_code=100462
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from PLI_Automobile_and_Auto_Components_New (nolock)
+WHERE [date]=(Select max(date) from PLI_Automobile_and_Auto_Components_New  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from PLI_for_category1 (nolock)
+WHERE [date]=(Select max(date) from PLI_for_category1  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PLI for Textiles] (nolock)
+WHERE [date]=(Select max(date) from [PLI for Textiles]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Pli_scheme_for_specialty_steel] (nolock)
+WHERE [date]=(Select max(date) from [Pli_scheme_for_specialty_steel]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PLI Scheme on Solar PV Modules] (nolock)
+WHERE [date]=(Select max(date) from [PLI Scheme on Solar PV Modules]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PM Adarsh Gram Yojana_Daily] (nolock)
+WHERE [date]=(Select max(date) from [PM Adarsh Gram Yojana_Daily]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PM Employment Generation] (nolock)
+WHERE [date]=(Select max(date) from [PM Employment Generation]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PM_GatiShakti] (nolock)
+WHERE [date]=(Select max(date) from [PM_GatiShakti]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PM Khanij Kshetra Kalyan Yojana] (nolock)
+WHERE [date]=(Select max(date) from [PM Khanij Kshetra Kalyan Yojana]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PM_Kisan_Mandhan_Scheme] (nolock)
+WHERE [date]=(Select max(date) from [PM_Kisan_Mandhan_Scheme]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PM Kisan Sampada Yojana] (nolock)
+WHERE [date]=(Select max(date) from [PM Kisan Sampada Yojana]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PMKSY AIBP_Yearly_Monthly] (nolock)
+WHERE [date]=(Select max(date) from [PMKSY AIBP_Yearly_Monthly]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Watershed_Development_Component_PMKSY2] (nolock)
+WHERE [date]=(Select max(date) from [Watershed_Development_Component_PMKSY2]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PM Shram Yogi_Daily] (nolock)
+WHERE [date]=(Select max(date) from [PM Shram Yogi_Daily]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PM_Vishwakarma_Monthly] (nolock)
+WHERE [date]=(Select max(date) from [PM_Vishwakarma_Monthly]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PM WANI daily] (nolock)
+WHERE [date]=(Select max(date) from [PM WANI daily]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PMFME] (nolock)
+WHERE [date]=(Select max(date) from [PMFME]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PMKSY_CADWM_Updated] (nolock)
+WHERE [date]=(Select max(date) from [PMKSY_CADWM_Updated]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PO Small Savings Daily] (nolock)
+WHERE [date]=(Select max(date) from [PO Small Savings Daily]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Postal Life Insurance Daily] (nolock)
+WHERE [date]=(Select max(date) from [Postal Life Insurance Daily]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Pm_Jan_Vikas_Karyakram_Quarterly] (nolock)
+WHERE [date]=(Select max(date) from [Pm_Jan_Vikas_Karyakram_Quarterly]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PRASHAD] (nolock)
+WHERE [date]=(Select max(date) from [PRASHAD]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [PLI_ALL] (nolock)
+WHERE [date]=(Select max(date) from [PLI_ALL]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Rashtriya Gram Swaraj] (nolock)
+WHERE [date]=(Select max(date) from [Rashtriya Gram Swaraj]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Regional Connectivity Scheme (RCS) UDAN ] (nolock)
+WHERE [date]=(Select max(date) from [Regional Connectivity Scheme (RCS) UDAN ]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [RCH_daily] (nolock)
+WHERE [date]=(Select max(date) from [RCH_daily]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Restoration of Land] (nolock)
+WHERE [date]=(Select max(date) from [Restoration of Land]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from RGNIYD (nolock)
+WHERE [date]=(Select max(date) from RGNIYD  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Rural_Self_employment_Training_Ins (nolock)
+WHERE [date]=(Select max(date) from Rural_Self_employment_Training_Ins  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Sagar Unnati] (nolock)
+WHERE [date]=(Select max(date) from [Sagar Unnati]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Samagra_Shiksha] (nolock)
+WHERE [date]=(Select max(date) from Samagra_Shiksha  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Samarth_Weekly (nolock)
+WHERE [date]=(Select max(date) from Samarth_Weekly  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [SARATHI Daily] (nolock)
+WHERE [date]=(Select max(date) from [SARATHI Daily]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Seismology and Geosciences (SAGE)] (nolock)
+WHERE [date]=(Select max(date) from [Seismology and Geosciences (SAGE)]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [SERB Fellowships] (nolock)
+WHERE [date]=(Select max(date) from [SERB Fellowships]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from SFURTI (nolock)
+WHERE [date]=(Select max(date) from SFURTI  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from soil_health_and_fertility (nolock)
+WHERE [date]=(Select max(date) from soil_health_and_fertility  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Solar_Roof_Top (nolock)
+WHERE [date]=(Select max(date) from Solar_Roof_Top  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Steel Import Monitoring System] (nolock)
+WHERE [date]=(Select max(date) from [Steel Import Monitoring System]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Steel (nolock)
+WHERE [date]=(Select max(date) from Steel  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Patents_updated (nolock)
+WHERE [date]=(Select max(date) from Patents_updated  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Designs_updated (nolock)
+WHERE [date]=(Select max(date) from Designs_updated  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Trade_Marks_updated (nolock)
+WHERE [date]=(Select max(date) from Trade_Marks_updated  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+/*---block---*/
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from Copyright (nolock)
+WHERE [date]=(Select max(date) from Copyright  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Swadesh Darshan] (nolock)
+WHERE [date]=(Select max(date) from [Swadesh Darshan]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from TeleLaw_Latest (nolock)
+WHERE [date]=(Select max(date) from TeleLaw_Latest  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Eklavya Model School] (nolock)
+WHERE [date]=(Select max(date) from [Eklavya Model School]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+and project_code=100211
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [National Fellowship Scheme] (nolock)
+WHERE [date]=(Select max(date) from [National Fellowship Scheme]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [National Overseas Scholarship Scheme] (nolock)
+WHERE [date]=(Select max(date) from [National Overseas Scholarship Scheme]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [NGO Grants] (nolock)
+WHERE [date]=(Select max(date) from [NGO Grants]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Post Matric Scholarship New] (nolock)
+WHERE [date]=(Select max(date) from [Post Matric Scholarship New]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Tribal Pre Matric Scholarship New] (nolock)
+WHERE [date]=(Select max(date) from [Tribal Pre Matric Scholarship New]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Scholarship for Top Class ST Students] (nolock)
+WHERE [date]=(Select max(date) from [Scholarship for Top Class ST Students]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Udyam_Registration] (nolock)
+WHERE [date]=(Select max(date) from [Udyam_Registration]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+
+/*---block---*/
+
+SELECT  project_code, project_name,1 as [label],'USOF Mobile Towers Planned' as indicator,
+[date],
+sum([USOF Mobile Towers Planned]) as national_value
+from useof_mobileTower_CurrMonth (nolock)
+WHERE [date]=(Select max(date) from useof_mobileTower_CurrMonth  (nolock) where [date]<= @datevalue) 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[date]
+/*---block---*/
+SELECT  project_code, project_name,2 as [label],'USOF Mobile Towers Commissioned' as indicator,
+[date],
+sum([USOF Mobile Towers Commissioned]) as national_value
+from useof_mobileTower_CurrMonth (nolock)
+WHERE [date]=(Select max(date) from useof_mobileTower_CurrMonth  (nolock) where [date]<= @datevalue) 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[date]
+
+/*---block---*/
+
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [VAHAN Daily] (nolock)
+WHERE [date]=(Select max(date) from [VAHAN Daily]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
+/*---block---*/
+
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Virtual_Court] (nolock)
+WHERE [date]=(Select max(date) from [Virtual_Court]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+/*---block---*/
+
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Women Scientists] (nolock)
+WHERE [date]=(Select max(date) from [Women Scientists]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+
 order by project_code,[label]
+
+/*---block---*/
+
+declare @value1 decimal(30,5),@value2 decimal(30,5)
+declare @tbltemp table (project_code int ,project_name varchar(250),[label] tinyint,indicator varchar(250),[date] date,national_value decimal(30,5))
+
+set @value1=(SELECT  sum(Cumulative_Value) as national_value
+from PM_Ujjwala_Phase1_Phase2 (nolock) 
+WHERE [date]=(Select max(date) from PM_Ujjwala_Phase1_Phase2 (nolock) where [date]<= @datevalue 
+and project_code=70062
+)  
+AND [label]=1 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70062 --and Data_freq='Daily'
+group by [label])
+
+set @value2=(SELECT  sum(Cumulative_Value) as national_value
+from PM_Ujjwala_Phase1_Phase2 (nolock)
+WHERE [date]=(Select max(date) from PM_Ujjwala_Phase1_Phase2 (nolock) where [date]<= @datevalue 
+and project_code=70062
+)  
+AND [label]=2 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70062 --and Data_freq='Daily'
+group by [label])
+
+
+insert into @tbltemp
+SELECT  project_code,project_name,[label],indicator,[date],sum(Cumulative_Value) as national_value
+from PM_Ujjwala_Phase1_Phase2 (nolock)
+WHERE [date]=(Select max(date) from PM_Ujjwala_Phase1_Phase2 (nolock) where [date]<= @datevalue and project_code=100383)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =100383 --and Data_freq='Daily'
+group by project_code,project_name,[label],indicator,[Date]
+
+update @tbltemp set national_value=national_value + @value1
+where [label]=1
+update @tbltemp set national_value=national_value +@value2
+where [label]=2
+
+Select * from @tbltemp
+
+/*---block---*/
+
+declare @value3 decimal(30,5),@value4 decimal(30,5)
+declare @tbltemp1 table (project_code int ,project_name varchar(250),[label] tinyint,indicator varchar(250),[date] date,national_value decimal(30,5))
+
+set @value3=(SELECT  sum([value]) as national_value
+from [Jan Aushadhi Pariyojana_Daily] (nolock)
+WHERE [date]<=(Select max(date) from [Jan Aushadhi Pariyojana_Daily] (nolock) where [date]<= @datevalue 
+and project_code=70054
+)  
+AND [label]=1 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70054 --and Data_freq='Daily'
+group by [label])
+
+set @value4=(SELECT  sum([value]) as national_value
+from [Jan Aushadhi Pariyojana_Daily] (nolock)
+WHERE [date]<=(Select max(date) from [Jan Aushadhi Pariyojana_Daily] (nolock) where [date]<= @datevalue 
+and project_code=70054
+)  
+AND [label]=2 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70054 --and Data_freq='Daily'
+group by [label])
+
+insert into @tbltemp1
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from [Jan Aushadhi Pariyojana_Daily] (nolock) where [date]<= @datevalue and project_code=100447),sum([value]) as national_value
+from [Jan Aushadhi Pariyojana_Daily] (nolock)
+WHERE [date]<=(Select max(date) from [Jan Aushadhi Pariyojana_Daily] (nolock) where [date]<= @datevalue and project_code=100447)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code=100447
+group by project_code,project_name,[label],indicator
+
+update @tbltemp1 set national_value=national_value + @value3
+where [label]=1
+update @tbltemp1 set national_value=national_value +@value4
+where [label]=3
+
+Select * from @tbltemp1
+
+/*---block---*/
+
+declare @value5 decimal(30,5),@value6 decimal(30,5),@value7 decimal(30,5)
+declare @value8 decimal(30,5),@value9 decimal(30,5),@value10 decimal(30,5),@value11 decimal(30,5)
+declare @tbltemp2 table (project_code int ,project_name varchar(250),[label] tinyint,indicator varchar(250),[date] date,national_value decimal(30,5))
+
+set @value5=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=1 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+set @value6=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=2 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+set @value7=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=3 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+set @value8=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=4 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+
+
+set @value9=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=5 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+set @value10=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=6 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+set @value11=(SELECT  sum([value]) as national_value
+from PMKVYRPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVYRPL (nolock) where [date]<= @datevalue 
+and project_code=70070
+)  
+AND [label]=7
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code =70070 --and Data_freq='Daily'
+group by [label])
+
+
+insert into @tbltemp2
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from PMKVY_RPL (nolock) 
+where [date]<= @datevalue and project_code=100406)
+,sum([value]) as national_value
+from PMKVY_RPL (nolock)
+WHERE [date]<=(Select max(date) from PMKVY_RPL (nolock) where [date]<= @datevalue and project_code=100406)  
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END   
+and project_code=100406
+--and Data_freq IN('Daily')
+group by project_code,project_name,[label],indicator
+--order by project_code,[label]
+
+update @tbltemp2 set national_value=national_value + @value5
+where [label]=1
+
+update @tbltemp2 set national_value=national_value + @value6
+where [label]=2
+
+update @tbltemp2 set national_value=national_value + @value7
+where [label]=3
+
+update @tbltemp2 set national_value=national_value + @value8
+where [label]=4
+update @tbltemp2 set national_value=national_value + @value9
+where [label]=5
+update @tbltemp2 set national_value=national_value + @value10
+where [label]=6
+update @tbltemp2 set national_value=national_value + @value11
+where [label]=7 
+
+Select * from @tbltemp2

@@ -12,6 +12,10 @@ using System.Configuration;
 using System.Data.SQLite;
 using System.Web.DynamicData;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Collections.Concurrent;
 
 namespace TreeViewProject
 {
@@ -39,7 +43,14 @@ namespace TreeViewProject
                     }
                 */
 
-                FillData();
+                DataTable result;
+                result = RunQueriesByThread("");
+                //Task.Run(async () =>
+                //{
+                //    result = await RunAllQueriesWithDeclarationsAsync("");
+                //}).GetAwaiter().GetResult();
+
+                //FillData();
             }
             catch (Exception ex)
             {
@@ -47,6 +58,161 @@ namespace TreeViewProject
                 ScriptManager.RegisterStartupScript(this.Page,Page.GetType(), "alertScript", sc, true);
                 return;
             }
+        }
+  
+
+        //Parallel Run
+        public DataTable RunQueriesByThread(string sqlFilePath)
+        {
+            string datevalue = txtdate.Text.Trim().Length > 0 ? txtdate.Text.Trim() : "";
+            //string filePath = @"E:\TreeView\TreeView\Consolidate_View1.txt";
+            string filePath = @"E:\TreeView\TreeView\Consolidate_View2.txt";
+            var (declarations, queries) = ParseSqlFileWithDeclarations(filePath, datevalue);            
+            var resultTables = new ConcurrentBag<DataTable>();
+            string fullQuery=string.Empty;
+            int cnt=0;
+            Parallel.ForEach(queries, new ParallelOptions { MaxDegreeOfParallelism =10 }, query =>
+            {
+                try
+                {
+                     fullQuery = declarations + "\n" + query;
+                    DataTable dt = ExecuteQuery(fullQuery);
+                    cnt++;
+                    resultTables.Add(dt);
+
+                }
+                catch (Exception ex)
+                {
+                    string logPath = @"E:\TreeView\TreeView\error_log.txt";
+                    using (StreamWriter writer = new StreamWriter(logPath, true)) // true = append
+                    {
+                        writer.WriteLine("----- Exception Occurred -----");
+
+                        writer.WriteLine("Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                        writer.WriteLine("Message: " + ex.Message);
+                        writer.WriteLine(fullQuery);
+                        //writer.WriteLine("StackTrace: " + ex.StackTrace);
+                        writer.WriteLine(); // Blank line for readability
+                    }
+                }
+            });
+            cnt = cnt +0;
+            // Merge all result tables
+            DataTable merged = resultTables.FirstOrDefault()?.Clone() ?? new DataTable();
+
+            foreach (var dt in resultTables)
+            {
+                merged.Merge(dt);
+            }
+
+            return merged;
+        }
+
+        private DataTable ExecuteQuery(string fullQuery)
+        {
+            DataTable dt = new DataTable();            
+            using (SqlConnection conn = new SqlConnection(connectionStringCEDA))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand(fullQuery, conn))
+                {  
+                    cmd.CommandTimeout= 40;
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                    {
+                        adapter.Fill(dt);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
+
+
+
+        private (string declarations, List<string> individualQueries) ParseSqlFileWithDeclarations(string filePath,string datevalue)
+        {
+
+             string paramdeclare = @"declare @stateid int=" + 0 + " ,@schemecode int=" + 0 + " ,@kpiid int=" + 0 + " ,@datevalue varchar(30)='" + datevalue + "'";
+             string fullSql = File.ReadAllText(filePath);
+
+            ////split at the first SELECT (assumes DECLAREs come before first SELECT)
+            //var match = Regex.Match(fullSql, @"^(.*?)(SELECT.*)$", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+
+            //string declarations = match.Groups[1].Value.Trim(); // everything before first SELECT
+            //string queriesBlock = match.Groups[2].Value.Trim(); // everything after
+
+            // Now split queries using UNION keyword
+            /*
+            var queries = Regex.Split(fullSql, @"\bUNION\b", RegexOptions.IgnoreCase)
+                               .Select(q => q.Trim())
+                               .Where(q => !string.IsNullOrWhiteSpace(q))
+                               .ToList();
+            */
+
+            var queries = Regex.Split(fullSql, @"/\*---block---\*/", RegexOptions.IgnoreCase)
+                     .Select(block => block.Trim())
+                     .Where(block => !string.IsNullOrWhiteSpace(block))
+                     .ToList();
+            return (paramdeclare, queries);            
+        }
+
+        public async Task<DataTable> RunAllQueriesWithDeclarationsAsync(string sqlFilePath)
+        {
+            string datevalue = txtdate.Text.Trim().Length > 0 ? txtdate.Text.Trim() : "";
+            string filePath = @"E:\TreeView\TreeView\Consolidate_View1.txt";
+            var result = ParseSqlFileWithDeclarations(filePath, datevalue);            
+            var fullQueries = CombineDeclarationsWithQueries(result.declarations, result.individualQueries);
+
+            int maxConcurrency = 10;
+            var allResults = new List<DataTable>();
+
+            using (SemaphoreSlim throttler = new SemaphoreSlim(maxConcurrency))
+            {
+                var tasks = fullQueries.Select(async query =>
+                {
+                    await throttler.WaitAsync();
+                    try
+                    {
+                        return await ExecuteSqlQueryAsync(query);
+                    }
+                    finally
+                    {
+                        throttler.Release();
+                    }
+                });
+
+                var results = await Task.WhenAll(tasks);
+                allResults.AddRange(results);
+            }
+
+            // Merge all tables
+            var merged = allResults[0].Clone();
+            foreach (var dt in allResults)
+                merged.Merge(dt);
+
+            return merged;
+        }
+
+        public async Task<DataTable> ExecuteSqlQueryAsync(string sqlQuery)
+        {
+            var dt = new DataTable();
+            
+            using (SqlConnection conn = new SqlConnection(connectionStringCEDA))
+            {
+                using (SqlCommand cmd = new SqlCommand(sqlQuery, conn))
+                using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                {
+                    await conn.OpenAsync();
+                    adapter.Fill(dt);
+                }
+            }
+            return dt;
+        }
+
+        List<string> CombineDeclarationsWithQueries(string declarations, List<string> queries)
+        {
+            return queries.Select(query => $"{declarations}\n{query}").ToList();
         }
 
         private void FillData()

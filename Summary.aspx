@@ -111,8 +111,8 @@
                     <img class="icon-btn" src="./Data Sanity Platform_files/Mis-Matched.svg" alt="Mis-Matched" />
                     <%--<span class="font_mismatch">Mis-Matched</span>--%>
                     <asp:LinkButton ID="lnkbtnMismatch" runat="server" CssClass="font_mismatch" ToolTip="Click for Mis-Match Records" Text="Mis-Matched" OnClick="lnkbtnMismatch_Click"></asp:LinkButton>                    
-                    <asp:LinkButton ID="lnkbtndtmismatch" runat="server" CssClass="font_mismatch" ToolTip="Click for Date Mis-Match Records" Text="Mis-Matched (Date)" OnClick="lnkbtndtmismatch_Click" ></asp:LinkButton>
-                    <asp:LinkButton ID="lnkbtnwodtmismatch" runat="server" CssClass="font_mismatch" ToolTip="Click for figure Mis-Match Records" Text="Mis-Matched (Figure)" OnClick="lnkbtnwodtmismatch_Click" ></asp:LinkButton>
+                    <asp:LinkButton ID="lnkbtndtmismatch" runat="server" CssClass="font_mismatch" ToolTip="Click for Date Mis-Match Records" Text="Mis-Matched with Date Diff." OnClick="lnkbtndtmismatch_Click" ></asp:LinkButton>
+                    <asp:LinkButton ID="lnkbtnwodtmismatch" runat="server" CssClass="font_mismatch" ToolTip="Click for figure Mis-Match Records" Text="Mis-Matched without Date Diff." OnClick="lnkbtnwodtmismatch_Click" ></asp:LinkButton>
                     <asp:LinkButton ID="lnkbtnAll" runat="server" CssClass="font_match" ToolTip="Click for All Records" Text="All Records" OnClick="lnkbtnAll_Click" Visible="false"></asp:LinkButton>
                 </div>
                 </div>
