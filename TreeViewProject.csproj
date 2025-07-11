@@ -157,6 +157,7 @@
     <Content Include="ceda\ceda.txt" />
     <Content Include="ceda\Ceda2.txt" />
     <Content Include="CEDA_2.sql" />
+    <Content Include="Consolidate_View3.txt" />
     <Content Include="Consolidate_View2.txt" />
     <Content Include="Consolidate_View1.txt" />
     <Content Include="css\bootstrap.min.css" />
@@ -227,6 +228,7 @@
     <Content Include="login.html" />
     <Content Include="newProject.html" />
     <Content Include="PrayasKPI.aspx" />
+    <Content Include="prayasquery.txt" />
     <Content Include="PullData.aspx" />
     <Content Include="Sql_Server.txt" />
     <Content Include="Summary.aspx" />

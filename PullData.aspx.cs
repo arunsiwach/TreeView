@@ -16,13 +16,16 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Concurrent;
+using System.Drawing;
+using System.Web.Services.Description;
+using System.Runtime.Remoting.Messaging;
 
 namespace TreeViewProject
 {
     public partial class PullData : System.Web.UI.Page
     {
         private string connectionStringCEDA = ConfigurationManager.AppSettings["MyConnectionStringCEDA"];
-        private string connectionStringDarpan = ConfigurationManager.AppSettings["MyConnectionStringCEDA1"];
+        private string MyConnectionStringprayas = ConfigurationManager.AppSettings["MyConnectionStringprayas"];
         private string connectionStringLocal = ConfigurationManager.AppSettings["MyConnectionString"];
         private string connectionStringSqlite = ConfigurationManager.AppSettings["SQLiteDbConnection"];
         protected void Page_Load(object sender, EventArgs e)
@@ -34,23 +37,31 @@ namespace TreeViewProject
         {
             try
             {
-                /*
-                    if (txtdate.Text.Trim().Length == 0)
-                    {
-                        string sc = "alert('Please select Date');";
-                        //ScriptManager.RegisterStartupScript(updatepnl, updatepnl.GetType(), "alertScript", sc, true);
-                        return;
-                    }
-                */
 
-                DataTable result;
-                result = RunQueriesByThread("");
+                if (txtdate.Text.Trim().Length == 0)
+                {
+                    string sc = "alert('Please select Date');";
+                    ScriptManager.RegisterStartupScript(scriptmanagerParayas, scriptmanagerParayas.GetType(), "alertScript", sc, true);
+                    return;
+                }
+
+
+                //DataTable result;
+                //result = RunQueriesByThread("");
+
+                //if (result != null && result.Rows.Count > 0)
+                //{
+                //    FilldataintoSqliteTable(result, connectionStringSqlite, "Tbl_Display_Consolidate_View");
+                //}
+
+                FillData();
+
                 //Task.Run(async () =>
                 //{
                 //    result = await RunAllQueriesWithDeclarationsAsync("");
                 //}).GetAwaiter().GetResult();
 
-                //FillData();
+
             }
             catch (Exception ex)
             {
@@ -59,23 +70,24 @@ namespace TreeViewProject
                 return;
             }
         }
-  
 
-        //Parallel Run
+
+        //Parallel Run 
         public DataTable RunQueriesByThread(string sqlFilePath)
         {
             string datevalue = txtdate.Text.Trim().Length > 0 ? txtdate.Text.Trim() : "";
             //string filePath = @"E:\TreeView\TreeView\Consolidate_View1.txt";
-            string filePath = @"E:\TreeView\TreeView\Consolidate_View2.txt";
-            var (declarations, queries) = ParseSqlFileWithDeclarations(filePath, datevalue);            
+            string filePath = @"E:\TreeView\TreeView\Consolidate_View2.txt"; 
+            //string filePath = @"E:\TreeView\TreeView\Consolidate_View3.txt";
+            var (declarations, queries) = ParseSqlFileWithDeclarations(filePath, datevalue);
             var resultTables = new ConcurrentBag<DataTable>();
-            string fullQuery=string.Empty;
-            int cnt=0;
-            Parallel.ForEach(queries, new ParallelOptions { MaxDegreeOfParallelism =10 }, query =>
+            string fullQuery = string.Empty;
+            int cnt = 0;
+            Parallel.ForEach(queries, new ParallelOptions { MaxDegreeOfParallelism =4 }, query =>
             {
                 try
                 {
-                     fullQuery = declarations + "\n" + query;
+                    fullQuery = declarations + "\n" + query;
                     DataTable dt = ExecuteQuery(fullQuery);
                     cnt++;
                     resultTables.Add(dt);
@@ -87,16 +99,16 @@ namespace TreeViewProject
                     using (StreamWriter writer = new StreamWriter(logPath, true)) // true = append
                     {
                         writer.WriteLine("----- Exception Occurred -----");
-
                         writer.WriteLine("Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                         writer.WriteLine("Message: " + ex.Message);
                         writer.WriteLine(fullQuery);
                         //writer.WriteLine("StackTrace: " + ex.StackTrace);
                         writer.WriteLine(); // Blank line for readability
                     }
+
                 }
             });
-            cnt = cnt +0;
+            cnt = cnt + 0;
             // Merge all result tables
             DataTable merged = resultTables.FirstOrDefault()?.Clone() ?? new DataTable();
 
@@ -110,13 +122,13 @@ namespace TreeViewProject
 
         private DataTable ExecuteQuery(string fullQuery)
         {
-            DataTable dt = new DataTable();            
+            DataTable dt = new DataTable();
             using (SqlConnection conn = new SqlConnection(connectionStringCEDA))
             {
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand(fullQuery, conn))
-                {  
-                    cmd.CommandTimeout= 40;
+                {
+                    cmd.CommandTimeout = 900;
                     using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
                     {
                         adapter.Fill(dt);
@@ -128,7 +140,106 @@ namespace TreeViewProject
         }
 
 
+        #region (    Parallelrun with retry     )
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sqlFilePath"></param>
+        /// <returns></returns>
+        public DataTable RunQueriesByThreadwithRetry(string sqlFilePath)
+        {
+            string datevalue = txtdate.Text.Trim().Length > 0 ? txtdate.Text.Trim() : "";
+            //string filePath = @"E:\TreeView\TreeView\Consolidate_View1.txt";
+            string filePath = @"E:\TreeView\TreeView\Consolidate_View1.txt";
+            var (declarations, queries) = ParseSqlFileWithDeclarations(filePath, datevalue);            
+            var resultTables = new ConcurrentBag<DataTable>();
+            string fullQuery=string.Empty;
 
+            List<string> currentRetryList = queries;
+            int maxRetries = 3;
+            int retryCount = 0;
+
+
+            while (currentRetryList.Any() && retryCount < maxRetries)
+            {
+             
+                var failedBlocks = new ConcurrentBag<string>();
+
+                Parallel.ForEach(currentRetryList,
+                    new ParallelOptions { MaxDegreeOfParallelism =8},
+                    (block, state, index) =>
+                    {
+                        try
+                        {
+
+                            if (TryExecuteWithRetry(declarations + "\n" + block, out DataTable result))
+                            {
+                                resultTables.Add(result);
+                                WriteLog("",$"Block executed successfully (Retry {retryCount + 1})");                                 
+                            }
+                            else
+                            {                              
+                                failedBlocks.Add(block);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            WriteLog("", $"❌ Block crashed: {ex.Message})");                            
+                            failedBlocks.Add(block);
+                        }
+                    });
+
+                // Prepare next round of retry
+                currentRetryList = failedBlocks.ToList();
+                retryCount++;
+            }
+
+            if (currentRetryList.Any())
+            {
+                WriteLog("",$"{currentRetryList.Count} blocks still failed after {retryCount} retries.");              
+            }
+
+
+            // Merge all result tables
+            DataTable merged = resultTables.FirstOrDefault()?.Clone() ?? new DataTable();
+
+            foreach (var dt in resultTables)
+            {
+                merged.Merge(dt);
+            }
+
+            return merged;
+        }
+
+        private bool TryExecuteWithRetry(string sql, out DataTable result, int maxAttempts = 2)
+        {
+            result = null;
+            for (int attempt = 1; attempt <= maxAttempts; attempt++)
+            {
+                try
+                {
+                    result = ExecuteQuery(sql);
+                    return true;
+                }
+                catch (SqlException ex) 
+                {
+                    if (ex.Message.Contains("timeout"))
+                    {
+                        //Console.WriteLine($" Timeout on attempt {attempt}");
+                        Thread.Sleep(2000);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //Console.WriteLine($"⚠️ Other error: {ex.Message}");
+                    break;
+                }
+            }
+            return false;
+        }
+        #endregion
+
+ 
 
         private (string declarations, List<string> individualQueries) ParseSqlFileWithDeclarations(string filePath,string datevalue)
         {
@@ -157,6 +268,7 @@ namespace TreeViewProject
             return (paramdeclare, queries);            
         }
 
+        #region( Async Methods )
         public async Task<DataTable> RunAllQueriesWithDeclarationsAsync(string sqlFilePath)
         {
             string datevalue = txtdate.Text.Trim().Length > 0 ? txtdate.Text.Trim() : "";
@@ -164,7 +276,7 @@ namespace TreeViewProject
             var result = ParseSqlFileWithDeclarations(filePath, datevalue);            
             var fullQueries = CombineDeclarationsWithQueries(result.declarations, result.individualQueries);
 
-            int maxConcurrency = 10;
+            int maxConcurrency =5;
             var allResults = new List<DataTable>();
 
             using (SemaphoreSlim throttler = new SemaphoreSlim(maxConcurrency))
@@ -175,7 +287,7 @@ namespace TreeViewProject
                     try
                     {
                         return await ExecuteSqlQueryAsync(query);
-                    }
+                    }                  
                     finally
                     {
                         throttler.Release();
@@ -201,30 +313,50 @@ namespace TreeViewProject
             using (SqlConnection conn = new SqlConnection(connectionStringCEDA))
             {
                 using (SqlCommand cmd = new SqlCommand(sqlQuery, conn))
-                using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
-                {
-                    await conn.OpenAsync();
-                    adapter.Fill(dt);
+                {                       
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                    {
+                        await conn.OpenAsync();
+                        adapter.Fill(dt);
+                    }
                 }
             }
             return dt;
         }
+
+        #endregion
 
         List<string> CombineDeclarationsWithQueries(string declarations, List<string> queries)
         {
             return queries.Select(query => $"{declarations}\n{query}").ToList();
         }
 
+        public void WriteLog(string block,string message)
+        {
+            string logPath = @"E:\TreeView\TreeView\error_log.txt";
+            using (StreamWriter writer = new StreamWriter(logPath, true)) // true = append
+            {
+                writer.WriteLine("----- Exception Occurred -----");
+                writer.WriteLine("Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                writer.WriteLine("Message: " + message);
+                writer.WriteLine(block);
+                //writer.WriteLine("StackTrace: " + ex.StackTrace);
+                writer.WriteLine(); // Blank line for readability
+            }
+        }
+
+
         private void FillData()
         {
             //UpdateLocalScheme(connectionStringSqlite);
             //return;
-            DataTable dt1 = null;            
+            DataTable dt = null;
+            DataTable dtprayas = null;
             int stateid = 0;int kpid = 0;int schemeCode = 0;
             string datevalue = txtdate.Text.Trim().Length > 0 ? txtdate.Text.Trim() : "";
 
-            DataTable dt = GetCedaConsolidatedViewData(stateid, kpid, schemeCode, datevalue);
-            //DataTable dt = GetCedaConsolidatedDataLocal(stateid, kpid, schemeCode, datevalue);
+            // dt = GetCedaConsolidatedViewData(stateid, kpid, schemeCode, datevalue);
+             dtprayas = GetCedaConsolidatedDataLocal(stateid, kpid, schemeCode, datevalue);
 
             /* darpan Data Code will be here      
              * 
@@ -235,10 +367,11 @@ namespace TreeViewProject
             {
                 FilldataintoSqliteTable(dt, connectionStringSqlite, "Tbl_Display_Consolidate_View");
             }
-            if (dt1 != null && dt1.Rows.Count > 0)
+            if (dtprayas != null && dtprayas.Rows.Count > 0)
             {
-                FilldataintoSqliteTable(dt, connectionStringSqlite, "Tbl_Display_Consolidate");
+                FilldataintoSqliteTable(dtprayas, connectionStringSqlite, "Tbl_Display_Consolidate");
             }
+
             
         }
 
@@ -247,8 +380,20 @@ namespace TreeViewProject
             try
             {
                 DataTable ds;
-                string finalQuery = @"Select Scheme_Code,Scheme_Name,KPIID,KPI_Name,DataDate,Viewkpi_value,NULL as 'Local_Scheme_Code' ,NULL as 'Localkpi_Value' from Tbl_Display_Consolidate_View";
-                using (SqlConnection con = new SqlConnection(connectionStringLocal))
+                string paramdeclare = @"declare @stateid int=" + stateCode + " ,@schemecode int=" + SchemeCode + " ,@kpiid int=" + KpiID + " ,@datevalue varchar(30)='" + datevalue + "'";
+
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine(paramdeclare);
+                string file = @"E:\TreeView\TreeView\prayasquery.txt";
+                if (File.Exists(file))
+                {
+                    string[] filedata = File.ReadAllLines(file);
+                    foreach (string ln in filedata)
+                        sb.AppendLine(ln);
+                }
+                string finalQuery = sb.ToString();
+
+                using (SqlConnection con = new SqlConnection(MyConnectionStringprayas))
                 {
                     con.Open();
                     using (SqlCommand command = new SqlCommand(finalQuery, con))
@@ -313,7 +458,7 @@ namespace TreeViewProject
                 throw ex;
             }                 
         }
-        private void FilldataintoSqliteTable(DataTable dtdata, string connectionstring, string tableName)
+        private void  FilldataintoSqliteTable(DataTable dtdata, string connectionstring, string tableName)
         {
             try
             {
@@ -387,9 +532,11 @@ namespace TreeViewProject
                         transaction.Commit();
                     }
                 }
+                //return "sucess";
             }
             catch (Exception ex)
             {
+                //return "fail";
                 throw ex;
             }
         }
