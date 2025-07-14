@@ -46,15 +46,15 @@ namespace TreeViewProject
                 }
 
 
-                //DataTable result;
-                //result = RunQueriesByThread("");
+                DataTable result;
+                result = RunQueriesByThread("");
 
-                //if (result != null && result.Rows.Count > 0)
-                //{
-                //    FilldataintoSqliteTable(result, connectionStringSqlite, "Tbl_Display_Consolidate_View");
-                //}
+                if (result != null && result.Rows.Count > 0)
+                {
+                    FilldataintoSqliteTable(result, connectionStringSqlite, "Tbl_Display_Consolidate_View");
+                }
 
-                FillData();
+                // FillData();
 
                 //Task.Run(async () =>
                 //{
@@ -76,9 +76,9 @@ namespace TreeViewProject
         public DataTable RunQueriesByThread(string sqlFilePath)
         {
             string datevalue = txtdate.Text.Trim().Length > 0 ? txtdate.Text.Trim() : "";
-            //string filePath = @"E:\TreeView\TreeView\Consolidate_View1.txt";
-            string filePath = @"E:\TreeView\TreeView\Consolidate_View2.txt"; 
-            //string filePath = @"E:\TreeView\TreeView\Consolidate_View3.txt";
+            //string filePath = @"E:\TreeView\TreeView\Consolidate_ViewFirst.txt";
+           // string filePath = @"E:\TreeView\TreeView\Consolidate_ViewSecond.txt";
+            string filePath = @"E:\TreeView\TreeView\Consolidate_Temp.txt";
             var (declarations, queries) = ParseSqlFileWithDeclarations(filePath, datevalue);
             var resultTables = new ConcurrentBag<DataTable>();
             string fullQuery = string.Empty;

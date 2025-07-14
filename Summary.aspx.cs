@@ -34,6 +34,7 @@ namespace TreeViewProject
                 DataTable dt1 = getSummaryFromSqlite();
                 Keywrd = "0";
                 BindDataForGrid(dt1,true);
+                DisplayToolTip(dt1);
                 lnkbtnAll.Visible = false;
             }
         }
@@ -296,71 +297,54 @@ namespace TreeViewProject
             int TotalKpicnt = rows.AsEnumerable()
                      .Count(row => !row.IsNull("KPI_Name_E") && row.Field<string>("KPI_Name_E") != "");
 
-            int totalKPImatch = rows.AsEnumerable()
-                     .Count(row =>
-                        !row.IsNull("outvalue") &&
-                        !row.IsNull("CedaValue") &&
+
+            var rows1 = dt1.AsEnumerable()
+                .Where(row =>
+                    !row.IsNull("Project_Name_E") &&
+                    !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
+                    !row.IsNull("outvalue") &&
+                    !row.IsNull("CedaValue")
+                )
+                .GroupBy(row => row.Field<string>("Project_Name_E").Trim())
+                .Where(group =>
+                    group.All(row =>
                         Convert.ToDecimal(row["outvalue"]) == Convert.ToDecimal(row["CedaValue"])
-                        //row.Field<decimal>("outvalue") - row.Field<decimal>("CedaValue") == 0
-                     );
-
-            int totalKPImismatch = rows.AsEnumerable()
-                      .Count(row =>
-                         !row.IsNull("outvalue") &&
-                         !row.IsNull("CedaValue") &&
-                         Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"])
-                      //row.Field<decimal>("outvalue") - row.Field<decimal>("CedaValue") != 0
-                      );
-
-            //int SchemecntMistach = rows.AsEnumerable()
-            //   .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != ""
-            //        && !row.IsNull("outvalue") && !row.IsNull("CedaValue")&& 
-            //        Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"])
-            //    )
-            //   .Select(row => row.Field<string>("Project_Name_E"))
-            //   .Distinct()
-            //   .Count();
-
-            int SchemecntMistach = rows.AsEnumerable()
-            .Where(row =>
-                !row.IsNull("Project_Name_E") &&
-                !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
-                !row.IsNull("outvalue") &&
-                !row.IsNull("CedaValue")
-            )
-            .GroupBy(row => row.Field<string>("Project_Name_E").Trim())
-            .Count(group =>
-                group.Any(row =>
-                    Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"])
-                )
-            );
+                    )
+                ).SelectMany(group => group);
 
 
-            int SchemecntMatch = rows.AsEnumerable()
-            .Where(row =>
-                !row.IsNull("Project_Name_E") &&
-                !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
-                !row.IsNull("outvalue") &&
-                !row.IsNull("CedaValue")
-            )
-            .GroupBy(row => row.Field<string>("Project_Name_E").Trim())
-            .Count(group =>
-                group.All(row =>
-                    Convert.ToDecimal(row["outvalue"]) == Convert.ToDecimal(row["CedaValue"])
-                )
-            );
+            int SchemecntMatch = rows1.AsEnumerable()
+            .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != "")
+            .Select(row => row.Field<string>("Project_Name_E"))
+            .Distinct()
+            .Count();
 
+            int totalKPImatch = rows1.AsEnumerable()
+                .Count(row => !row.IsNull("KPI_Name_E") && row.Field<string>("KPI_Name_E") != "");
+          
 
-       
+            var rows2 = dt1.AsEnumerable()
+               .Where(row =>
+                   !row.IsNull("Project_Name_E") &&
+                   !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
+                   !row.IsNull("outvalue") &&
+                   !row.IsNull("CedaValue")
+               ).GroupBy(row => row.Field<string>("Project_Name_E").Trim())
+               .Where(group =>
+                   group.Any(row =>
+                       Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"])
+                   )
+               ).SelectMany(group => group);
 
-            //int SchemecntMatch = rows.AsEnumerable()
-            // .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != ""
-            //      && !row.IsNull("outvalue") && !row.IsNull("CedaValue") &&
-            //      Convert.ToDecimal(row["outvalue"]) == Convert.ToDecimal(row["CedaValue"])
-            //  )
-            // .Select(row => row.Field<string>("Project_Name_E").Trim())  
-            // .Distinct()
-            // .Count();
+            int SchemecntMistach = rows2.AsEnumerable()
+           .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != "")
+           .Select(row => row.Field<string>("Project_Name_E"))
+           .Distinct()
+           .Count();
+
+            int totalKPImismatch = rows2.AsEnumerable()
+              .Count(row => !row.IsNull("KPI_Name_E") && row.Field<string>("KPI_Name_E") != "");
+
 
             sb.AppendLine(Convert.ToString(TotalSchemecnt) + " Schemes having " + Convert.ToString(TotalKpicnt) + " kpis have been Compared.  ");
             sb.AppendLine(" A. " + Convert.ToString(SchemecntMatch) + " Schemes and "+ Convert.ToString(totalKPImatch) + " kpis are Matching");
@@ -856,20 +840,122 @@ namespace TreeViewProject
 
             }
         }
+
+        private void DisplayToolTip(DataTable dtrecords)
+        {                  
+            int tipSchemeCnt, tipkpiCnt;
+
+            if (dtrecords != null && dtrecords.Rows.Count > 0)
+            {
+                var rows1 = dtrecords.AsEnumerable()
+                    .Where(row =>
+                        !row.IsNull("Project_Name_E") &&
+                        !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
+                        !row.IsNull("outvalue") &&
+                        !row.IsNull("CedaValue")
+                    )
+                    .GroupBy(row => row.Field<string>("Project_Name_E").Trim())
+                    .Where(group =>
+                        group.All(row =>
+                            Convert.ToDecimal(row["outvalue"]) == Convert.ToDecimal(row["CedaValue"])
+                        )
+                    ).SelectMany(group => group);
+
+
+                tipSchemeCnt = rows1.AsEnumerable()
+                .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != "")
+                .Select(row => row.Field<string>("Project_Name_E"))
+                .Distinct()
+                .Count();
+
+                tipkpiCnt = rows1.AsEnumerable()
+                    .Count(row => !row.IsNull("KPI_Name_E") && row.Field<string>("KPI_Name_E") != "");
+
+                lnkbtnMatch.ToolTip = "Schemes : " + tipSchemeCnt + ", KPIs : " + tipkpiCnt;
+
+                var rows2 = dtrecords.AsEnumerable()
+                   .Where(row =>
+                       !row.IsNull("Project_Name_E") &&
+                       !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
+                       !row.IsNull("outvalue") &&
+                       !row.IsNull("CedaValue")
+                   ).GroupBy(row => row.Field<string>("Project_Name_E").Trim())
+                   .Where(group =>
+                       group.Any(row =>
+                           Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"])
+                       )
+                   ).SelectMany(group => group);
+
+                tipSchemeCnt = rows2.AsEnumerable()
+               .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != "")
+               .Select(row => row.Field<string>("Project_Name_E"))
+               .Distinct()
+               .Count();
+
+                tipkpiCnt = rows2.AsEnumerable()
+                  .Count(row => !row.IsNull("KPI_Name_E") && row.Field<string>("KPI_Name_E") != "");
+
+                lnkbtnMismatch.ToolTip = "Schemes : " + tipSchemeCnt + ", KPIs : " + tipkpiCnt;
+
+                var rows3 = dtrecords.AsEnumerable().Where(row =>
+                   !row.IsNull("Project_Name_E") &&
+                   !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
+                   !row.IsNull("outvalue") &&
+                   !row.IsNull("CedaValue")
+               ).GroupBy(row => row.Field<string>("Project_Name_E").Trim())
+               .Where(group =>
+                   group.Any(row =>
+                       Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"]) &&
+                       Convert.ToDateTime(row["PrayasDate"]) == Convert.ToDateTime(row["CedaDate"])
+                   )
+               ).SelectMany(group => group);
+
+                tipSchemeCnt = rows3.AsEnumerable()
+               .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != "")
+               .Select(row => row.Field<string>("Project_Name_E"))
+               .Distinct()
+               .Count();
+
+                tipkpiCnt = rows3.AsEnumerable()
+                  .Count(row => !row.IsNull("KPI_Name_E") && row.Field<string>("KPI_Name_E") != "");
+
+                lnkbtnwodtmismatch.ToolTip = "Schemes : " + tipSchemeCnt + ", KPIs : " + tipkpiCnt;
+
+                var rows4 = dtrecords.AsEnumerable().Where(row =>
+                   !row.IsNull("Project_Name_E") &&
+                   !string.IsNullOrWhiteSpace(row.Field<string>("Project_Name_E")) &&
+                   !row.IsNull("outvalue") &&
+                   !row.IsNull("CedaValue")
+               ).GroupBy(row => row.Field<string>("Project_Name_E").Trim())
+               .Where(group =>
+                   group.Any(row =>
+                       Convert.ToDecimal(row["outvalue"]) != Convert.ToDecimal(row["CedaValue"]) &&
+                       Convert.ToDateTime(row["PrayasDate"]) != Convert.ToDateTime(row["CedaDate"])
+                   )
+               ).SelectMany(group => group);
+
+                tipSchemeCnt = rows4.AsEnumerable()
+               .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != "")
+               .Select(row => row.Field<string>("Project_Name_E"))
+               .Distinct()
+               .Count();
+
+                tipkpiCnt = rows4.AsEnumerable()
+                  .Count(row => !row.IsNull("KPI_Name_E") && row.Field<string>("KPI_Name_E") != "");
+
+                lnkbtndtmismatch.ToolTip = "Schemes : " + tipSchemeCnt + ", KPIs : " + tipkpiCnt;
+            }
+        }
       
         private void FilterRecord(string keywrd)
         {
 
             DataTable dtrecords = getSummaryFromSqlite();         
-            DataTable dtfilter = dtrecords.Clone();  // Copy schema            
+            DataTable dtfilter = dtrecords.Clone();  // Copy schema
+            int tipSchemeCnt, tipkpiCnt;
 
             if (keywrd == "1") //Match
             {
-                //var rows = dtrecords.AsEnumerable().Where(row =>
-                //          !row.IsNull("outvalue") &&
-                //          !row.IsNull("CedaValue") &&
-                //          Convert.ToDecimal(row["outvalue"]) == Convert.ToDecimal(row["CedaValue"])
-                //       );
 
                 var rows1 = dtrecords.AsEnumerable()
                   .Where(row =>
@@ -884,6 +970,18 @@ namespace TreeViewProject
                           Convert.ToDecimal(row["outvalue"]) == Convert.ToDecimal(row["CedaValue"])
                       )
                   ).SelectMany(group => group);
+
+                
+                 tipSchemeCnt = rows1.AsEnumerable()
+                .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != "")
+                .Select(row => row.Field<string>("Project_Name_E"))
+                .Distinct()
+                .Count();
+
+                 tipkpiCnt = rows1.AsEnumerable()
+                   .Count(row => !row.IsNull("KPI_Name_E") && row.Field<string>("KPI_Name_E") != "");
+
+                lnkbtnMatch.ToolTip = "Schemes : " + tipSchemeCnt + ", KPIs : " + tipkpiCnt;
 
                 foreach (var row in rows1)
                 {
@@ -911,6 +1009,17 @@ namespace TreeViewProject
                    )
                ).SelectMany(group => group);
 
+                tipSchemeCnt = rows1.AsEnumerable()
+               .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != "")
+               .Select(row => row.Field<string>("Project_Name_E"))
+               .Distinct()
+               .Count();
+
+                tipkpiCnt = rows1.AsEnumerable()
+                  .Count(row => !row.IsNull("KPI_Name_E") && row.Field<string>("KPI_Name_E") != "");
+
+                lnkbtnMismatch.ToolTip = "Schemes : " + tipSchemeCnt + ", KPIs : " + tipkpiCnt;
+
                 foreach (var row in rows1)
                 {
                     dtfilter.ImportRow(row);
@@ -931,6 +1040,17 @@ namespace TreeViewProject
                        Convert.ToDateTime(row["PrayasDate"]) == Convert.ToDateTime(row["CedaDate"])
                    )
                ).SelectMany(group => group);
+
+                tipSchemeCnt = rows1.AsEnumerable()
+               .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != "")
+               .Select(row => row.Field<string>("Project_Name_E"))
+               .Distinct()
+               .Count();
+
+                tipkpiCnt = rows1.AsEnumerable()
+                  .Count(row => !row.IsNull("KPI_Name_E") && row.Field<string>("KPI_Name_E") != "");
+
+                lnkbtnwodtmismatch.ToolTip = "Schemes : " + tipSchemeCnt + ", KPIs : " + tipkpiCnt;
 
                 foreach (var row in rows1)
                 {
@@ -953,6 +1073,17 @@ namespace TreeViewProject
                    )
                ).SelectMany(group => group);
 
+                tipSchemeCnt = rows1.AsEnumerable()
+               .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != "")
+               .Select(row => row.Field<string>("Project_Name_E"))
+               .Distinct()
+               .Count();
+
+                tipkpiCnt = rows1.AsEnumerable()
+                  .Count(row => !row.IsNull("KPI_Name_E") && row.Field<string>("KPI_Name_E") != "");
+
+                
+                lnkbtndtmismatch.ToolTip = "Schemes : " + tipSchemeCnt + ", KPIs : " + tipkpiCnt;
                 foreach (var row in rows1)
                 {
                     dtfilter.ImportRow(row);

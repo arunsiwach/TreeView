@@ -157,9 +157,9 @@
     <Content Include="ceda\ceda.txt" />
     <Content Include="ceda\Ceda2.txt" />
     <Content Include="CEDA_2.sql" />
-    <Content Include="Consolidate_View3.txt" />
-    <Content Include="Consolidate_View2.txt" />
-    <Content Include="Consolidate_View1.txt" />
+    <Content Include="Consolidate_ViewFirst.txt" />
+    <Content Include="Consolidate_Temp.txt" />
+    <Content Include="Consolidate_ViewSecond.txt" />
     <Content Include="css\bootstrap.min.css" />
     <Content Include="css\style.css" />
     <Content Include="css\Style1.css" />

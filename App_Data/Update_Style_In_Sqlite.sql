@@ -1,6 +1,4 @@
-﻿
-
-UPDATE Tbl_Display_Consolidate_View
+﻿UPDATE Tbl_Display_Consolidate_View
 SET Local_Scheme_Code = (
     SELECT vm.Local_SchemeCode
     FROM Tbl_Scheme_ViewName_Mapping_New vm

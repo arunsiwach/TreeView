@@ -31,7 +31,7 @@
             */
         }
 
-            .center1 img1 {
+        .center1 img1 {
                 /* position: center;*/
                 height: 200px;
                 width: 200px;
@@ -43,50 +43,78 @@
             text-align: right;
         }
 
-            /* Style the paging buttons */
-            .custom-pager a,
-            .custom-pager span {
-                display: inline-block;
-                margin: 0 1px;
-                padding: 6px 12px;
-                border-radius: 20px;
-                background-color: #007bff;
-                color: #fff;
-                text-decoration: none;
-                font-size: 14px;
-                transition: background-color 0.3s ease;
-            }
-
-                /* Hover effect for active page links */
-                .custom-pager a:hover {
-                    background-color: #0056b3;
-                }
-            /* Style for current page (non-clickable span) */
-            .custom-pager span {
-                background-color: #6c757d;
-                cursor: default;
-            }
-           .nowrap-header {
-               width: 120px;
-               white-space: nowrap;
-} 
-
-            .font_black
-            {
-            color:black;             
-            }
-            .highlighted-link {
-            background-color: lightgrey;             
-            font-weight: bold;
-            padding: 6px 14px;
-            border-radius: 6px;
-            border: 1px solid #999;
-            text-decoration: none !important;
+        /* Style the paging buttons */
+        .custom-pager a,
+        .custom-pager span {
             display: inline-block;
-            transition: all 0.2s ease;
-            }
-              
-    </style>
+            margin: 0 1px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Hover effect for active page links */
+        .custom-pager a:hover {
+            background-color: #0056b3;
+        }
+        /* Style for current page (non-clickable span) */
+        .custom-pager span {
+            background-color: #6c757d;
+            cursor: default;
+        }
+        .nowrap-header {
+            width: 120px;
+            white-space: nowrap;
+        } 
+        .font_black
+        {
+        color:black;             
+        }
+        .highlighted-link {
+        background-color: lightgrey;             
+        font-weight: bold;
+        padding: 6px 14px;
+        border-radius: 6px;
+        border: 1px solid #999;
+        text-decoration: none !important;
+        display: inline-block;
+        transition: all 0.2s ease;
+        }
+    
+        .styled-tooltip {
+        position: relative;
+        cursor: pointer;
+        }
+
+        .styled-tooltip::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 125%; /* position above */
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #f5f5f5;
+        color: #333;
+        font-weight: bold;
+        font-size: 14px;
+        padding: 8px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+        border: 1px solid #ccc;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease-in-out;
+        z-index: 999;
+        }
+
+        .styled-tooltip:hover::after {
+        opacity: 1;
+        }
+</style>
+                  
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:ScriptManager ID="smParayas" runat="server"></asp:ScriptManager>
@@ -105,14 +133,14 @@
                 <div class="item_right">
                     <asp:ImageButton ID="imgEx" class="header_logo" ImageUrl="~/Data Sanity Platform_files/Excel.svg" runat="server" OnClick="imgEx_Click" />
                     <asp:ImageButton ID="imgPdf" class="header_logo" ImageUrl="~/Data Sanity Platform_files/PDF.svg" runat="server" OnClick="imgPdf_Click" />
-                    <img class="icon-btn" src="./Data Sanity Platform_files/Matched.svg" alt="Matched" />
-                    <asp:LinkButton ID="lnkbtnMatch" runat="server" CssClass="font_match" ToolTip="Click for Matched Records"  Text="Matched" OnClick="lnkbtnMatch_Click"></asp:LinkButton>
+                    <img class="icon-btn" src="./Data Sanity Platform_files/Matched.svg" alt="Matched" /> <%--ToolTip="Click for Matched Records"--%>
+                    <asp:LinkButton ID="lnkbtnMatch" runat="server" CssClass="font_match"   Text="Matched" OnClick="lnkbtnMatch_Click"></asp:LinkButton>
                     <%--<span class="font_match">Matched</span>--%>
                     <img class="icon-btn" src="./Data Sanity Platform_files/Mis-Matched.svg" alt="Mis-Matched" />
                     <%--<span class="font_mismatch">Mis-Matched</span>--%>
-                    <asp:LinkButton ID="lnkbtnMismatch" runat="server" CssClass="font_mismatch" ToolTip="Click for Mis-Match Records" Text="Mis-Matched" OnClick="lnkbtnMismatch_Click"></asp:LinkButton>                    
-                    <asp:LinkButton ID="lnkbtndtmismatch" runat="server" CssClass="font_mismatch" ToolTip="Click for Date Mis-Match Records" Text="Mis-Matched with Date Diff." OnClick="lnkbtndtmismatch_Click" ></asp:LinkButton>
-                    <asp:LinkButton ID="lnkbtnwodtmismatch" runat="server" CssClass="font_mismatch" ToolTip="Click for figure Mis-Match Records" Text="Mis-Matched without Date Diff." OnClick="lnkbtnwodtmismatch_Click" ></asp:LinkButton>
+                    <asp:LinkButton ID="lnkbtnMismatch" runat="server" CssClass="font_mismatch"  Text="Mis-Matched" OnClick="lnkbtnMismatch_Click"></asp:LinkButton> <%--ToolTip="Click for Mis-Match Records"--%>                   
+                    <asp:LinkButton ID="lnkbtndtmismatch" runat="server" CssClass="font_mismatch"  Text="Mis-Matched with Date Diff." OnClick="lnkbtndtmismatch_Click" ></asp:LinkButton> <%--ToolTip="Click for Date Mis-Match Records"--%>
+                    <asp:LinkButton ID="lnkbtnwodtmismatch" runat="server" CssClass="font_mismatch"  Text="Mis-Matched without Date Diff." OnClick="lnkbtnwodtmismatch_Click" ></asp:LinkButton> <%--ToolTip="Click for figure Mis-Match Records"--%>
                     <asp:LinkButton ID="lnkbtnAll" runat="server" CssClass="font_match" ToolTip="Click for All Records" Text="All Records" OnClick="lnkbtnAll_Click" Visible="false"></asp:LinkButton>
                 </div>
                 </div>

@@ -1,6 +1,7 @@
 ﻿declare @fromdate1 datetime,@fromdate2 datetime
 set @fromdate1='2025-04-01'
 set @fromdate2='2024-04-01'
+
 declare @tbl table
 (
 id int identity(1,1),
@@ -32,11 +33,23 @@ tbl_maxdatadate datetime
 )
 
 
+declare @tbllastlastfinyearschemes table
+(
+id int identity(1,1),
+tbl_project_code int,
+tbl_kpi_id int,
+tbl_kpi_data_type_id tinyint,
+tbl_fromdate datetime,
+tbl_maxdatadate datetime
+)
+
+
 
 
 insert into @tbl 
 select Project_Code,KPI_ID,KPI_Data_Type_ID,@datevalue from Tbl_Project_kpi_Detail_Intrim
-where Project_Code in (
+where Project_Code in 
+(
 100137,100383,100134,100135,100138,10010,10016,10017,10018,100201,10021,10033,10038,100237,100238,100248,10025,10027,10069,10068,10067
 ,10032,100351,100359,100378,100406,100405,100579,100435,10043,100565,100447,10045,10046,100476,100508,10051,100524,100547,100560,100576,100593,100613,100674,10019,
 10063,10084,10086,100102,100104,100105,100127,
@@ -44,26 +57,32 @@ where Project_Code in (
 100411,100414,100415,100442,100416,100439,100448,100449,100475,100552,100575,100561,100580,100585,100600,100614,100689,100666,100122,100180,10043,100563,100597,100606,100371,
 100373,100412,100362,100688,100176,100175,100174,100207,100244,100513
 ,100183,100224,100631,100642,100473,100390,100514,1003,100521,100198,10088,100522,100410,100380,100574,100577,
-100455,100485,100486,100471,100461,100462,100506,100557,100484,100487,100491,100139,100245,100616,1009,100635,100131,100504,100375,10042,100615,100356,100555,100571,100363,100374,100619,
-100154,100665,10083,100168,100519,100232,100196,100549,10097,100572,100425,100409,100392,10093,100241,100610,100103,100235,100223,100226,100228,100527,100153,100607,100211,10075,10076,
+100455,100485,100486,100471,100461,100462,100506,100557,100484,100487,100491,100139,100245,100616,1009,100635,100131,100504,100375,10042,100615,100356,100555,100571,100619,
+100154,100665,10083,100168,100519,100232,100196,100549,10097,100425,100409,100392,10093,100241,100610,100103,100527,100153,100607,100211,10075,10076,
 10078,100149,100148,10077,100598,100553,100408,100434,100107,100427,100429,100433,100436,100437,100438,100443,100525,100526,100527
 )
 
 insert into @tblcurrentfinyearschemes 
 select Project_Code,KPI_ID,KPI_Data_Type_ID,'2025-04-01',@datevalue from Tbl_Project_kpi_Detail_Intrim
-where Project_Code in (100219,100143,100231,100387,100564,100204)
+where Project_Code in (100219,100143,100231,100387,100564,100204,100363,100374,100235,100226,100223,100228)
 
 insert into @tbllastfinyearschemes 
 select Project_Code,KPI_ID,KPI_Data_Type_ID,'2024-04-01',@datevalue from Tbl_Project_kpi_Detail_Intrim
 where Project_Code in (100234,100202)
+
+insert into @tbllastlastfinyearschemes 
+select Project_Code,KPI_ID,KPI_Data_Type_ID,'2023-04-01',@datevalue from Tbl_Project_kpi_Detail_Intrim
+where Project_Code in (100572)
+
 
 
 update @tbl set tbl_maxdatadate=(select max(Datadt) from Tbl_DataPort_KPI_PORTED_DATA where project_code=a.tbl_project_code and Kpi_id=a.tbl_kpi_id and Datadt<=@datevalue )             
 from @tbl a
 
 
+
 update @tbl set tbl_kpi_data_type_id=1 where tbl_project_code in 
-(100134,10025,100351,10010,100201,100476,100576,100383,10068,10067,100446,100565,100122,100104,100614,100180,100175,100174,100176)
+(100134,10025,100351,10010,100201,100476,100576,100383,10068,10067,100446,100565,100122,100104,100614,100180,100175,100174,100176,100571)
 
 
 
@@ -95,11 +114,49 @@ where a.project_code=b.tbl_project_code and a.Datadt>=b.tbl_fromdate and  a.Data
 group by a.project_code,a.Kpi_id,a.Mode_frequency_id,b.tbl_maxdatadate
 
 union
+---------------------------------------------
+select a.project_code,a.Kpi_id,
+sum(Kpi_Data) as KPI_Value ,a.Mode_frequency_id,b.tbl_maxdatadate as datadt
+from Tbl_DataPort_KPI_PORTED_DATA a (nolock)
+inner join @tblcurrentfinyearschemes b on a.project_code=b.tbl_project_code and a.Kpi_id=b.tbl_kpi_id
+where a.project_code=b.tbl_project_code and
+a.Datadt=(select max(Datadt) from Tbl_DataPort_KPI_PORTED_DATA where project_code=b.tbl_project_code and Kpi_id=b.tbl_kpi_id and Datadt<=@datevalue )             
+--a.Datadt=b.tbl_maxdatadate 
+and b.tbl_kpi_data_type_id=1
+group by a.project_code,a.Kpi_id,a.Mode_frequency_id,b.tbl_maxdatadate
+------------------------------------------------------
+union
 select a.project_code,a.Kpi_id,
 sum(Kpi_Data) as KPI_Value ,a.Mode_frequency_id,b.tbl_maxdatadate as datadt
 from Tbl_DataPort_KPI_PORTED_DATA a (nolock)
 inner join @tbllastfinyearschemes b on a.project_code=b.tbl_project_code and a.Kpi_id=b.tbl_kpi_id
 where a.project_code=b.tbl_project_code and a.Datadt>=b.tbl_fromdate and  a.Datadt<=b.tbl_maxdatadate and b.tbl_kpi_data_type_id=2
+group by a.project_code,a.Kpi_id,a.Mode_frequency_id,b.tbl_maxdatadate
+union
+select a.project_code,a.Kpi_id,
+sum(Kpi_Data) as KPI_Value ,a.Mode_frequency_id,b.tbl_maxdatadate as datadt
+from Tbl_DataPort_KPI_PORTED_DATA a (nolock)
+inner join @tbllastfinyearschemes b on a.project_code=b.tbl_project_code and a.Kpi_id=b.tbl_kpi_id
+where a.project_code=b.tbl_project_code and a.Datadt=(select max(Datadt) from Tbl_DataPort_KPI_PORTED_DATA where project_code=b.tbl_project_code and Kpi_id=b.tbl_kpi_id and Datadt<=@datevalue )
+and b.tbl_kpi_data_type_id=1
+group by a.project_code,a.Kpi_id,a.Mode_frequency_id,b.tbl_maxdatadate
+
+union
+select a.project_code,a.Kpi_id,
+sum(Kpi_Data) as KPI_Value ,a.Mode_frequency_id,b.tbl_maxdatadate as datadt
+from Tbl_DataPort_KPI_PORTED_DATA a (nolock)
+inner join @tbllastlastfinyearschemes b on a.project_code=b.tbl_project_code and a.Kpi_id=b.tbl_kpi_id
+where a.project_code=b.tbl_project_code and a.Datadt>=b.tbl_fromdate and  a.Datadt<=b.tbl_maxdatadate and b.tbl_kpi_data_type_id=2
+group by a.project_code,a.Kpi_id,a.Mode_frequency_id,b.tbl_maxdatadate
+union
+
+select a.project_code,a.Kpi_id,
+sum(Kpi_Data) as KPI_Value ,a.Mode_frequency_id,b.tbl_maxdatadate as datadt
+from Tbl_DataPort_KPI_PORTED_DATA a (nolock)
+inner join @tbllastlastfinyearschemes b on a.project_code=b.tbl_project_code and a.Kpi_id=b.tbl_kpi_id
+where a.project_code=b.tbl_project_code and
+a.Datadt=(select max(Datadt) from Tbl_DataPort_KPI_PORTED_DATA where project_code=b.tbl_project_code and Kpi_id=b.tbl_kpi_id and Datadt<=@datevalue )
+and b.tbl_kpi_data_type_id=1
 group by a.project_code,a.Kpi_id,a.Mode_frequency_id,b.tbl_maxdatadate
 
 
@@ -211,16 +268,3 @@ from #temp
 inner join M_Data_Frequency on M_Data_Frequency.Data_Frequency_Id=#temp.modefrequencyid
 order by projectcode,kpiid
 
-
---select distinct projectcode from #temp
-
---select sum(kpivalue) from #temp
---99636107582480.56335
---99713574648861.02184
---68577494234870.04307
---select count(distinct projectcode) from #temp
-drop table #temp
-
---select 99713574648861.02184-99636107582480.56335
-
---77467066380.45849
