@@ -1,1 +1,24 @@
-﻿
+﻿----- Exception Occurred -----
+Date: 2025-07-15 09:28:01
+Message: Transaction (Process ID 210) was deadlocked on generic waitable object resources with another process and has been chosen as the deadlock victim. Rerun the transaction.
+declare @stateid int=0 ,@schemecode int=0 ,@kpiid int=0 ,@datevalue varchar(30)='2025-07-15'
+SELECT  project_code,project_name,[label],indicator,
+[date],
+sum([Value]) as national_value
+from [One Stop Centre] (nolock)
+WHERE [date]=(Select max(date) from [One Stop Centre]  (nolock) where [date]<= @datevalue)
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
+and [label]=1
+group by project_code,project_name,[label],indicator,[date]
+union
+SELECT  project_code,project_name,[label],indicator,(Select max(date) from [One Stop Centre] (nolock) where [date]<= @datevalue and project_code=100577) as [date] ,
+sum([Value]) as national_value
+from [One Stop Centre] (nolock)
+WHERE [date]<=(Select max(date) from [One Stop Centre]  (nolock) where [date]<= @datevalue and project_code=100577)
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END 
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END
+and project_code=100577
+and [label]=2
+group by project_code,project_name,[label],indicator
+

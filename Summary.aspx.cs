@@ -527,10 +527,10 @@ namespace TreeViewProject
                     headingp = "Data Comparison Sheet ( UnMatched )";
                     break;
                 case "3":
-                    headingp = "Data Comparison Sheet ( UnMatched )";
+                    headingp = "Data Comparison Sheet ( MisMatch Without Date Difference )";
                     break;
                 case "4":
-                    headingp = "Data Comparison Sheet ( UnMatched )";
+                    headingp = "Data Comparison Sheet ( MisMatch with Date Difference )";
                     break;
                 default:
                     break;
@@ -734,11 +734,11 @@ namespace TreeViewProject
                             headingp = "Data Comparison Sheet ( UnMatched )";
                             break;
                         case "3":
-                            headingp = "Data Comparison Sheet ( UnMatched )";
+                            headingp = "Data Comparison Sheet ( MisMatch Without Date Difference )";
                             break;
                         case "4":
-                            headingp = "Data Comparison Sheet ( UnMatched )";
-                            break;
+                            headingp = "Data Comparison Sheet ( MisMatch with Date Difference )";
+                            break;                     
                         default:
                             break;
                     }
