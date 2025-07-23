@@ -187,6 +187,7 @@
     <Content Include="Data Sanity Platform_files\TableStyle.css" />
     <Content Include="Data Sanity Platform_files\Wrapper.css" />
     <Content Include="Data\Scripts.sql" />
+    <Content Include="ErrorWhileRunning.txt" />
     <Content Include="error_log.txt" />
     <Content Include="FrmReport1.aspx" />
     <Content Include="FrmReport2.aspx" />

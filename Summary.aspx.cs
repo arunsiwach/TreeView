@@ -143,7 +143,7 @@ namespace TreeViewProject
             {
                 GridViewRow currentRow = gvLedgerDetail.Rows[i];
 
-                if (i == 0 || currentRow.Cells[groupCol].Text != gvLedgerDetail.Rows[i - 1].Cells[groupCol].Text)
+                if (i == 0 || currentRow.Cells[groupCol].Text.Trim() != gvLedgerDetail.Rows[i - 1].Cells[groupCol].Text.Trim())
                 {
                     currentRow.Cells[serialCol].Text = serialNo.ToString();
                     serialNo++;
@@ -289,7 +289,7 @@ namespace TreeViewProject
 
             //int Schemecnt = 39;
             int TotalSchemecnt = rows.AsEnumerable()
-                .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != "")
+                .Where(row => !row.IsNull("Project_Name_E") && row.Field<string>("Project_Name_E").Trim() != "")                
                 .Select(row => row.Field<string>("Project_Name_E"))
                 .Distinct()
                 .Count();

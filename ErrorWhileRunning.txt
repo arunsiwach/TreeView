@@ -1,0 +1,13 @@
+﻿/*---block---*/
+SELECT  project_code, project_name,[label],indicator,
+[date],
+sum([Cumulative_Value]) as national_value
+from [Women Scientists] (nolock)
+WHERE [date]=(Select max(date) from [Women Scientists]  (nolock) where [date]<= @datevalue) 
+AND [label]=CASE WHEN @kpiid=0  THEN [label] ELSE @kpiid END  
+and state_code=CASE WHEN @stateid=0  THEN state_code ELSE @stateid END 
+group by project_code,project_name,[label],indicator,[date]
+order by project_code,[label]
+/*---block---*/
+
+
